@@ -2866,7 +2866,7 @@ function gerarRelVisita(idx) {
     <button class="dcls" onclick="fecharForm()">✕</button>
   </div>
   <div id="dbody" style="flex:1;overflow-y:auto;padding:12px 22px 8px"></div>
-  <div class="factions" id="drawer-factions" style="display:none"></div>
+  <div class="factions" id="drawer-factions" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center"></div>
 </div>
 
 <!-- TOAST -->
@@ -4493,62 +4493,50 @@ function _buildVisFilters(){_buildDrop('vis-fil','Filial',['CEARÁ','MARANHÃO',
 
 // ── FORMULÁRIOS ───────────────────────────────────────────────
 function abrirForm(tipo,idx) {
+  // ── Visitas: sempre usar o novo painel ──────────────────
+  if(tipo === 'vis') {
+    abrirFrmVis(typeof idx==='number'?idx:( idx===-1?-1:Number(idx)||0 ));
+    return;
+  }
   if(!podeEd()){showToast('⚠️ Sem permissão para editar',1);return;}
   fType=tipo; fIdx=idx;
-  var tits={cond:'Condomínio',dem:'Demanda',sat:'Pesquisa',vis:'Visita',critop:'Crítico',ret:'Retenção',inc:'Incidente',fluxo:'Fluxo'};
+  var tits={cond:'Condomínio',dem:'Demanda',sat:'Pesquisa',critop:'Crítico',ret:'Retenção',inc:'Incidente',fluxo:'Fluxo'};
   var _titulo=(idx===-1?'➕ Novo ':'✏️ Editar ')+(tits[tipo]||tipo);
   var _formHtml;
   try{_formHtml=_buildForm(tipo,idx);}
   catch(e){showToast('Erro: '+e.message,1);console.error(e);return;}
   _abrirDrawer(_titulo, _formHtml);
-  // Focar no campo condomínio após a transição do drawer (250ms)
   setTimeout(function(){
     var fc = document.getElementById('fc');
-    if(fc && !fc.value){
-      // Garantir que DB.conds está carregado
-      garantirDB();
-      // Abrir dropdown se tiver condomínios
-      if((DB.conds||[]).length > 0){
-        _acF('fc');
-      }
-    }
-  }, 270);
+    if(fc && !fc.value) try{ fc.focus(); }catch(e){}
+  }, 250);
 }
-
 // ── _abrirDrawer: abre drawer separando factions do body ────────
 function _abrirDrawer(titulo, html) {
   var dbEl = document.getElementById('dbody');
   var dfEl = document.getElementById('drawer-factions');
   var dtEl = document.getElementById('dtit');
+  var dr   = document.getElementById('drawer');
+  var ov   = document.getElementById('overlay');
 
-  // Separar .factions do body
   var factionsStart = html.lastIndexOf('<div class="factions">');
   var bodyHtml     = factionsStart >= 0 ? html.substring(0, factionsStart) : html;
-  var factionsHtml = factionsStart >= 0 ? html.substring(factionsStart) : '';
+  var factionsHtml = factionsStart >= 0 ? html.substring(factionsStart)    : '';
 
-  // Tornar o factions sticky dentro do dbody (método mais robusto)
+  // Extrair somente o conteúdo interno do factions (sem a div wrapper)
+  var factionsInner = '';
   if(factionsHtml) {
-    factionsHtml = factionsHtml.replace(
-      '<div class="factions">',
-      '<div class="factions" style="position:sticky;bottom:0;background:#0d1117;border-top:1px solid #1e2736;margin-top:12px;padding:12px 0 4px;z-index:10">'
-    );
+    var m1 = factionsHtml.indexOf('>') + 1;
+    var m2 = factionsHtml.lastIndexOf('</div>');
+    factionsInner = m2 > m1 ? factionsHtml.substring(m1, m2) : factionsHtml;
   }
 
   if(dtEl) dtEl.textContent = titulo || 'Formulário';
-  if(dbEl) { dbEl.innerHTML = bodyHtml + factionsHtml; dbEl.scrollTop = 0; }
-
-  // Também preencher o drawer-factions externo como fallback
-  if(dfEl) {
-    dfEl.innerHTML    = factionsHtml;
-    dfEl.style.display = factionsHtml ? 'flex' : 'none';
-  }
-  var dr = document.getElementById('drawer');
-  var ov = document.getElementById('overlay');
+  if(dbEl) { dbEl.innerHTML = bodyHtml; dbEl.scrollTop = 0; }
+  if(dfEl) { dfEl.innerHTML = factionsInner; }
   if(dr) dr.classList.add('on');
   if(ov) ov.classList.add('on');
 }
-
-
 
 function _abrirMainModal(titulo, bodyHtml) {
   var el   = document.getElementById('main-modal');
@@ -4564,13 +4552,14 @@ function fecharMainModal() {
   if(el) el.style.display = 'none';
 }
 function fecharForm(){
-  document.getElementById('drawer').classList.remove('on');
-  document.getElementById('overlay').classList.remove('on');
-  var dfEl=document.getElementById('drawer-factions');
-  if(dfEl){dfEl.innerHTML='';dfEl.style.display='none';}
-  fType='';fIdx=-1;
+  var dr = document.getElementById('drawer');
+  var ov = document.getElementById('overlay');
+  var dfEl = document.getElementById('drawer-factions');
+  if(dr) dr.classList.remove('on');
+  if(ov) ov.classList.remove('on');
+  if(dfEl) dfEl.innerHTML = '';
+  fType=''; fIdx=-1;
 }
-
 // Abrir form de fluxo a partir do botão "+ Preencher" (lê data-attributes)
 function abrirFluxoFormBtn(btn){
   var condNome = btn.getAttribute('data-cond') || '';
@@ -10087,74 +10076,138 @@ var _visModalIdx = -1; // índice atual
 // ═══════════════════════════════════════════════════════════
 
 // ── 1. EDITAR — abre o formulário da visita ─────────────────
-function editarVisita(idx) {
-  abrirFormularioVisita(idx);
-}
+function editarVisita(idx) { abrirFrmVis(idx); }
 
 // ── 2. REGISTRAR RETORNO ────────────────────────────────────
+
+// ── Abrir o modal de visitas de forma garantida ─────────────────
+function _abrirVisModal(titulo, conteudo, extraBtnsHtml) {
+  var ov     = document.getElementById('vis-modal-overlay');
+  var titEl  = document.getElementById('vis-modal-title');
+  var scroll = document.getElementById('vis-modal-scroll');
+  var footer = document.getElementById('vis-modal-footer');
+  var extraDiv = document.getElementById('vis-modal-extra-btns');
+
+  if(!ov || !scroll) {
+    // Fallback: usar o drawer
+    _abrirDrawer(titulo, conteudo + (extraBtnsHtml||''));
+    return;
+  }
+
+  if(titEl)  titEl.textContent = titulo || 'Visita';
+  if(scroll) { scroll.innerHTML = conteudo; scroll.scrollTop = 0; }
+
+  // Botões extras no rodapé
+  if(footer && extraBtnsHtml) {
+    // Adicionar botões extras temporários
+    var tmp = document.getElementById('vis-modal-tmp-btns');
+    if(tmp) tmp.parentNode && tmp.parentNode.removeChild && tmp.parentNode.removeChild(tmp);
+    var div = document.createElement('div');
+    div.id = 'vis-modal-tmp-btns';
+    div.innerHTML = extraBtnsHtml;
+    footer.appendChild(div);
+  }
+
+  // Ocultar/mostrar botões padrão do rodapé
+  var bSave = document.getElementById('vis-btn-save');
+  var bOk   = document.getElementById('vis-btn-ok');
+  var bRel  = document.getElementById('vis-btn-rel');
+  var bDel  = document.getElementById('vis-btn-del');
+
+  if(extraBtnsHtml) {
+    // Esconder botões padrão quando há customização
+    if(bSave) bSave.style.display = 'none';
+    if(bOk)   bOk.style.display   = 'none';
+    if(bRel)  bRel.style.display  = 'none';
+    if(bDel)  bDel.style.display  = 'none';
+  } else {
+    if(bSave) bSave.style.display = '';
+    if(bOk)   bOk.style.display  = _visModalIdx>=0&&(DB.visitas[_visModalIdx]||{}).status==='Realizada'?'none':'';
+    if(bRel)  bRel.style.display = '';
+    if(bDel)  bDel.style.display = _visModalIdx>=0 ? '' : 'none';
+  }
+
+  // Abrir — usar style.display direto
+  ov.style.display = 'flex';
+  ov.style.zIndex  = '9995';
+}
+
+function _fecharVisModal() {
+  var ov = document.getElementById('vis-modal-overlay');
+  if(ov) { ov.style.display = 'none'; ov.style.zIndex = ''; }
+  // Remover botões extras temporários
+  var tmp = document.getElementById('vis-modal-tmp-btns');
+  if(tmp && tmp.parentNode) tmp.parentNode.removeChild(tmp);
+  _visModalIdx = -1;
+}
+
 function registrarRetornoVisita(idx) {
   garantirDB();
   var v = DB.visitas[idx];
   if(!v){ showToast('⚠️ Visita não encontrada', 1); return; }
-
-  var titEl  = document.getElementById('vis-modal-title');
-  var scroll = document.getElementById('vis-modal-scroll');
-  var ov     = document.getElementById('vis-modal-overlay');
-  var bSave  = document.getElementById('vis-btn-save');
-  var bOk    = document.getElementById('vis-btn-ok');
-  var bRel   = document.getElementById('vis-btn-rel');
-  var bDel   = document.getElementById('vis-btn-del');
-  if(!scroll||!ov) return;
-
   _visModalIdx = idx;
-  if(titEl) titEl.textContent = '📞 Registrar Retorno — '+esc(v.cond||'');
-  if(bSave) bSave.style.display = 'none';
-  if(bOk)   bOk.style.display   = 'none';
-  if(bRel)  bRel.style.display  = 'none';
-  if(bDel)  bDel.style.display  = 'none';
 
-  // Injetar botão salvar retorno no footer temporariamente
-  var footerEl = document.getElementById('vis-modal-footer');
-  var extraBtns = document.getElementById('vis-extra-btns');
-  if(footerEl && !extraBtns) {
-    var div = document.createElement ? document.createElement('div') : null;
-    if(div) {
-      div.id = 'vis-extra-btns';
-      div.innerHTML = '<button class="btn-vis-save" onclick="_salvarRetornoVisita('+idx+')" style="background:#1e3a5f;color:#93c5fd;border:1px solid #3b82f6">💾 Salvar Retorno</button>'
-        +' <button class="btn-vis-cancel" onclick="_fecharRetornoVisita()">✕ Cancelar</button>';
-      footerEl.appendChild(div);
-    }
-  } else if(extraBtns) {
-    extraBtns.innerHTML = '<button class="btn-vis-save" onclick="_salvarRetornoVisita('+idx+')" style="background:#1e3a5f;color:#93c5fd;border:1px solid #3b82f6">💾 Salvar Retorno</button>'
-      +' <button class="btn-vis-cancel" onclick="_fecharRetornoVisita()">✕ Cancelar</button>';
-    extraBtns.style.display = '';
-  }
-
-  var FORMAS = ['Telefone','WhatsApp','Presencial','E-mail','Aplicativo'].map(function(f){
-    return '<option value="'+f+'"'+(f===(v.forma_contato||'')?' selected':'')+'>'+f+'</option>';
-  }).join('');
-
-  scroll.innerHTML =
+  var conteudo =
     '<div class="fgrid">'
-    +'<div class="fg full" style="background:#0d1117;border:1px solid #3b82f6;border-radius:7px;padding:8px 14px;margin-bottom:6px">'
-      +'<span style="font-size:9px;font-weight:700;color:#3b82f6">🏠 '+esc(v.cond||'—')+'</span>'
-      +'<span style="font-size:9px;color:#64748b;margin-left:8px">'+esc(v.filial||'')+' · '+esc(v.motivo||v.tipo||'')+'</span>'
+    +'<div class="fg full" style="background:#0d1117;border:1px solid #3b82f6;border-radius:8px;padding:8px 14px;margin-bottom:8px">'
+      +'<span style="font-size:9px;font-weight:700;color:#3b82f6">📋 Visita</span>'
+      +'<span style="font-size:10px;font-weight:700;color:#f1f5f9;margin-left:8px">'+esc(v.cond||'—')+'</span>'
+      +'<span style="font-size:9px;color:#64748b;margin-left:6px">'+esc(v.filial||'')+' · '+esc(v.motivo||v.tipo||'—')+'</span>'
     +'</div>'
-    +'<div class="fg"><label>Data do retorno <span class="req">*</span></label>'
+    +'<div class="fg"><label>Data do retorno</label>'
       +'<input class="fi" type="date" id="vret-data" value="'+hoje()+'"></div>'
-    +'<div class="fg"><label>Responsável pelo retorno <span class="req">*</span></label>'
-      +'<input class="fi" id="vret-resp" value="'+esc(v.resp_retorno||curUser.name||'')+'"></div>'
+    +'<div class="fg"><label>Responsável pelo retorno</label>'
+      +'<input class="fi" id="vret-resp" value="'+esc(v.resp||curUser.name||'')+'"></div>'
     +'<div class="fg"><label>Forma de contato</label>'
-      +'<select class="fi" id="vret-forma"><option value="">Selecione...</option>'+FORMAS+'</select></div>'
-    +'<div class="fg full"><label>Retorno dado ao síndico <span class="req">*</span></label>'
-      +'<textarea class="fi" id="vret-texto" rows="3" placeholder="Descreva o retorno dado ao síndico...">'+esc(v.retorno||'')+'</textarea></div>'
+      +'<select class="fi" id="vret-forma">'
+        +'<option value="WhatsApp"'+(v.forma_contato==='WhatsApp'?' selected':'')+'>WhatsApp</option>'
+        +'<option value="Ligação"'+(v.forma_contato==='Ligação'?' selected':'')+'>Ligação</option>'
+        +'<option value="E-mail"'+(v.forma_contato==='E-mail'?' selected':'')+'>E-mail</option>'
+        +'<option value="Presencial"'+(v.forma_contato==='Presencial'?' selected':'')+'>Presencial</option>'
+      +'</select></div>'
+    +'<div class="fg"><label>Status após retorno</label>'
+      +'<select class="fi" id="vret-status">'
+        +'<option value="Pendente"'+(v.status==='Pendente'?' selected':'')+'>Pendente</option>'
+        +'<option value="Em andamento"'+(v.status==='Em andamento'?' selected':'')+'>Em andamento</option>'
+        +'<option value="Realizada"'+(v.status==='Realizada'?' selected':'')+'>Realizada</option>'
+      +'</select></div>'
+    +'<div class="fg full"><label>Retorno dado ao síndico *</label>'
+      +'<textarea class="fi" id="vret-texto" rows="3" placeholder="Descreva o retorno...">'+esc(v.retorno||'')+'</textarea></div>'
     +'<div class="fg full"><label>Feedback do síndico</label>'
       +'<textarea class="fi" id="vret-feedback" rows="2" placeholder="Como o síndico reagiu?">'+esc(v.feedback_sindico||'')+'</textarea></div>'
     +'<div class="fg full"><label>Observação</label>'
       +'<textarea class="fi" id="vret-obs" rows="2">'+esc(v.obs_retorno||'')+'</textarea></div>'
     +'</div>';
 
-  ov.classList.add('on');
+  var extraBtns =
+    '<button class="btn btn-bl" onclick="_salvarRetornoVisita('+idx+')">💾 Salvar Retorno</button>'
+    +'<button class="btn btn-gh" onclick="_fecharVisModal()">Cancelar</button>';
+
+  _abrirVisModal('📞 Registrar Retorno da Visita', conteudo, extraBtns);
+}
+
+function _salvarRetornoVisita(idx) {
+  garantirDB();
+  var v = DB.visitas[idx];
+  if(!v) return;
+  var texto = (document.getElementById('vret-texto')||{value:''}).value;
+  if(!texto) { showToast('⚠️ Informe o retorno dado ao síndico', 1); return; }
+  v.dt_retorno       = (document.getElementById('vret-data')||{value:hoje()}).value || hoje();
+  v.resp_retorno     = (document.getElementById('vret-resp')||{value:''}).value || v.resp;
+  v.forma_contato    = (document.getElementById('vret-forma')||{value:'WhatsApp'}).value || 'WhatsApp';
+  v.status           = (document.getElementById('vret-status')||{value:v.status}).value || v.status;
+  v.retorno          = texto;
+  v.feedback_sindico = (document.getElementById('vret-feedback')||{value:''}).value;
+  v.obs_retorno      = (document.getElementById('vret-obs')||{value:''}).value;
+  v.updated_at       = new Date().toISOString();
+  // Histórico do condomínio
+  var ci = (DB.conds||[]).findIndex(function(c){ return c.nome===v.cond; });
+  if(ci>=0){ if(!DB.conds[ci].historico)DB.conds[ci].historico=[];
+    DB.conds[ci].historico.unshift({data:v.dt_retorno,tipo:'Retorno visita',desc:texto.substring(0,80),resp:v.resp_retorno}); }
+  addLog('Visitas','Registrou retorno',v.cond,{status:v.status});
+  salvar(); _fecharVisModal();
+  try{ renderVisitas(); renderDash(); }catch(e){}
+  showToast('✅ Retorno registrado!');
 }
 
 function _salvarRetornoVisita(idx) {
@@ -10213,64 +10266,77 @@ function concluirTratativaVisita(idx) {
   garantirDB();
   var v = DB.visitas[idx];
   if(!v){ showToast('⚠️ Visita não encontrada', 1); return; }
-  if(v.status === 'Realizada'){ showToast('ℹ️ Esta visita já está realizada', 0); }
-
-  var titEl  = document.getElementById('vis-modal-title');
-  var scroll = document.getElementById('vis-modal-scroll');
-  var ov     = document.getElementById('vis-modal-overlay');
-  var bSave  = document.getElementById('vis-btn-save');
-  var bOk    = document.getElementById('vis-btn-ok');
-  var bRel   = document.getElementById('vis-btn-rel');
-  var bDel   = document.getElementById('vis-btn-del');
-  if(!scroll||!ov) return;
-
   _visModalIdx = idx;
-  if(titEl) titEl.textContent = '✅ Concluir Tratativa — '+esc(v.cond||'');
-  if(bSave) bSave.style.display = 'none';
-  if(bOk)   bOk.style.display   = 'none';
-  if(bRel)  bRel.style.display  = 'none';
-  if(bDel)  bDel.style.display  = 'none';
 
-  var extraBtns = document.getElementById('vis-extra-btns');
-  var footerEl  = document.getElementById('vis-modal-footer');
-  if(footerEl) {
-    if(!extraBtns) {
-      extraBtns = document.createElement ? document.createElement('div') : null;
-      if(extraBtns) { extraBtns.id = 'vis-extra-btns'; footerEl.appendChild(extraBtns); }
-    }
-    if(extraBtns) {
-      extraBtns.innerHTML = '<button class="btn-vis-ok" onclick="_confirmarConclusaoTratativa('+idx+')" style="background:#065f46;color:#6ee7b7;border:1px solid #10b981">✅ Confirmar Conclusão</button>'
-        +' <button class="btn-vis-cancel" onclick="_fecharRetornoVisita()">✕ Cancelar</button>';
-      extraBtns.style.display = '';
-    }
-  }
-
-  scroll.innerHTML =
+  var conteudo =
     '<div class="fgrid">'
-    +'<div class="fg full" style="background:#0d1117;border:1px solid #10b981;border-radius:7px;padding:8px 14px;margin-bottom:6px">'
-      +'<span style="font-size:9px;font-weight:700;color:#10b981">✅ '+esc(v.cond||'—')+'</span>'
-      +'<span style="font-size:9px;color:#64748b;margin-left:8px">'+esc(v.filial||'')+' · '+esc(v.motivo||v.tipo||'')+'</span>'
+    +'<div class="fg full" style="background:#0d1117;border:1px solid #10b981;border-radius:8px;padding:8px 14px;margin-bottom:8px">'
+      +'<span style="font-size:9px;font-weight:700;color:#10b981">✅ Concluir</span>'
+      +'<span style="font-size:10px;font-weight:700;color:#f1f5f9;margin-left:8px">'+esc(v.cond||'—')+'</span>'
+      +'<span style="font-size:9px;color:#64748b;margin-left:6px">'+esc(v.filial||'')+' · '+esc(v.motivo||v.tipo||'—')+'</span>'
     +'</div>'
-    +'<div class="fg full"><label>Tratativa final <span class="req">*</span></label>'
-      +'<textarea class="fi" id="vcon-tratativa" rows="3" placeholder="Descreva a tratativa realizada...">'+esc(v.acoes||'')+'</textarea></div>'
-    +'<div class="fg full"><label>Resultado da visita <span class="req">*</span></label>'
-      +'<textarea class="fi" id="vcon-resultado" rows="2" placeholder="Qual foi o resultado?">'+esc(v.pontos||'')+'</textarea></div>'
-    +'<div class="fg"><label>Responsável pela conclusão <span class="req">*</span></label>'
-      +'<input class="fi" id="vcon-resp" value="'+esc(v.resp||curUser.name||'')+'"></div>'
+    +'<div class="fg"><label>Responsável pela conclusão *</label>'
+      +'<input class="fi" id="vconc-resp" value="'+esc(v.resp||curUser.name||'')+'"></div>'
     +'<div class="fg"><label>Data da conclusão</label>'
-      +'<input class="fi" type="date" id="vcon-data" value="'+hoje()+'"></div>'
+      +'<input class="fi" type="date" id="vconc-data" value="'+hoje()+'"></div>'
+    +'<div class="fg full"><label>Tratativa final *</label>'
+      +'<textarea class="fi" id="vconc-tratativa" rows="3" placeholder="Descreva a tratativa final realizada...">'+esc(v.acoes||'')+'</textarea></div>'
+    +'<div class="fg full"><label>Resultado da visita *</label>'
+      +'<textarea class="fi" id="vconc-resultado" rows="3" placeholder="Qual foi o resultado final?">'+esc(v.pontos||'')+'</textarea></div>'
     +'<div class="fg full"><label>Observação final</label>'
-      +'<textarea class="fi" id="vcon-obs" rows="2">'+esc(v.obs||'')+'</textarea></div>'
+      +'<textarea class="fi" id="vconc-obs" rows="2">'+esc(v.obs||'')+'</textarea></div>'
     +'<div class="fg full"><label>Necessita nova visita?</label>'
-      +'<div style="display:flex;gap:12px;margin-top:4px">'
-        +'<label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:10px;color:#94a3b8"><input type="radio" name="vcon-nova" id="vcon-nova-sim" value="sim" onchange="document.getElementById(\'vcon-prox-wrap\').style.display=\'\'"> Sim</label>'
-        +'<label style="display:flex;align-items:center;gap=6px;cursor:pointer;font-size:10px;color:#94a3b8"><input type="radio" name="vcon-nova" id="vcon-nova-nao" value="nao" checked onchange="document.getElementById(\'vcon-prox-wrap\').style.display=\'none\'"> Não</label>'
-      +'</div></div>'
-    +'<div class="fg" id="vcon-prox-wrap" style="display:none"><label>Data da próxima visita</label>'
-      +'<input class="fi" type="date" id="vcon-prox" value="'+esc(v.proximo||'')+'"></div>'
+      +'<select class="fi" id="vconc-nova-vis" onchange="var d=document.getElementById(\'vconc-prox-wrap\');if(d)d.style.display=this.value===\'Sim\'?\'block\':\'none\'">'
+        +'<option value="Não">Não</option>'
+        +'<option value="Sim">Sim</option>'
+      +'</select></div>'
+    +'<div class="fg" id="vconc-prox-wrap" style="display:none"><label>Data da próxima visita</label>'
+      +'<input class="fi" type="date" id="vconc-prox"></div>'
     +'</div>';
 
-  ov.classList.add('on');
+  var extraBtns =
+    '<button class="btn btn-ok" onclick="_confirmarConcluirVisita('+idx+')" style="background:#065f46;color:#6ee7b7;border:1px solid #10b981">✅ Confirmar Conclusão</button>'
+    +'<button class="btn btn-gh" onclick="_fecharVisModal()">Cancelar</button>';
+
+  _abrirVisModal('✅ Concluir Tratativa da Visita', conteudo, extraBtns);
+}
+
+function _confirmarConcluirVisita(idx) {
+  garantirDB();
+  var v = DB.visitas[idx];
+  if(!v) return;
+  var resp      = (document.getElementById('vconc-resp')||{value:''}).value;
+  var tratativa = (document.getElementById('vconc-tratativa')||{value:''}).value;
+  var resultado = (document.getElementById('vconc-resultado')||{value:''}).value;
+  if(!resp)      { showToast('⚠️ Informe o responsável pela conclusão', 1); return; }
+  if(!tratativa) { showToast('⚠️ Informe a tratativa final', 1); return; }
+  if(!resultado) { showToast('⚠️ Informe o resultado da visita', 1); return; }
+  v.resp         = resp;
+  v.acoes        = tratativa;
+  v.pontos       = resultado;
+  v.obs          = (document.getElementById('vconc-obs')||{value:''}).value;
+  v.dt_conclusao = (document.getElementById('vconc-data')||{value:hoje()}).value || hoje();
+  v.status       = 'Realizada';
+  v.rel_gerado   = false;
+  v.updated_at   = new Date().toISOString();
+  var novaVis = (document.getElementById('vconc-nova-vis')||{value:'Não'}).value;
+  if(novaVis === 'Sim') {
+    v.proximo = (document.getElementById('vconc-prox')||{value:''}).value;
+  }
+  // Histórico do condomínio
+  var ci = (DB.conds||[]).findIndex(function(c){ return c.nome===v.cond; });
+  if(ci>=0){
+    DB.conds[ci].ult_visita = v.dt_conclusao;
+    if(!DB.conds[ci].historico)DB.conds[ci].historico=[];
+    DB.conds[ci].historico.unshift({data:v.dt_conclusao,tipo:'Visita concluída',desc:resultado.substring(0,80),resp:resp});
+  }
+  addLog('Visitas','Concluiu tratativa',v.cond,{anterior:'Pendente',novo:'Realizada'});
+  salvar(); _fecharVisModal();
+  try{ renderVisitas(); renderDash(); sincronizarAbas(); }catch(e){}
+  showToast('✅ Visita concluída!');
+  setTimeout(function(){
+    if(confirm('Deseja gerar o relatório agora?')){ try{gerarRelVisita(idx);}catch(e){} }
+  }, 400);
 }
 
 function _confirmarConclusaoTratativa(idx) {
@@ -10342,118 +10408,51 @@ function abrirHistoricoVisita(idx) {
   garantirDB();
   var v = DB.visitas[idx];
   if(!v){ showToast('⚠️ Visita não encontrada', 1); return; }
-
-  var titEl  = document.getElementById('vis-modal-title');
-  var scroll = document.getElementById('vis-modal-scroll');
-  var ov     = document.getElementById('vis-modal-overlay');
-  var bSave  = document.getElementById('vis-btn-save');
-  var bOk    = document.getElementById('vis-btn-ok');
-  var bRel   = document.getElementById('vis-btn-rel');
-  var bDel   = document.getElementById('vis-btn-del');
-  if(!scroll||!ov) return;
-
   _visModalIdx = idx;
-  if(titEl) titEl.textContent = '📋 Histórico da Visita — '+esc(v.cond||'');
-  if(bSave) bSave.style.display = 'none';
-  if(bOk)   bOk.style.display   = 'none';
-  if(bRel)  bRel.style.display  = 'none';
-  if(bDel)  bDel.style.display  = 'none';
 
-  var extraBtns = document.getElementById('vis-extra-btns');
-  var footerEl  = document.getElementById('vis-modal-footer');
-  if(footerEl) {
-    if(!extraBtns) {
-      extraBtns = document.createElement ? document.createElement('div') : null;
-      if(extraBtns) { extraBtns.id = 'vis-extra-btns'; footerEl.appendChild(extraBtns); }
-    }
-    if(extraBtns) {
-      extraBtns.innerHTML = '<button class="btn-vis-cancel" onclick="_fecharRetornoVisita()">✕ Fechar</button>';
-      extraBtns.style.display = '';
-    }
-  }
+  // Montar timeline do histórico
+  var eventos = [];
+  // Criação
+  eventos.push({data:v.data||'—',tipo:'Visita criada',desc:v.motivo||v.tipo||'Visita registrada',resp:v.resp||'—',cor:'#3b82f6'});
+  // Retorno
+  if(v.dt_retorno) eventos.push({data:v.dt_retorno,tipo:'Retorno registrado',desc:v.retorno||'Retorno ao síndico',resp:v.resp_retorno||v.resp,cor:'#0891b2'});
+  // Conclusão
+  if(v.status==='Realizada') eventos.push({data:v.dt_conclusao||v.data,tipo:'Visita concluída',desc:v.pontos||'Visita realizada',resp:v.resp,cor:'#10b981'});
+  // Log do sistema
+  var logsVisita = (DB.log||[]).filter(function(l){ return l.m==='Visitas' && l.c===v.cond; }).slice(0,5);
+  logsVisita.forEach(function(l){
+    eventos.push({data:l.d||'—',tipo:l.a,desc:l.c,resp:l.u||'—',cor:'#64748b'});
+  });
+  eventos.sort(function(a,b){ return (b.data||'').localeCompare(a.data||''); });
 
-  var stC = v.status==='Realizada'?'#10b981':v.status==='Pendente'?'#ef4444':'#f59e0b';
-
-  function histRow(lbl, val, cor) {
-    if(!val||val==='—'||String(val).trim()==='') return '';
-    return '<div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid #1e2736">'
-      +'<div style="font-size:9px;font-weight:700;color:#64748b;width:160px;flex-shrink:0">'+lbl+'</div>'
-      +'<div style="font-size:9.5px;color:'+(cor||'#94a3b8')+';flex:1;word-break:break-word">'+esc(String(val))+'</div>'
+  var timelineHtml = eventos.length ? eventos.map(function(ev){
+    return '<div style="display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #1e2736">'
+      +'<div style="width:10px;height:10px;border-radius:50%;background:'+ev.cor+';flex-shrink:0;margin-top:4px"></div>'
+      +'<div style="flex:1;min-width:0">'
+        +'<div style="font-size:10px;font-weight:700;color:#f1f5f9">'+esc(ev.tipo)+'</div>'
+        +'<div style="font-size:9px;color:#94a3b8;margin-top:2px">'+esc(ev.desc.substring(0,80))+'</div>'
+        +'<div style="font-size:8.5px;color:#64748b;margin-top:3px">'+esc(ev.data)+' · '+esc(ev.resp)+'</div>'
+      +'</div>'
     +'</div>';
-  }
+  }).join('') : '<div style="color:#64748b;padding:20px;text-align:center;font-size:11px">Nenhum histórico registrado.</div>';
 
-  scroll.innerHTML =
-    // Status badge
-    '<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:2px solid #1e2736;margin-bottom:12px">'
-      +'<span style="font-size:9px;font-weight:800;padding:4px 12px;border-radius:20px;background:'+stC+'18;color:'+stC+'">'+esc(v.status||'—')+'</span>'
-      +'<span style="font-size:9px;color:#64748b">'+esc(v.cond||'—')+' · '+esc(v.filial||'')+'</span>'
+  var conteudo =
+    // Dados atuais
+    '<div style="background:#0d1117;border:1px solid #1e2736;border-radius:8px;padding:12px 14px;margin-bottom:12px">'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
+        +'<div><div style="font-size:9px;color:#64748b;font-weight:700;text-transform:uppercase">Condomínio</div><div style="font-size:11px;font-weight:700;color:#f1f5f9">'+esc(v.cond||'—')+'</div></div>'
+        +'<div><div style="font-size:9px;color:#64748b;font-weight:700;text-transform:uppercase">Status</div><div style="font-size:11px;font-weight:700;color:'+(v.status==='Realizada'?'#10b981':v.status==='Pendente'?'#ef4444':'#f59e0b')+'">'+esc(v.status||'—')+'</div></div>'
+        +'<div><div style="font-size:9px;color:#64748b;font-weight:700;text-transform:uppercase">Data</div><div style="font-size:11px;color:#f1f5f9">'+esc(v.data||'—')+'</div></div>'
+        +'<div><div style="font-size:9px;color:#64748b;font-weight:700;text-transform:uppercase">Responsável</div><div style="font-size:11px;color:#f1f5f9">'+esc(v.resp||'—')+'</div></div>'
+        +(v.motivo?'<div style="grid-column:span 2"><div style="font-size:9px;color:#64748b;font-weight:700;text-transform:uppercase">Motivo</div><div style="font-size:11px;color:#94a3b8">'+esc(v.motivo)+'</div></div>':'')
+      +'</div>'
     +'</div>'
+    // Timeline
+    +'<div style="font-size:9px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">Histórico de Atividades</div>'
+    + timelineHtml;
 
-    // Dados originais
-    +'<div style="font-size:9px;font-weight:700;color:#3b82f6;text-transform:uppercase;margin-bottom:6px">📋 Dados da Visita</div>'
-    +histRow('Data',             v.data,           '#f1f5f9')
-    +histRow('Tipo / Motivo',    v.tipo||v.motivo,  '#f1f5f9')
-    +histRow('Responsável',      v.resp,            '#f1f5f9')
-    +histRow('Participantes',    v.participantes,   '#94a3b8')
-    +histRow('Prioridade',       v.prioridade,      '#f59e0b')
-
-    // Resultado
-    +(v.pontos||v.problemas||v.acoes ? (
-      '<div style="font-size:9px;font-weight:700;color:#10b981;text-transform:uppercase;margin:12px 0 6px">📝 Resultado</div>'
-      +histRow('Situação / Pontos',    v.pontos,            '#94a3b8')
-      +histRow('Pendências',           v.problemas,         '#f59e0b')
-      +histRow('Tratativas',           v.acoes,             '#94a3b8')
-      +histRow('Solicitações síndico', v.solicitacoes,      '#94a3b8')
-      +histRow('Melhorias sugeridas',  v.melhorias,         '#94a3b8')
-    ) : '')
-
-    // Plano de ação
-    +(v.acoes_plano||v.resp_acao||v.prazo ? (
-      '<div style="font-size:9px;font-weight:700;color:#ef4444;text-transform:uppercase;margin:12px 0 6px">🎯 Plano de Ação</div>'
-      +histRow('Plano',                v.acoes_plano,       '#94a3b8')
-      +histRow('Responsável pela ação',v.resp_acao,         '#f1f5f9')
-      +histRow('Prazo',                v.prazo,             '#ef4444')
-      +histRow('Próxima visita',       v.proximo,           '#10b981')
-    ) : '')
-
-    // Retorno
-    +(v.dt_retorno||v.retorno ? (
-      '<div style="font-size:9px;font-weight:700;color:#8b5cf6;text-transform:uppercase;margin:12px 0 6px">📞 Retorno ao Síndico</div>'
-      +histRow('Data do retorno',      v.dt_retorno,        '#f1f5f9')
-      +histRow('Responsável retorno',  v.resp_retorno,      '#f1f5f9')
-      +histRow('Forma de contato',     v.forma_contato,     '#94a3b8')
-      +histRow('Retorno dado',         v.retorno,           '#94a3b8')
-      +histRow('Feedback do síndico',  v.feedback_sindico,  '#94a3b8')
-    ) : '')
-
-    // Conclusão
-    +(v.dt_conclusao||v.status==='Realizada' ? (
-      '<div style="font-size:9px;font-weight:700;color:#10b981;text-transform:uppercase;margin:12px 0 6px">✅ Conclusão</div>'
-      +histRow('Data de conclusão',    v.dt_conclusao,      '#10b981')
-      +histRow('Observação final',     v.obs,               '#94a3b8')
-    ) : '')
-
-    // Log do condomínio relacionado
-    +(function(){
-      var ci = (DB.conds||[]).findIndex(function(c){ return c.nome===v.cond; });
-      if(ci < 0) return '';
-      var logs = (DB.log||[]).filter(function(l){ return l.m==='Visitas' && l.d===v.cond; }).slice(0,5);
-      if(!logs.length) return '';
-      return '<div style="font-size:9px;font-weight:700;color:#64748b;text-transform:uppercase;margin:12px 0 6px">📜 Registro de Atividades</div>'
-        + logs.map(function(l){
-          return '<div style="display:flex;gap:8px;padding:6px 0;border-bottom:1px solid #1e2736">'
-            +'<span style="font-size:8.5px;color:#64748b;width:80px;flex-shrink:0;font-family:monospace">'+esc(l.dtStr||l.dt||'')+'</span>'
-            +'<span style="font-size:9px;color:#94a3b8;flex:1">'+esc(l.a||'—')+'</span>'
-            +'<span style="font-size:8.5px;color:#64748b">'+esc(l.user||'')+'</span>'
-          +'</div>';
-        }).join('');
-    })()
-
-    +((!v.pontos&&!v.problemas&&!v.dt_retorno&&!v.dt_conclusao)
-      ? '<div style="text-align:center;padding:24px;font-size:10px;color:#334155">Nenhum histórico registrado.</div>'
-      : '');
-
-  ov.classList.add('on');
+  var extraBtns = '<button class="btn btn-gh" onclick="_fecharVisModal()">✕ Fechar</button>';
+  _abrirVisModal('📋 Histórico da Visita — '+esc(v.cond||''), conteudo, extraBtns);
 }
 
 // ── Aliases globais (compatibilidade com onclick) ────────────
@@ -10546,14 +10545,28 @@ function abrirFormularioVisita(idx) {
 
   // Abrir overlay
   var ov = document.getElementById('vis-modal-overlay');
-  if(ov) ov.classList.add('on');
+  if(ov) {
+    ov.style.display = 'flex';
+    ov.style.zIndex  = '9995';
+    // Ajustar botões do rodapé
+    var bSave = document.getElementById('vis-btn-save');
+    var bOk   = document.getElementById('vis-btn-ok');
+    var bRel  = document.getElementById('vis-btn-rel');
+    var bDel  = document.getElementById('vis-btn-del');
+    if(bSave) bSave.style.display = '';
+    if(bOk)   bOk.style.display   = (isNovo || status !== 'Realizada') ? '' : 'none';
+    if(bRel)  bRel.style.display  = '';
+    if(bDel)  bDel.style.display  = isNovo ? 'none' : '';
+    // Remover botões extras temporários
+    var tmp = document.getElementById('vis-modal-tmp-btns');
+    if(tmp && tmp.parentNode) tmp.parentNode.removeChild(tmp);
+    // Scroll para o topo
+    var sc = document.getElementById('vis-modal-scroll');
+    if(sc) sc.scrollTop = 0;
+  }
 }
 
-function fecharModalVisita() {
-  var ov = document.getElementById('vis-modal-overlay');
-  if(ov) ov.classList.remove('on');
-  _visModalIdx = -1;
-}
+function fecharModalVisita() { _fecharVisModal(); }
 
 function _visModalGV(id) {
   var el = document.getElementById(id);
@@ -10673,132 +10686,163 @@ function _abrirFrmVisCompat(idx) { abrirFormularioVisita(idx); }
 
 function abrirFrmVis(idx) {
   garantirDB();
-  fIdx  = (idx === undefined || idx === null) ? -1 : idx;
-  fType = 'vis';
-  var ex     = fIdx >= 0 ? (DB.visitas[fIdx] || {}) : {};
+  fIdx = (idx === undefined || idx === null) ? -1 : Number(idx);
   var isNovo = fIdx === -1;
-  var titulo = isNovo ? '🏠 Nova Visita' : '✏️ Editar Visita — ' + esc(ex.cond || '');
+  var ex = isNovo ? {} : (DB.visitas[fIdx] || {});
 
-  document.getElementById('dtit').textContent = titulo;
+  // ── Remover painel anterior se existir ──────────────────
+  var old = document.getElementById('vis-panel-overlay');
+  if(old && old.parentNode) old.parentNode.removeChild(old);
 
-  // Construir o HTML do formulário
-  var html = '<div class="fgrid">';
+  // ── Helpers ─────────────────────────────────────────────
+  function fi(id, lbl, val, tipo) {
+    return '<div class="fg"><label>'+lbl+'</label>'
+      +'<input class="fi" type="'+(tipo||'text')+'" id="'+id+'" value="'+esc(val||'')+'"></div>';
+  }
+  function ta(id, lbl, val, rows) {
+    return '<div class="fg full"><label>'+lbl+'</label>'
+      +'<textarea class="fi" id="'+id+'" rows="'+(rows||2)+'" placeholder="'+lbl+'...">'+esc(val||'')+'</textarea></div>';
+  }
 
-  // ── DADOS GERAIS ───────────────────────────────────────────
-  html += '<div class="fg full" style="background:#0d1117;border:1px solid #1e2736;border-radius:8px;padding:8px 12px;margin-bottom:4px">'
-    +'<span style="font-size:9px;font-weight:700;color:#3b82f6;text-transform:uppercase">📋 Dados Gerais</span></div>';
+  // Opções de condomínio
+  var condOpts = (DB.conds||[]).map(function(c){
+    return '<option value="'+esc(c.nome)+'"'+(c.nome===ex.cond?' selected':'')+'>'+esc(c.nome)+'</option>';
+  }).join('');
+  var STATUS_OPTS = ['Pendente','Agendada','Em andamento','Realizada'].map(function(s){
+    return '<option value="'+s+'"'+(s===(ex.status||'Pendente')?' selected':'')+'>'+s+'</option>';
+  }).join('');
 
-  // Condomínio
-  html += '<div class="fg"><label>Condomínio <span class="req">*</span></label>';
-  if(isNovo){
-    html += '<select class="fi" id="fc"><option value="">Selecione...</option>'
-      +(DB.conds||[]).map(function(c){ return '<option value="'+esc(c.nome)+'">'+esc(c.nome)+' ('+esc(c.filial||'')+')</option>'; }).join('')
-      +'</select>';
+  // ── Construir o painel ───────────────────────────────────
+  var overlay = document.createElement('div');
+  overlay.id = 'vis-panel-overlay';
+  overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:9999;display:flex;justify-content:flex-end';
+  overlay.onclick = function(e){ if(e.target===overlay) fecharVPanel(); };
+
+  var panel = document.createElement('div');
+  panel.style.cssText = 'width:520px;max-width:100vw;height:100vh;background:#0d1117;border-left:1px solid #1e2736;display:flex;flex-direction:column;overflow:hidden';
+
+  // Cabeçalho
+  var head = document.createElement('div');
+  head.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #1e2736;flex-shrink:0;background:#080b12';
+  head.innerHTML = '<span style="font-size:13px;font-weight:800;color:#f1f5f9">✏️ '+(isNovo?'Nova Visita':'Editar Visita')+'</span>'
+    +'<button onclick="fecharVPanel()" style="background:none;border:none;color:#64748b;font-size:20px;cursor:pointer;padding:0 4px">✕</button>';
+
+  // Corpo (scrollável)
+  var body = document.createElement('div');
+  body.style.cssText = 'flex:1;overflow-y:auto;padding:14px 20px 8px';
+  body.innerHTML = '<div class="fgrid">'
+    +'<div class="fg"><label>Condomínio</label><select class="fi" id="vp-cond"><option value="">Selecione...</option>'+condOpts+'</select></div>'
+    +'<div class="fg"><label>Filial</label><input class="fi" id="vp-filial" value="'+esc(ex.filial||'')+'"></div>'
+    +'<div class="fg"><label>Data</label><input class="fi" type="date" id="vp-data" value="'+esc(ex.data||hoje())+'"></div>'
+    +'<div class="fg"><label>Status</label><select class="fi" id="vp-status">'+STATUS_OPTS+'</select></div>'
+    +'<div class="fg"><label>Responsável</label><input class="fi" id="vp-resp" value="'+esc(ex.resp||curUser.name||'')+'"></div>'
+    +'<div class="fg"><label>Próxima visita</label><input class="fi" type="date" id="vp-prox" value="'+esc(ex.proximo||'')+'"></div>'
+    +'<div class="fg"><label>Motivo</label><input class="fi" id="vp-motivo" value="'+esc(ex.motivo||ex.tipo||'')+'"></div>'
+    +'<div class="fg"><label>Participantes</label><input class="fi" id="vp-part" value="'+esc(ex.participantes||'')+'"></div>'
+    +ta('vp-pontos',    'Resultado / pontos observados',  ex.pontos,   3)
+    +ta('vp-problemas', 'Pendências identificadas',       ex.problemas,2)
+    +ta('vp-acoes',     'Tratativas realizadas',          ex.acoes,    2)
+    +ta('vp-solicit',   'Solicitações do síndico',        ex.solicitacoes,2)
+    +ta('vp-melhorias', 'Melhorias sugeridas',            ex.melhorias,2)
+    +ta('vp-plano',     'Plano de ação',                  ex.acoes_plano||ex.resp_acao,2)
+    +'<div class="fg"><label>Responsável pela ação</label><input class="fi" id="vp-resp-acao" value="'+esc(ex.resp_acao||'')+'"></div>'
+    +'<div class="fg"><label>Prazo da ação</label><input class="fi" type="date" id="vp-prazo" value="'+esc(ex.prazo||'')+'"></div>'
+    +ta('vp-obs', 'Observação final', ex.obs, 2)
+    +'</div>';
+
+  // Rodapé (SEMPRE visível, flex-shrink:0)
+  var footer = document.createElement('div');
+  footer.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;padding:12px 20px 16px;border-top:2px solid #1e2736;background:#080b12;flex-shrink:0';
+  footer.innerHTML = ''
+    +'<button onclick="_vpSalvar()" style="background:#1e3a5f;color:#93c5fd;border:1px solid #3b82f6;padding:7px 13px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer">💾 Salvar</button>'
+    +'<button onclick="registrarRetornoVisita('+fIdx+')" style="background:#1e2a3a;color:#93c5fd;border:1px solid #3b82f640;padding:7px 13px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer">📞 Retorno</button>'
+    +'<button onclick="concluirTratativaVisita('+fIdx+')" style="background:#065f46;color:#6ee7b7;border:1px solid #10b981;padding:7px 13px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer">✅ Concluir</button>'
+    +'<button onclick="abrirHistoricoVisita('+fIdx+')" style="background:#1e2736;color:#94a3b8;border:1px solid #334155;padding:7px 13px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer">📋 Histórico</button>'
+    +'<button onclick="fecharVPanel();setTimeout(function(){gerarRelVisita('+fIdx+')},100)" style="background:#3b0764;color:#d8b4fe;border:1px solid #8b5cf6;padding:7px 13px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer">📄 Relatório</button>'
+    +(fIdx>=0?'<button onclick="_vpExcluir()" style="background:#3f0f0f;color:#fca5a5;border:1px solid #ef4444;padding:7px 13px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer">🗑 Excluir</button>':'')
+    +'<button onclick="fecharVPanel()" style="background:#1e2736;color:#94a3b8;border:1px solid #334155;padding:7px 13px;border-radius:7px;font-size:10px;cursor:pointer">✕</button>';
+
+  panel.appendChild(head);
+  panel.appendChild(body);
+  panel.appendChild(footer);
+  overlay.appendChild(panel);
+  document.body.appendChild(overlay);
+}
+
+function fecharVPanel() {
+  var el = document.getElementById('vis-panel-overlay');
+  if(el && el.parentNode) el.parentNode.removeChild(el);
+  fIdx = -1;
+}
+
+function _vpGV(id) {
+  var el = document.getElementById(id);
+  if(!el) return '';
+  if(el.tagName === 'SELECT') return el.options[el.selectedIndex] ? el.options[el.selectedIndex].value : '';
+  return el.value || '';
+}
+
+function _vpSalvar() {
+  garantirDB();
+  var cond = _vpGV('vp-cond');
+  if(!cond) { showToast('⚠️ Selecione o condomínio', 1); return; }
+  var obj = {
+    id:           fIdx >= 0 ? (DB.visitas[fIdx]||{}).id || nid('vis') : nid('vis'),
+    cond:         cond,
+    filial:       _vpGV('vp-filial'),
+    data:         _vpGV('vp-data') || hoje(),
+    status:       _vpGV('vp-status') || 'Pendente',
+    resp:         _vpGV('vp-resp'),
+    proximo:      _vpGV('vp-prox'),
+    motivo:       _vpGV('vp-motivo'),
+    tipo:         _vpGV('vp-motivo'),
+    participantes:_vpGV('vp-part'),
+    pontos:       _vpGV('vp-pontos'),
+    problemas:    _vpGV('vp-problemas'),
+    acoes:        _vpGV('vp-acoes'),
+    solicitacoes: _vpGV('vp-solicit'),
+    melhorias:    _vpGV('vp-melhorias'),
+    acoes_plano:  _vpGV('vp-plano'),
+    resp_acao:    _vpGV('vp-resp-acao'),
+    prazo:        _vpGV('vp-prazo'),
+    obs:          _vpGV('vp-obs'),
+    updated_at:   new Date().toISOString()
+  };
+  // Preservar campos existentes
+  if(fIdx >= 0 && DB.visitas[fIdx]) {
+    var ex = DB.visitas[fIdx];
+    obj.prioridade   = ex.prioridade || 'Normal';
+    obj.auto_gerado  = ex.auto_gerado || false;
+    obj.rel_gerado   = ex.rel_gerado  || false;
+    obj.dt_retorno   = ex.dt_retorno;
+    obj.retorno      = ex.retorno;
+    obj.dt_conclusao = ex.dt_conclusao;
+    obj.ck_facial    = ex.ck_facial;
+    DB.visitas[fIdx] = obj;
   } else {
-    html += '<div class="fi" style="background:#0d1117;color:#94a3b8;font-weight:700">'+esc(ex.cond||'—')+'</div>'
-      +'<input type="hidden" id="fc" value="'+esc(ex.cond||'')+'">';
+    obj.prioridade = 'Normal';
+    obj.auto_gerado = false;
+    obj.rel_gerado = false;
+    DB.visitas.unshift(obj);
+    fIdx = 0;
   }
-  html += '</div>';
+  addLog('Visitas', fIdx<0?'Criou':'Editou', cond, {status: obj.status});
+  salvar();
+  fecharVPanel();
+  try{ renderVisitas(); renderDash(); }catch(e){}
+  showToast('💾 Visita salva!');
+}
 
-  // Filial
-  html += '<div class="fg"><label>Filial</label>'
-    +'<input class="fi" id="f_filial" value="'+esc(ex.filial||'')+'" placeholder="Ex: CEARÁ"></div>';
-
-  // Data
-  html += '<div class="fg"><label>Data <span class="req">*</span></label>'
-    +'<input class="fi" type="date" id="f_data" value="'+esc(ex.data||hoje())+'"></div>';
-
-  // Tipo/Motivo
-  html += '<div class="fg"><label>Tipo / Motivo <span class="req">*</span></label>'
-    +'<input class="fi" id="fmot" value="'+esc(ex.motivo||ex.tipo||'')+'" placeholder="Ex: Vistoria técnica..."></div>';
-
-  // Status
-  html += '<div class="fg"><label>Status</label><select class="fi" id="f_status">';
-  ['Pendente','Agendada','Em andamento','Realizada'].forEach(function(st){
-    html += '<option value="'+st+'"'+(ex.status===st?' selected':'')+'>'+st+'</option>';
-  });
-  html += '</select></div>';
-
-  // Responsável
-  html += '<div class="fg"><label>Responsável</label>'
-    +'<input class="fi" id="fvis_resp" value="'+esc(ex.resp||curUser.name||'')+'" placeholder="Responsável pela visita..."></div>';
-
-  // Prioridade
-  html += '<div class="fg"><label>Prioridade</label><select class="fi" id="f_prioridade">';
-  ['Normal','Alta','Crítica','Baixa'].forEach(function(p){
-    html += '<option value="'+p+'"'+((ex.prioridade||'Normal')===p?' selected':'')+'>'+p+'</option>';
-  });
-  html += '</select></div>';
-
-  // Próxima visita
-  html += '<div class="fg"><label>Próxima visita</label>'
-    +'<input class="fi" type="date" id="f_proximo" value="'+esc(ex.proximo||'')+'"></div>';
-
-  // ── SITUAÇÃO ──────────────────────────────────────────────
-  html += '<div class="fg full" style="background:#0d1117;border:1px solid #1e2736;border-radius:8px;padding:8px 12px;margin:4px 0">'
-    +'<span style="font-size:9px;font-weight:700;color:#f59e0b;text-transform:uppercase">📝 Situação</span></div>';
-
-  html += '<div class="fg full"><label>Pontos observados</label>'
-    +'<textarea class="fi" id="f_pontos" rows="2" placeholder="O que foi observado...">'+esc(ex.pontos||'')+'</textarea></div>';
-  html += '<div class="fg full"><label>Problemas identificados</label>'
-    +'<textarea class="fi" id="f_problemas" rows="2" placeholder="Problemas encontrados...">'+esc(ex.problemas||'')+'</textarea></div>';
-  html += '<div class="fg full"><label>Ações realizadas</label>'
-    +'<textarea class="fi" id="f_acoes" rows="2" placeholder="Ações tomadas...">'+esc(ex.acoes||'')+'</textarea></div>';
-  html += '<div class="fg full"><label>Observações</label>'
-    +'<textarea class="fi" id="fvis_obs" rows="2" placeholder="Observações gerais...">'+esc(ex.obs||'')+'</textarea></div>';
-
-  // ── CHECKLIST TÉCNICO ────────────────────────────────────
-  html += '<div class="fg full" style="background:#0d1117;border:1px solid #1e2736;border-radius:8px;padding:8px 12px;margin:4px 0">'
-    +'<span style="font-size:9px;font-weight:700;color:#8b5cf6;text-transform:uppercase">✅ Checklist Técnico</span></div>';
-  [['ck_facial','fvis_facial','Facial/Biometria'],['ck_app','fvis_app','App Funcionando'],
-   ['ck_interfone','fvis_interfone','Interfone'],['ck_camera','fvis_camera','Câmeras'],
-   ['ck_alarme','fvis_alarme','Alarme'],['ck_portao','fvis_portao','Portão'],
-   ['ck_nobreak','fvis_nobreak','Nobreak'],['ck_internet','fvis_internet','Internet']].forEach(function(ck){
-    var val = ex[ck[0]] || '';
-    html += '<div class="fg"><label>'+ck[2]+'</label><select class="fi" id="'+ck[1]+'">'
-      +['','OK','Atenção','Falha','N/A'].map(function(o){
-        return '<option value="'+o+'"'+(val===o?' selected':'')+'>'+( o||'—')+'</option>';
-      }).join('')
-      +'</select></div>';
-  });
-
-  // ── PLANO DE AÇÃO ──────────────────────────────────────────
-  html += '<div class="fg full" style="background:#0d1117;border:1px solid #ef4444;border-radius:8px;padding:8px 12px;margin:4px 0">'
-    +'<span style="font-size:9px;font-weight:700;color:#ef4444;text-transform:uppercase">🎯 Plano de Ação</span></div>';
-  html += '<div class="fg full"><label>Solicitações recebidas</label>'
-    +'<textarea class="fi" id="fvis_solicit" rows="2" placeholder="Solicitações...">'+esc(ex.solicitacoes||'')+'</textarea></div>';
-  html += '<div class="fg full"><label>Melhorias sugeridas</label>'
-    +'<textarea class="fi" id="fvis_melhoria" rows="2" placeholder="Sugestões...">'+esc(ex.melhorias||'')+'</textarea></div>';
-  html += '<div class="fg"><label>Responsável pela ação</label>'
-    +'<input class="fi" id="fvis_resp_acao" value="'+esc(ex.resp_acao||ex.resp||'')+'" placeholder="Responsável..."></div>';
-  html += '<div class="fg"><label>Prazo da ação</label>'
-    +'<input class="fi" type="date" id="fvis_prazo" value="'+esc(ex.prazo||'')+'"></div>';
-
-  html += '</div>'; // fecha fgrid
-
-  // ── AÇÕES DO RODAPÉ ─────────────────────────────────────────
-  var statusAtual = ex.status || 'Pendente';
-  var podeConc    = (statusAtual === 'Pendente' || statusAtual === 'Agendada' || statusAtual === 'Em andamento' || isNovo);
-  html += '<div class="factions">'
-    +'<button class="btn btn-bl" onclick="_salvarVisita()" type="button">💾 Salvar Visita</button>';
-  if(podeConc) {
-    html += '<button class="btn" onclick="_salvarEConcluirVisita()" type="button" '
-      +'style="background:#10b98120;color:#10b981;border:1px solid #10b981;padding:7px 14px;border-radius:7px;font-size:10px;font-weight:600;cursor:pointer">✅ Concluir Visita</button>';
-  }
-  html += '<button class="btn btn-gh" onclick="fecharForm();setTimeout(function(){gerarRelVisita('+fIdx+')},100)" type="button" title="Gerar relatório desta visita">📄 Gerar Relatório</button>';
-  if(fIdx >= 0) {
-    html += '<button class="btn btn-rd btn-sm" onclick="fecharForm();delVis('+fIdx+')" type="button" data-perm="delete" style="margin-left:4px">🗑</button>';
-  }
-  html += '<button class="btn btn-gh" onclick="fecharForm()" type="button">Cancelar</button>';
-  html += '</div>';
-
-  _abrirDrawer('✏️ '+(isNovo?'Nova Visita':'Editar Visita'), html);
-
-  // Focar campo principal
-  setTimeout(function(){
-    var fc = document.getElementById('fc');
-    if(fc && !fc.value) try{ fc.focus(); }catch(e){}
-  }, 250);
+function _vpExcluir() {
+  if(fIdx < 0) return;
+  if(!confirm('Excluir esta visita?')) return;
+  var v = DB.visitas[fIdx];
+  if(v) addLog('Visitas','Excluiu', v.cond||'', {});
+  DB.visitas.splice(fIdx, 1);
+  salvar();
+  fecharVPanel();
+  try{ renderVisitas(); }catch(e){}
+  showToast('🗑 Visita excluída');
 }
 
 // ── Helper checklist ──────────────────────────────────────────
@@ -10881,6 +10925,9 @@ function _salvarVisita() {
 }
 
 // ── Gerar/imprimir relatório de visita ────────────────────────
+function gerarRelatorioVisita(idx){ gerarRelVisita(idx); }
+function excluirVisita(idx){ delVis(idx); }
+
 function gerarRelVisita(idx) {
   garantirDB();
   var v = DB.visitas[idx];
@@ -11177,19 +11224,19 @@ function renderVisitas() {
       }},
     {key:'proximo',        label:'PRÓXIMA',       thStyle:'min-width:80px',
       render:function(v){ return '<span style="font-family:monospace;font-size:9px;color:#64748b">'+esc(v.proximo||'—')+'</span>'; }},
-    {key:'acoes',          label:'AÇÕES',         thStyle:'min-width:100px',
+    {key:'acoes', label:'AÇÕES', thStyle:'min-width:220px;white-space:nowrap',
       render:function(v,vi){
-        var ci=(DB.conds||[]).findIndex(function(c){return c.nome===v.cond;});
+        var realIdx = (DB.visitas||[]).indexOf(v);
+        if(realIdx < 0) realIdx = vi;
         var r='';
-        r+='<button class="btn btn-gh btn-sm" onclick="editarVisita('+vi+')" title="✏️ Editar">✏️</button> ';
-        r+='<button class="btn btn-gh btn-sm" onclick="registrarRetornoVisita('+vi+')" title="📞 Registrar Retorno" style="background:#1e2a3a;color:#93c5fd;border:1px solid #3b82f640">📞</button> ';
-        if(v.status!=='Realizada') r+='<button class="btn btn-sm" onclick="concluirTratativaVisita('+vi+')" title="✅ Concluir Tratativa" style="background:#065f46;color:#6ee7b7;border:1px solid #10b98140;padding:3px 7px;border-radius:5px;font-size:10px;cursor:pointer">✅</button> ';
-        r+='<button class="btn btn-gh btn-sm" onclick="abrirHistoricoVisita('+vi+')" title="📋 Histórico">📋</button> ';
-        r+='<button class="btn btn-gh btn-sm" onclick="gerarRelVisita('+vi+')" title="📄 Gerar Relatório">📄</button> ';
-        r+='<button class="btn btn-rd btn-sm" onclick="delVis('+vi+')" title="Excluir" data-perm="delete">🗑</button>';
+        r+='<button class="btn btn-gh btn-sm" onclick="abrirFrmVis('+realIdx+')" title="✏️ Editar">✏️</button> ';
+        r+='<button class="btn btn-sm" onclick="registrarRetornoVisita('+realIdx+')" title="📞 Retorno" style="background:#1e2a3a;color:#93c5fd;border:1px solid #3b82f640;padding:3px 7px;border-radius:5px;font-size:10px;cursor:pointer">📞</button> ';
+        if(v.status!=='Realizada') r+='<button class="btn btn-sm" onclick="concluirTratativaVisita('+realIdx+')" title="✅ Concluir" style="background:#065f46;color:#6ee7b7;border:1px solid #10b981;padding:3px 7px;border-radius:5px;font-size:10px;cursor:pointer">✅</button> ';
+        r+='<button class="btn btn-gh btn-sm" onclick="abrirHistoricoVisita('+realIdx+')" title="📋 Histórico">📋</button> ';
+        r+='<button class="btn btn-gh btn-sm" onclick="gerarRelVisita('+realIdx+')" title="📄 Relatório">📄</button> ';
+        r+='<button class="btn btn-rd btn-sm" onclick="delVis('+realIdx+')" title="🗑" data-perm="delete">🗑</button>';
         return r;
-      }}
-  ], vis, {
+      }}  ], vis, {
     theadId: 'vis-thead-row',
     noneMsg: 'Nenhuma visita encontrada.',
     onRowClick: function(v,vi){ var ci=(DB.conds||[]).findIndex(function(c){return c.nome===v.cond;}); return ci>=0?'abrirPront('+ci+')':''; }
@@ -16618,19 +16665,20 @@ function carregarDB(){
 
 <!-- ═══ MODAL DE VISITAS ═══════════════════════════════════ -->
 <style>
-#vis-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:800;display:none;align-items:center;justify-content:center}
-#vis-modal-overlay.on{display:flex}
-#vis-modal-box{background:#0d1117;border:1px solid #1e2736;border-radius:12px;width:min(600px,95vw);max-height:90vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6)}
-#vis-modal-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #1e2736;flex-shrink:0}
-#vis-modal-title{font-size:14px;font-weight:800;color:#f1f5f9}
-#vis-modal-close{background:none;border:none;color:#64748b;font-size:20px;cursor:pointer;padding:0 4px;line-height:1}
-#vis-modal-scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:16px 20px 8px}
-#vis-modal-footer{display:flex;gap:8px;flex-wrap:wrap;padding:12px 20px 16px;border-top:1px solid #1e2736;background:#080b12;flex-shrink:0}
-#vis-modal-footer .btn-vis-save{background:#1e3a5f;color:#93c5fd;border:1px solid #3b82f6;padding:7px 14px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer}
-#vis-modal-footer .btn-vis-ok{background:#065f46;color:#6ee7b7;border:1px solid #10b981;padding:7px 14px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer}
-#vis-modal-footer .btn-vis-rel{background:#3b0764;color:#d8b4fe;border:1px solid #8b5cf6;padding:7px 14px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer}
-#vis-modal-footer .btn-vis-del{background:#3f0f0f;color:#fca5a5;border:1px solid #ef4444;padding:7px 14px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer}
-#vis-modal-footer .btn-vis-cancel{background:#1e2736;color:#94a3b8;border:1px solid #334155;padding:7px 14px;border-radius:7px;font-size:10px;font-weight:600;cursor:pointer}
+/* ── Modal de Visitas — Painel Lateral ───────────────────── */
+#vis-modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:9990;display:none}
+#vis-modal-box{position:fixed;top:0;right:0;width:520px;max-width:98vw;height:100vh;background:#0d1117;border-left:1px solid #1e2736;display:flex;flex-direction:column;overflow:hidden;box-shadow:-8px 0 32px rgba(0,0,0,.6);z-index:9991}
+#vis-modal-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px 14px;border-bottom:1px solid #1e2736;flex-shrink:0;background:#080b12}
+#vis-modal-title{font-size:13px;font-weight:800;color:#f1f5f9}
+#vis-modal-close{background:none;border:none;color:#64748b;font-size:20px;cursor:pointer;padding:0 6px;line-height:1}
+#vis-modal-close:hover{color:#f1f5f9}
+#vis-modal-scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:14px 20px 8px;scroll-behavior:smooth}
+#vis-modal-footer{display:flex;gap:8px;flex-wrap:wrap;padding:12px 20px 16px;border-top:1px solid #1e2736;background:#080b12;flex-shrink:0;min-height:54px}
+.btn-vis-save{background:#1e3a5f;color:#93c5fd;border:1px solid #3b82f6;padding:7px 14px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer}
+.btn-vis-ok{background:#065f46;color:#6ee7b7;border:1px solid #10b981;padding:7px 14px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer}
+.btn-vis-rel{background:#3b0764;color:#d8b4fe;border:1px solid #8b5cf6;padding:7px 14px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer}
+.btn-vis-del{background:#3f0f0f;color:#fca5a5;border:1px solid #ef4444;padding:7px 14px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer}
+.btn-vis-cancel{background:#1e2736;color:#94a3b8;border:1px solid #334155;padding:7px 14px;border-radius:7px;font-size:10px;font-weight:600;cursor:pointer}
 </style>
 <div id="vis-modal-overlay">
   <div id="vis-modal-box">
