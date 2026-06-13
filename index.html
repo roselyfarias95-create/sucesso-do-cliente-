@@ -4669,10 +4669,14 @@ Realizada visita ao Condomínio Miron Dias com. Sem visita há mais de 90 dias</
 </div>
 <div class="page" id="page-config">
 <div class="ph">
-<div>
-<h1>Configurações</h1>
+<div><h1>Configurações</h1></div>
 </div>
+<!-- Sub-abas Config -->
+<div style="display:flex;gap:4px;border-bottom:1px solid #1e2736;margin-bottom:16px;flex-wrap:wrap">
+  <button class="radar-tab-btn active" id="ctab-sistema" onclick="switchConfigTab('sistema')">⚙️ Sistema</button>
+  <button class="radar-tab-btn" id="ctab-personalizacao" onclick="switchConfigTab('personalizacao')" data-perm="admin">🎨 Personalização</button>
 </div>
+<div id="config-panel-sistema">
 <div class="g2">
 <div class="card">
 <div class="st">🔐 Gerenciar Senhas</div>
@@ -4733,6 +4737,24 @@ Realizada visita ao Condomínio Miron Dias com. Sem visita há mais de 90 dias</
 <div id="config-users-table">
 </div>
 </div>
+</div><!-- fim config-panel-sistema -->
+
+<!-- Painel Personalização -->
+<div id="config-panel-personalizacao" style="display:none">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+    <div>
+      <h2 style="font-size:14px;font-weight:700;color:#f1f5f9;margin:0">🎨 Personalização do Sistema</h2>
+      <p style="font-size:11px;color:#64748b;margin:4px 0 0">Edite, adicione ou remova itens das listas usadas em todo o sistema.</p>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-gh btn-sm" onclick="resetarPersonalizacao()">↺ Resetar padrão</button>
+      <button class="btn btn-bl" onclick="salvarPersonalizacao()">💾 Salvar alterações</button>
+    </div>
+  </div>
+  <div id="config-personalizacao"></div>
+</div>
+
+
 </div>
 </div>
 </div>
@@ -5064,7 +5086,7 @@ function _kpiCard(lbl,val,sub,color,icon,kpiKey){var attr=kpiKey?' data-kpi="'+k
 +'</div>';}
 function addLog(m,a,d,extra){if(!DB||!DB.log)return;DB.log.unshift({dt:new Date().toISOString(),dtStr:new Date().toLocaleString('pt-BR'),user:(curUser||{}).name||'?',role:(curUser||{}).role||'—',m:m,a:a,d:d,cond:extra&&extra.cond||''});if(DB.log.length>500)DB.log=DB.log.slice(0,500);}
 function garantirDB(){if(!DB||typeof DB!=='object'){initDB();return;}
-['conds','demandas','satisfacao','visitas','criticos','retencao','incidentes','fluxo','adocao','preventivas','atendimentos','os','log','reclamacoes_avulsas','sat_tratativas','renovacoes','sla_historico','radar_ocorrencias'].forEach(function(k){if(!Array.isArray(DB[k]))DB[k]=[];});if(!DB.nid||typeof DB.nid!=='object')DB.nid={};['cond','dem','sat','vis','crit','ret','inc','fluxo','ra','prev','atend','os'].forEach(function(k){if(!DB.nid[k])DB.nid[k]=10;});(DB.satisfacao||[]).forEach(function(s){if(!s.id)s.id=nid('sat');});if(!Array.isArray(DB.visitasExcluidas))DB.visitasExcluidas=[];if(!Array.isArray(DB.motivos_recl))DB.motivos_recl=["FALTA DE RETORNO","PORTÃO TRAVANDO","INTERFONE FORA","DEMORA NO ATENDIMENTO","CÂMERA COM DEFEITO","SISTEMA FORA DO AR"];if(!Array.isArray(DB.evo))DB.evo=[{mes:'Jan',nota:8.1,criticos:4},{mes:'Fev',nota:7.9,criticos:6},{mes:'Mar',nota:8.3,criticos:3},{mes:'Abr',nota:8.5,criticos:2},{mes:'Mai',nota:8.4,criticos:5}];if(!DB.adm_ui_config)DB.adm_ui_config={};if(!DB.form_config)DB.form_config={};(DB.conds||[]).forEach(function(c){if(!c.condominioId)c.condominioId=c.id||c.nome;});}
+['conds','demandas','satisfacao','visitas','criticos','retencao','incidentes','fluxo','adocao','preventivas','atendimentos','os','log','reclamacoes_avulsas','sat_tratativas','renovacoes','sla_historico','radar_ocorrencias'].forEach(function(k){if(!Array.isArray(DB[k]))DB[k]=[];});if(!DB.config_listas||typeof DB.config_listas!=='object')DB.config_listas={};if(!DB.nid||typeof DB.nid!=='object')DB.nid={};['cond','dem','sat','vis','crit','ret','inc','fluxo','ra','prev','atend','os'].forEach(function(k){if(!DB.nid[k])DB.nid[k]=10;});(DB.satisfacao||[]).forEach(function(s){if(!s.id)s.id=nid('sat');});if(!Array.isArray(DB.visitasExcluidas))DB.visitasExcluidas=[];if(!Array.isArray(DB.motivos_recl))DB.motivos_recl=["FALTA DE RETORNO","PORTÃO TRAVANDO","INTERFONE FORA","DEMORA NO ATENDIMENTO","CÂMERA COM DEFEITO","SISTEMA FORA DO AR"];if(!Array.isArray(DB.evo))DB.evo=[{mes:'Jan',nota:8.1,criticos:4},{mes:'Fev',nota:7.9,criticos:6},{mes:'Mar',nota:8.3,criticos:3},{mes:'Abr',nota:8.5,criticos:2},{mes:'Mai',nota:8.4,criticos:5}];if(!DB.adm_ui_config)DB.adm_ui_config={};if(!DB.form_config)DB.form_config={};(DB.conds||[]).forEach(function(c){if(!c.condominioId)c.condominioId=c.id||c.nome;});}
 function nid(t){garantirDB();DB.nid[t]=(DB.nid[t]||10)+1;return t+'-'+DB.nid[t];}
 function initDB(){_demoLoaded=false;DB={conds:[],demandas:[],satisfacao:[],visitas:[],criticos:[],retencao:[],adocao:[],preventivas:[],atendimentos:[],os:[],incidentes:[],fluxo:[],log:[],radar_ocorrencias:[],reclamacoes_avulsas:[],sat_tratativas:[],motivos_recl:["FALTA DE RETORNO","PORTÃO TRAVANDO","INTERFONE FORA","DEMORA NO ATENDIMENTO","CÂMERA COM DEFEITO","SISTEMA FORA DO AR"],evo:[{mes:'Jan',nota:8.1,criticos:4},{mes:'Fev',nota:7.9,criticos:6},{mes:'Mar',nota:8.3,criticos:3},{mes:'Abr',nota:8.5,criticos:2},{mes:'Mai',nota:8.4,criticos:5}],nid:{cond:100,dem:100,sat:100,vis:10,crit:10,ret:10,inc:10,fluxo:10,ra:10},adm_ui_config:{},form_config:{},_savedAt:null};_loadDemoData();}
 function _loadDemoData(){if(_demoLoaded)return;_demoLoaded=true;DB.conds=[{id:901,nome:'COND. VILLA SOLARIUM',filial:'CEARÁ',nota:3.5,sac:'Crítico',resp:'Josy',humor:'😡',app:14,facial:15,gphone:'Não',recl:8,valor:4800,obs:'Sem retorno há 12 dias',unidades:48,moradores:96,os_abertas:2,cameras:4,risco_cancel:'Alto',sindico:'Carlos Melo',tel:'(85)99999-0001',timeline:[],particularidades:''},{id:902,nome:'MAISON NOVA METROPOLE',filial:'CEARÁ',nota:6.0,sac:'Em acompanhamento',resp:'Josy',humor:'😐',app:58,facial:60,gphone:'Instalado',recl:2,valor:5200,obs:'Módulo guarita fora',unidades:72,moradores:216,os_abertas:1,cameras:6,risco_cancel:'Baixo',sindico:'Ana Lima',tel:'(85)99999-0002',timeline:[],particularidades:''},{id:903,nome:'COND. COPENHAGUE',filial:'SECOPI',nota:9.0,sac:'Finalizado',resp:'Josi',humor:'😊',app:88,facial:90,gphone:'Instalado',recl:0,valor:6300,obs:'',unidades:96,moradores:384,os_abertas:0,cameras:8,risco_cancel:'Baixo',sindico:'Roberto Silva',tel:'(98)99999-0003',timeline:[],particularidades:'Delivery no armário inteligente'},{id:904,nome:'CONDOMINIO MARSOL',filial:'MARANHÃO',nota:8.5,sac:'Finalizado',resp:'Rosely',humor:'😊',app:82,facial:85,gphone:'Instalado',recl:0,valor:4200,obs:'',unidades:120,moradores:240,os_abertas:0,cameras:12,risco_cancel:'Baixo',sindico:'Patricia Costa',tel:'(98)99999-0004',timeline:[],particularidades:''},{id:905,nome:'RESIDENCIAL JARDIM AMERICA',filial:'CEARÁ',nota:9.0,sac:'Em tratamento',resp:'Rosely',humor:'😊',app:75,facial:78,gphone:'Instalado',recl:1,valor:3800,obs:'',unidades:200,moradores:800,os_abertas:1,cameras:4,risco_cancel:'Baixo',sindico:'José Santos',tel:'(85)99999-0005',timeline:[],particularidades:''},{id:906,nome:'EDIFICIO BIENE',filial:'CEARÁ',nota:8.0,sac:'Finalizado',resp:'Rosely',humor:'😊',app:65,facial:70,gphone:'Instalado',recl:0,valor:2900,obs:'',unidades:72,moradores:216,os_abertas:0,cameras:8,risco_cancel:'Baixo',sindico:'Maria Souza',tel:'(85)99999-0006',timeline:[],particularidades:''},{id:907,nome:'CONDOMINIO EDIFICIO PARMA',filial:'CEARÁ',nota:7.0,sac:'Em tratamento',resp:'Rosely',humor:'😐',app:45,facial:50,gphone:'Não',recl:3,valor:3200,obs:'Portão com barulho',unidades:96,moradores:384,os_abertas:2,cameras:12,risco_cancel:'Médio',sindico:'Paulo Ferreira',tel:'(85)99999-0007',timeline:[],particularidades:''},{id:908,nome:'SINGULAR RESIDENCIAL',filial:'MARANHÃO',nota:7.5,sac:'Em tratamento',resp:'Equipe CS',humor:'😐',app:40,facial:45,gphone:'Não',recl:2,valor:3600,obs:'',unidades:48,moradores:96,os_abertas:1,cameras:6,risco_cancel:'Médio',sindico:'Clara Rocha',tel:'(98)99999-0008',timeline:[],particularidades:''},{id:909,nome:'CONDOMINIO VILLA DI FIORI',filial:'CEARÁ',nota:9.0,sac:'Finalizado',resp:'Josi',humor:'😊',app:90,facial:92,gphone:'Instalado',recl:0,valor:5500,obs:'',unidades:144,moradores:432,os_abertas:0,cameras:16,risco_cancel:'Baixo',sindico:'Luciana Alves',tel:'(85)99999-0009',timeline:[],particularidades:''},{id:910,nome:'ISLA VERDE CONDOMINIUM',filial:'CEARÁ',nota:10.0,sac:'Finalizado',resp:'Josi',humor:'😊',app:95,facial:95,gphone:'Instalado',recl:0,valor:7200,obs:'',unidades:120,moradores:240,os_abertas:0,cameras:16,risco_cancel:'Baixo',sindico:'Fernando Gomes',tel:'(85)99999-0010',timeline:[],particularidades:''}];DB.demandas=[{id:901,cond:'COND. VILLA SOLARIUM',filial:'CEARÁ',tipo:'Retenção',desc:'Risco cancelamento — crítico ativo',resp:'Josy',prio:'Alta',status:'Aberta',abertura:'2026-05-01',prazo:'2026-05-10',obs:'',tratativa:'',conclusao:''},{id:902,cond:'MAISON NOVA METROPOLE',filial:'CEARÁ',tipo:'Técnica',desc:'Módulo guarita fora — tags com problema',resp:'Josy',prio:'Média',status:'Em andamento',abertura:'2026-05-05',prazo:'2026-05-13',obs:'',tratativa:'Técnico alocado',conclusao:''},{id:903,cond:'CONDOMINIO EDIFICIO PARMA',filial:'CEARÁ',tipo:'SAC',desc:'Portão veicular com barulho',resp:'Rosely',prio:'Média',status:'Aguardando',abertura:'2026-05-06',prazo:'2026-05-15',obs:'',tratativa:'',conclusao:''},{id:904,cond:'SINGULAR RESIDENCIAL',filial:'MARANHÃO',tipo:'SAC',desc:'App 40% de adesão',resp:'Equipe CS',prio:'Média',status:'Aberta',abertura:'2026-05-08',prazo:'2026-05-20',obs:'',tratativa:'',conclusao:''}];DB.satisfacao=[{id:901,cond:'COND. COPENHAGUE',filial:'SECOPI',nota:9,pesq_realizada:'Sim',houve_reclamacao:'sim',motivo_reclamacao:'Atendimento da Central',houve_elogio:'nao',comentario:'',resp:'Josi',data:'2026-05-15',mes:'2026-05',nps:'Promotor',classi:'saudavel',status:'Finalizado'},{id:902,cond:'CONDOMINIO MARSOL',filial:'MARANHÃO',nota:8.5,pesq_realizada:'Sim',houve_reclamacao:'nao',motivo_reclamacao:'',houve_elogio:'sim',comentario:'Equipe excelente!',resp:'Rosely',data:'2026-05-14',mes:'2026-05',nps:'Promotor',classi:'saudavel',status:'Finalizado'},{id:903,cond:'COND. VILLA SOLARIUM',filial:'CEARÁ',nota:3.5,pesq_realizada:'Sim',houve_reclamacao:'sim',motivo_reclamacao:'Falta de Retorno',houve_elogio:'nao',comentario:'Sem retorno há 12 dias',resp:'Josy',data:'2026-05-08',mes:'2026-05',nps:'Detrator',classi:'critico',status:'Em acompanhamento'},{id:904,cond:'MAISON NOVA METROPOLE',filial:'CEARÁ',nota:6,pesq_realizada:'Sim',houve_reclamacao:'sim',motivo_reclamacao:'Equipe Técnica',houve_elogio:'nao',comentario:'Módulo guarita fora',resp:'Josy',data:'2026-05-10',mes:'2026-05',nps:'Neutro',classi:'critico',status:'Em acompanhamento'},{id:905,cond:'ISLA VERDE CONDOMINIUM',filial:'CEARÁ',nota:10,pesq_realizada:'Sim',houve_reclamacao:'nao',motivo_reclamacao:'',houve_elogio:'sim',comentario:'Serviço perfeito!',resp:'Josi',data:'2026-05-12',mes:'2026-05',nps:'Promotor',classi:'saudavel',status:'Finalizado'}];DB.retencao=[{id:901,cond:'COND. VILLA SOLARIUM',filial:'CEARÁ',sit:'Em negociação',tipo_neg:'Renovação',motivo:'Insatisfação',acao:'Contato agendado',result:'',data:'2026-05-01',obs:'',valor:4800,resp:'Josy',prox_contato:'2026-05-20',vencimento:'2026-08-01',prox_vencimento:'2026-08-01',ult_contato:'2026-05-20',status_contrato:'Vigente',timeline:[]},{id:902,cond:'EDIFICIO BIENE',filial:'CEARÁ',sit:'Retido',tipo_neg:'Renovação',motivo:'',acao:'Visita + desconto',result:'Cliente retido',data:'2026-04-20',obs:'',valor:2900,resp:'Rosely',prox_contato:'',vencimento:'2026-09-15',prox_vencimento:'2026-09-15',ult_contato:'2026-04-20',status_contrato:'Vigente',timeline:[]},{id:903,cond:'CONDOMINIO MARSOL',filial:'MARANHÃO',sit:'Em contato',tipo_neg:'Renovação',motivo:'Negociação de desconto',acao:'Enviar proposta',result:'',data:'2026-05-10',obs:'',valor:3200,resp:'Josy',prox_contato:'2026-06-10',vencimento:'2026-07-20',prox_vencimento:'2026-07-20',ult_contato:'2026-05-10',status_contrato:'Vigente',timeline:[]},{id:904,cond:'CONDOMINIO EDIFICIO PARMA',filial:'CEARÁ',sit:'Proposta enviada',tipo_neg:'Renovação',motivo:'',acao:'Aguardar retorno',result:'',data:'2026-05-15',obs:'',valor:5100,resp:'Rosely',prox_contato:'2026-05-30',vencimento:'2026-07-01',prox_vencimento:'2026-07-01',ult_contato:'2026-05-15',status_contrato:'Vigente',timeline:[]}];var setores=['SAC','Técnica','Financeiro','Operacional','CS'];(DB.demandas||[]).forEach(function(d,i){if(!d.setor)d.setor=d.tipo||setores[i%setores.length];});var meses=['2026-01','2026-02','2026-03','2026-04','2025-11','2025-12'];var contatos=['2026-05-10','2026-05-15','2026-04-28','2026-05-02','2026-04-15'];(DB.conds||[]).forEach(function(c,i){if(!c.ult_preventiva||c.ult_preventiva==='undefined')
@@ -5096,7 +5118,7 @@ function _syncHumor(){if(!Array.isArray(DB.conds))return;DB.conds.forEach(functi
 function _syncNotas(){if(!Array.isArray(DB.conds))return;DB.conds.forEach(function(c){var ss=(DB.satisfacao||[]).filter(function(s){return s.cond===c.nome&&s.nota!==null&&s.nota!==undefined;});if(ss.length)c.nota=parseFloat((ss.reduce(function(a,s){return a+(parseFloat(s.nota)||0);},0)/ss.length).toFixed(1));ss.forEach(function(s){if(!s.nps&&s.nota!==null)s.nps=npsC(s.nota);if(!s.filial)s.filial=c.filial||'';});});}
 function _syncStatus(){if(!Array.isArray(DB.conds))return;DB.conds.forEach(function(c){var n=parseFloat(c.nota)||0;c.classificacao=n>=8?'Saudável':n>=6?'Atenção':'Crítico';if(!c.risco_cancel)c.risco_cancel=n<4?'Alto':n<6?'Médio':'Baixo';if(!Array.isArray(c.timeline))c.timeline=[];});}
 function doLogin(){var u=(document.getElementById('lu').value||'').trim().toLowerCase();var p=document.getElementById('lp').value||'';var err=document.getElementById('lerr');if(UPAD[u]&&UPAD[u].active===false){err.style.display='block';err.textContent='Usuário desativado.';return;}
-if(UPAD[u]&&UPAD[u].pass===p){curUser=Object.assign({},UPAD[u],{user:u});document.getElementById('login').style.display='none';var app=document.getElementById('app');app.className='visible';setText('uname',curUser.name);setText('urole',ROLE_LABELS[curUser.role]||curUser.role);var av=document.getElementById('urole');if(av)av.style.color=ROLE_COLORS[curUser.role]||'#64748b';var avEl=document.getElementById('uav');if(avEl)avEl.textContent=curUser.av||curUser.name.substring(0,2).toUpperCase();err.style.display='none';carregarDB();garantirDB();try{_syncNotas();}catch(e){}
+if(UPAD[u]&&UPAD[u].pass===p){curUser=Object.assign({},UPAD[u],{user:u});document.getElementById('login').style.display='none';var app=document.getElementById('app');app.className='visible';setText('uname',curUser.name);setText('urole',ROLE_LABELS[curUser.role]||curUser.role);var av=document.getElementById('urole');if(av)av.style.color=ROLE_COLORS[curUser.role]||'#64748b';var avEl=document.getElementById('uav');if(avEl)avEl.textContent=curUser.av||curUser.name.substring(0,2).toUpperCase();err.style.display='none';carregarDB();garantirDB();try{_aplicarListasSalvas();}catch(e){}try{_syncNotas();}catch(e){}
 try{_syncHumor();}catch(e){}
 try{_syncStatus();}catch(e){}
 applyPermissions();renderAll();addLog('Sistema','Login',curUser.name+' ['+curUser.role+']');setupNav();setupProntTabs();setTimeout(function(){try{_deduplicarVisitas();}catch(e){}
@@ -9360,6 +9382,364 @@ function abrirLegendaNPS() {
   modal.style.display = 'flex';
 }
 // === FIM LEGENDA NPS ===
+
+
+
+function switchConfigTab(tab) {
+  ['sistema','personalizacao'].forEach(function(t) {
+    var btn = document.getElementById('ctab-' + t);
+    var panel = document.getElementById('config-panel-' + t);
+    if (btn) { if(t===tab) btn.classList.add('active'); else btn.classList.remove('active'); }
+    if (panel) panel.style.display = t===tab ? '' : 'none';
+  });
+  if (tab === 'personalizacao') {
+    try { garantirListasPersonalizacao(); } catch(e) {}
+    _renderPersonalizacao();
+  }
+}
+
+// ================================================================
+// MÓDULO: PERSONALIZAÇÃO (Admin)
+// ================================================================
+
+function garantirListasPersonalizacao() {
+  window.MOTIVOS_RADAR = window.MOTIVOS_RADAR && window.MOTIVOS_RADAR.length ? window.MOTIVOS_RADAR : [
+    'Portão','Interfone','Facial','Ligação direta ao morador','Demora no atendimento',
+    'Aplicativo','GPhone','Armário Inteligente','IA de Atendimento','Câmeras',
+    'Cerca Elétrica','Barreira','Entrega/IFood','Acesso Visitante',
+    'Procedimento Operacional','Falha Operacional','Outros'
+  ];
+  window._osMotivos = window._osMotivos && window._osMotivos.length ? window._osMotivos : [
+    'Interfone sem funcionar','Facial com falha','Aplicativo com falha','Portão travando',
+    'Porta aberta','Porta violada','Câmera sem imagem','Cerca elétrica',
+    'Nobreak/bateria','Controle/tag','Falha de comunicação','Outro'
+  ];
+  garantirDB();
+  if (!DB.config_listas || typeof DB.config_listas !== 'object') DB.config_listas = {};
+}
+
+function _renderPersonalizacao() {
+  garantirDB();
+  garantirListasPersonalizacao();
+
+  var el = document.getElementById('config-personalizacao');
+  if (!el) { console.error('Div config-personalizacao não encontrada'); return; }
+
+  try {
+    var CL = DB.config_listas;
+    var motivosRadar   = (CL.motivos_radar   && CL.motivos_radar.length)   ? CL.motivos_radar   : MOTIVOS_RADAR.slice();
+    var motivosOS      = (CL.motivos_os      && CL.motivos_os.length)      ? CL.motivos_os      : _osMotivos.slice();
+    var statusOS       = (CL.status_os       && CL.status_os.length)       ? CL.status_os       : ['Aberta','Em andamento','Concluída','Cancelada'];
+    var filiais        = (CL.filiais         && CL.filiais.length)         ? CL.filiais         : ['CEARÁ','MARANHÃO','SECOPI'];
+    var responsaveis   = (CL.responsaveis    && CL.responsaveis.length)    ? CL.responsaveis    : ['Rosely','Josy','Josi','Equipe CS'];
+    var tiposDemanda   = (CL.tipos_demanda   && CL.tipos_demanda.length)   ? CL.tipos_demanda   : ['SAC','Suporte','Financeiro','Operacional','Outro'];
+    var statusDemanda  = (CL.status_demanda  && CL.status_demanda.length)  ? CL.status_demanda  : ['Aberta','Em andamento','Aguardando cliente','Concluída','Cancelada'];
+    var perguntasSat   = (CL.perguntas_sat   && CL.perguntas_sat.length)   ? CL.perguntas_sat   : ['De 0 a 10, qual nota você daria para o atendimento da portaria?','Houve alguma reclamação neste período?','Deseja fazer algum comentário?'];
+
+    el.innerHTML = _buildPersonalizacaoHTML(
+      motivosRadar, motivosOS, statusOS,
+      filiais, responsaveis, tiposDemanda, statusDemanda, perguntasSat
+    );
+  } catch(e) {
+    console.error('Erro _renderPersonalizacao:', e);
+    el.innerHTML = '<div style="padding:20px;color:#ef4444;background:rgba(239,68,68,.1);border-radius:10px;font-size:12px">' +
+      '⚠️ Erro ao carregar personalização: ' + e.message + '<br><br>' +
+      '<button class="btn btn-gh btn-sm" onclick="_renderPersonalizacao()">🔄 Tentar novamente</button>' +
+    '</div>';
+  }
+}
+
+function _buildPersonalizacaoHTML(motivosRadar, motivosOS, statusOS, filiais, responsaveis, tiposDemanda, statusDemanda, perguntasSat) {
+  function secao(id, titulo, emoji, lista) {
+    return '<div style="border:1px solid #1e2736;border-radius:10px;margin-bottom:8px;overflow:hidden">' +
+      '<div onclick="_pToggle(\''+id+'\');" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;cursor:pointer;background:#0d1117;user-select:none">' +
+        '<div style="display:flex;align-items:center;gap:8px">' +
+          '<span style="font-size:15px">'+emoji+'</span>' +
+          '<span style="font-size:12px;font-weight:700;color:#f1f5f9">'+titulo+'</span>' +
+          '<span style="font-size:10px;color:#64748b;background:#1e2736;padding:2px 8px;border-radius:10px" id="pcount-'+id+'">'+lista.length+' itens</span>' +
+        '</div>' +
+        '<span id="parrow-'+id+'" style="color:#64748b;font-size:11px;transition:transform .2s">▼</span>' +
+      '</div>' +
+      '<div id="pbody-'+id+'" style="display:none;padding:12px 16px;background:#080b12;border-top:1px solid #1e2736">' +
+        '<div id="plist-'+id+'" style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px">' +
+          lista.map(function(item,i){return _pItemRow(id,item,i);}).join('') +
+        '</div>' +
+        '<button class="btn btn-bl btn-sm" onclick="event.stopPropagation();_pAddItem(\''+id+'\')">➕ Adicionar item</button>' +
+      '</div>' +
+    '</div>';
+  }
+  return (
+    secao('motivos_radar',  'Motivos do Radar de Recorrência', '🎯', motivosRadar) +
+    secao('motivos_os',     'Motivos de O.S.',                 '🔧', motivosOS) +
+    secao('status_os',      'Status de O.S.',                  '📋', statusOS) +
+    secao('filiais',        'Filiais',                         '🏢', filiais) +
+    secao('responsaveis',   'Responsáveis CS',                 '👤', responsaveis) +
+    secao('tipos_demanda',  'Tipos de Demanda',                '📝', tiposDemanda) +
+    secao('status_demanda', 'Status de Demanda',               '🔄', statusDemanda) +
+    secao('perguntas_sat',  'Perguntas do Questionário de Satisfação', '⭐', perguntasSat)
+  ) + _buildKPIsSection() + _buildQuestionariosSection();
+}
+
+// === SEÇÃO KPIs EDITÁVEIS ===
+function _buildKPIsSection() {
+  garantirDB();
+  if (!DB.config_kpis) DB.config_kpis = {};
+  var kpis = [
+    { id:'sla_meta',    label:'Meta de SLA (%)',              default:'95' },
+    { id:'nps_meta',    label:'Meta de NPS',                  default:'50' },
+    { id:'vis_freq',    label:'Frequência de visitas (dias)', default:'30' },
+    { id:'crit_score',  label:'Score mínimo para Crítico',    default:'6'  },
+    { id:'atencao_score',label:'Score mínimo para Atenção',   default:'3'  },
+    { id:'sem_pesq_dias',label:'Alerta sem pesquisa (dias)',  default:'120' },
+    { id:'sem_vis_dias', label:'Alerta sem visita (dias)',    default:'90'  },
+    { id:'sem_contato_dias',label:'Alerta sem contato (dias)',default:'90'  },
+    { id:'tma_grave',   label:'TMA grave (segundos)',         default:'600' },
+    { id:'tma_medio',   label:'TMA médio (segundos)',         default:'300' },
+    { id:'contrato_venc1',label:'Alerta vencimento contrato 1 (dias)', default:'30' },
+    { id:'contrato_venc2',label:'Alerta vencimento contrato 2 (dias)', default:'60' },
+    { id:'contrato_venc3',label:'Alerta vencimento contrato 3 (dias)', default:'120'},
+  ];
+  var rows = kpis.map(function(k){
+    var val = DB.config_kpis[k.id] !== undefined ? DB.config_kpis[k.id] : k.default;
+    return '<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #1e273640">' +
+      '<span style="flex:1;font-size:12px;color:#e2e8f0">'+k.label+'</span>' +
+      '<input class="fi" id="kpi_cfg_'+k.id+'" value="'+val+'" style="width:90px;padding:5px 10px;font-size:12px;text-align:center" '+
+        'placeholder="'+k.default+'" onchange="_pDirty=true">' +
+      '<span style="font-size:10px;color:#64748b;min-width:40px">padrão: '+k.default+'</span>' +
+    '</div>';
+  }).join('');
+
+  return '<div style="border:1px solid #1e2736;border-radius:10px;margin-bottom:8px;overflow:hidden">' +
+    '<div onclick="_pToggle(\'kpis_config\')" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;cursor:pointer;background:#0d1117;user-select:none">' +
+      '<div style="display:flex;align-items:center;gap:8px">' +
+        '<span style="font-size:15px">📊</span>' +
+        '<span style="font-size:12px;font-weight:700;color:#f1f5f9">Metas e Parâmetros dos KPIs</span>' +
+        '<span style="font-size:10px;color:#64748b;background:#1e2736;padding:2px 8px;border-radius:10px">'+kpis.length+' parâmetros</span>' +
+      '</div>' +
+      '<span id="parrow-kpis_config" style="color:#64748b;font-size:11px;transition:transform .2s">▼</span>' +
+    '</div>' +
+    '<div id="pbody-kpis_config" style="display:none;padding:12px 16px;background:#080b12;border-top:1px solid #1e2736">' +
+      '<p style="font-size:10px;color:#64748b;margin-bottom:10px">Estes valores controlam quando o sistema dispara alertas e classifica condomínios.</p>' +
+      rows +
+    '</div>' +
+  '</div>';
+}
+
+function _salvarKPIs() {
+  garantirDB();
+  if (!DB.config_kpis) DB.config_kpis = {};
+  var ids = ['sla_meta','nps_meta','vis_freq','crit_score','atencao_score','sem_pesq_dias','sem_vis_dias',
+             'sem_contato_dias','tma_grave','tma_medio','contrato_venc1','contrato_venc2','contrato_venc3'];
+  ids.forEach(function(id){
+    var el = document.getElementById('kpi_cfg_'+id);
+    if (el && el.value.trim()) DB.config_kpis[id] = el.value.trim();
+  });
+}
+
+// === SEÇÃO QUESTIONÁRIOS ===
+function _buildQuestionariosSection() {
+  garantirDB();
+  if (!DB.config_questionarios) DB.config_questionarios = {};
+  var Q = DB.config_questionarios;
+
+  var questionarios = [
+    { id:'sat',   titulo:'Pesquisa de Satisfação',    emoji:'⭐',
+      perguntas: Q.sat || [
+        'De 0 a 10, qual nota você daria para o atendimento da portaria remota?',
+        'Houve alguma reclamação ou problema neste período?',
+        'O síndico ou moradores entraram em contato com reclamações?',
+        'Deseja registrar algum comentário ou observação?'
+      ]},
+    { id:'vis',   titulo:'Checklist de Visita',       emoji:'🏠',
+      perguntas: Q.vis || [
+        'Equipamentos de portaria estão funcionando?',
+        'Câmeras operacionais e com boa visibilidade?',
+        'Interfone testado e aprovado?',
+        'Facial calibrado e funcionando?',
+        'Síndico satisfeito com o atendimento?',
+        'Há pendências a registrar?'
+      ]},
+    { id:'ret',   titulo:'Questionário de Retenção',  emoji:'🔄',
+      perguntas: Q.ret || [
+        'Qual o motivo de insatisfação?',
+        'Houve comparação com concorrência?',
+        'O cliente tem proposta de outro fornecedor?',
+        'Qual o prazo para decisão do cliente?',
+        'Quais ações foram propostas para retenção?'
+      ]},
+    { id:'prev',  titulo:'Checklist de Preventiva',   emoji:'🔧',
+      perguntas: Q.prev || [
+        'Portão principal verificado?',
+        'Sistema de acesso testado?',
+        'Câmeras limpas e ajustadas?',
+        'Nobreak/bateria verificado?',
+        'Cerca elétrica testada?',
+        'Interfones testados?',
+        'Relatório fotográfico realizado?'
+      ]},
+  ];
+
+  return questionarios.map(function(q){
+    var listId = 'quest_'+q.id;
+    var rows = q.perguntas.map(function(p,i){ return _pItemRow(listId,p,i); }).join('');
+    return '<div style="border:1px solid #1e2736;border-radius:10px;margin-bottom:8px;overflow:hidden">' +
+      '<div onclick="_pToggle(\''+listId+'\')" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;cursor:pointer;background:#0d1117;user-select:none">' +
+        '<div style="display:flex;align-items:center;gap:8px">' +
+          '<span style="font-size:15px">'+q.emoji+'</span>' +
+          '<span style="font-size:12px;font-weight:700;color:#f1f5f9">'+q.titulo+'</span>' +
+          '<span style="font-size:10px;color:#64748b;background:#1e2736;padding:2px 8px;border-radius:10px" id="pcount-'+listId+'">'+q.perguntas.length+' perguntas</span>' +
+        '</div>' +
+        '<span id="parrow-'+listId+'" style="color:#64748b;font-size:11px;transition:transform .2s">▼</span>' +
+      '</div>' +
+      '<div id="pbody-'+listId+'" style="display:none;padding:12px 16px;background:#080b12;border-top:1px solid #1e2736">' +
+        '<div id="plist-'+listId+'" style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px">'+rows+'</div>' +
+        '<button class="btn btn-bl btn-sm" onclick="event.stopPropagation();_pAddItem(\''+listId+'\')">➕ Adicionar pergunta</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function _salvarQuestionarios() {
+  garantirDB();
+  if (!DB.config_questionarios) DB.config_questionarios = {};
+  ['sat','vis','ret','prev'].forEach(function(id){
+    var items = _pGetLista('quest_'+id);
+    if (items.length) DB.config_questionarios[id] = items;
+  });
+}
+// === FIM SEÇÕES EXTRAS ===
+
+
+function _esc(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function _pItemRow(listId, texto, idx) {
+  var eid = 'pinp-'+listId+'-'+idx;
+  var rid = 'prow-'+listId+'-'+idx;
+  return '<div id="'+rid+'" style="display:flex;gap:6px;align-items:center">'+
+    '<input class="fi" value="'+_esc(texto)+'" id="'+eid+'" data-lid="'+listId+'" style="flex:1;padding:7px 10px;font-size:12px" '+
+      'onchange="var l=this.getAttribute(\'data-lid\');_pMarkDirty(l)" placeholder="Digite o item...">'+
+    '<button onclick="_pMoveUp(\''+listId+'\','+idx+')" title="Mover para cima" '+
+      'style="background:#1e2736;border:1px solid #334155;border-radius:6px;color:#94a3b8;padding:5px 8px;cursor:pointer;font-size:11px">▲</button>'+
+    '<button onclick="_pMoveDown(\''+listId+'\','+idx+')" title="Mover para baixo" '+
+      'style="background:#1e2736;border:1px solid #334155;border-radius:6px;color:#94a3b8;padding:5px 8px;cursor:pointer;font-size:11px">▼</button>'+
+    '<button onclick="_pRemoveItem(\''+listId+'\','+idx+')" title="Remover" '+
+      'style="background:rgba(239,68,68,.15);border:1px solid #ef4444;border-radius:6px;color:#ef4444;padding:5px 8px;cursor:pointer;font-size:11px">🗑</button>'+
+  '</div>';
+}
+
+function _pToggle(id) {
+  var body  = document.getElementById('pbody-' + id);
+  var arrow = document.getElementById('parrow-' + id);
+  if (!body) return;
+  var aberto = body.style.display !== 'none';
+  body.style.display = aberto ? 'none' : '';
+  if (arrow) arrow.style.transform = aberto ? '' : 'rotate(180deg)';
+}
+
+function _pAtualizarContador(listId) {
+  var el = document.getElementById('pcount-' + listId);
+  if (!el) return;
+  var rows = document.querySelectorAll('[id^="pinp-' + listId + '-"]');
+  var count = 0;
+  rows.forEach(function(r){ if((r.value||'').trim()) count++; });
+  el.textContent = count + ' itens';
+}
+
+var _pDirty = false;
+function _pMarkDirty(listId) {
+  _pDirty = true;
+  if (listId) _pAtualizarContador(listId);
+}
+
+function _pGetLista(listId) {
+  var rows = document.querySelectorAll('[id^="pinp-' + listId + '-"]');
+  var items = [];
+  rows.forEach(function(inp){ var v=(inp.value||'').trim(); if(v) items.push(v); });
+  return items;
+}
+
+function _pAddItem(listId) {
+  var cont = document.getElementById('plist-' + listId);
+  if (!cont) return;
+  var idx = cont.children.length;
+  var div = document.createElement('div');
+  div.innerHTML = _pItemRow(listId, '', idx);
+  cont.appendChild(div.firstChild);
+  var newInp = document.getElementById('pinp-' + listId + '-' + idx);
+  if (newInp) { newInp.focus(); newInp.addEventListener('change', function(){ _pMarkDirty(listId); }); }
+  _pDirty = true;
+  _pAtualizarContador(listId);
+}
+
+function _pRemoveItem(listId, idx) {
+  var row = document.getElementById('prow-' + listId + '-' + idx);
+  if (row && confirm('Remover este item?')) { row.remove(); _pDirty = true; _pAtualizarContador(listId); }
+}
+
+
+function _pMoveUp(listId, idx) {
+  if (idx === 0) return;
+  var inp1 = document.getElementById('pinp-' + listId + '-' + idx);
+  var inp2 = document.getElementById('pinp-' + listId + '-' + (idx-1));
+  if (inp1 && inp2) { var t = inp1.value; inp1.value = inp2.value; inp2.value = t; _pDirty = true; }
+}
+
+function _pMoveDown(listId, idx) {
+  var inp1 = document.getElementById('pinp-' + listId + '-' + idx);
+  var inp2 = document.getElementById('pinp-' + listId + '-' + (idx+1));
+  if (inp1 && inp2) { var t = inp1.value; inp1.value = inp2.value; inp2.value = t; _pDirty = true; }
+}
+
+function salvarPersonalizacao() {
+  garantirDB();
+  if (!DB.config_listas) DB.config_listas = {};
+  var listas = ['motivos_radar','motivos_os','status_os','filiais','responsaveis','tipos_demanda','status_demanda','perguntas_sat'];
+  var alterados = 0;
+  listas.forEach(function(id) {
+    var items = _pGetLista(id);
+    if (items.length > 0) { DB.config_listas[id] = items; alterados++; }
+  });
+  // Questionários
+  try { _salvarQuestionarios(); alterados++; } catch(e) {}
+  // KPIs
+  try { _salvarKPIs(); alterados++; } catch(e) {}
+  // Aplicar nas variáveis globais
+  if (DB.config_listas.motivos_radar && DB.config_listas.motivos_radar.length)
+    window.MOTIVOS_RADAR = DB.config_listas.motivos_radar.slice();
+  if (DB.config_listas.motivos_os && DB.config_listas.motivos_os.length)
+    window._osMotivos = DB.config_listas.motivos_os.slice();
+  salvar();
+  _pDirty = false;
+  showToast('✅ Personalização salva com sucesso!');
+  addLog('Config', 'Personalização salva', 'Admin');
+}
+
+function resetarPersonalizacao() {
+  if (!confirm('Resetar todas as listas para os valores originais do sistema?')) return;
+  garantirDB();
+  DB.config_listas = {};
+  window.MOTIVOS_RADAR = ['Portão','Interfone','Facial','Ligação direta ao morador','Demora no atendimento','Aplicativo','GPhone','Armário Inteligente','IA de Atendimento','Câmeras','Cerca Elétrica','Barreira','Entrega/IFood','Acesso Visitante','Procedimento Operacional','Falha Operacional','Outros'];
+  window._osMotivos = ['Interfone sem funcionar','Facial com falha','Aplicativo com falha','Portão travando','Porta aberta','Porta violada','Câmera sem imagem','Cerca elétrica','Nobreak/bateria','Controle/tag','Falha de comunicação','Outro'];
+  salvar();
+  _renderPersonalizacao();
+  showToast('✅ Listas resetadas para o padrão.');
+}
+
+// Aplicar listas salvas ao inicializar
+function _aplicarListasSalvas() {
+  garantirDB();
+  if (!DB.config_listas) return;
+  if (DB.config_listas.motivos_radar && DB.config_listas.motivos_radar.length)
+    window.MOTIVOS_RADAR = DB.config_listas.motivos_radar.slice();
+  if (DB.config_listas.motivos_os && DB.config_listas.motivos_os.length)
+    window._osMotivos = DB.config_listas.motivos_os.slice();
+}
+
+// ================================================================
+// FIM MÓDULO PERSONALIZAÇÃO
+// ================================================================
 
 </script><div id="adm-global-modal" class="adm-modal-full"><div class="adm-modal-box"><div class="adm-modal-hd"><h2 id="adm-gm-title">⚙️ Administrador</h2><div style="display:flex;gap:6px"><button class="btn btn-gr btn-sm" id="adm-gm-save" onclick="admGmSave()">💾 Salvar</button><button class="btn btn-gh btn-sm" onclick="admGmClose()">✕ Fechar</button></div></div><div class="adm-modal-bd" id="adm-gm-body"></div></div></div>
 
