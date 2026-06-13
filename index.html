@@ -550,8 +550,11 @@ showToast('📄 Relatório gerado!');try{renderVisitas();}catch(e){}}</script>
 <option>CEARÁ</option>
 <option>MARANHÃO</option>
 <option>SECOPI</option>
+<option>MANAUS</option>
 </select>
 <button class="btn btn-gh btn-sm" onclick="renderDash()">↻</button>
+<button class="btn btn-gh btn-sm" onclick="abrirFiltrosAba('dashboard')" title="Filtros">🔽 Filtros</button>
+<button class="btn btn-gh btn-sm" onclick="abrirGerenciarAba('dashboard')" title="Gerenciar">⚙️</button>
 <button class="btn btn-bl btn-sm" onclick="gerarRelAba('dashboard')" style="white-space:nowrap;margin-left:4px" title="Gerar relatório">📄 Relatório</button>
 </div>
 </div>
@@ -621,6 +624,7 @@ showToast('📄 Relatório gerado!');try{renderVisitas();}catch(e){}}</script>
 <div style="display:flex;gap:8px">
 <button class="btn btn-gh btn-sm" id="cond-vtoggle" onclick="condToggle()">⊞ Cards</button>
 <button class="btn btn-bl" onclick="abrirForm('cond',-1)">＋ Adicionar</button>
+<button class="btn btn-gh btn-sm" onclick="abrirFiltrosAba('condominios')" title="Editar filtros">🔽 Filtros</button>
 <button class="btn btn-gh btn-sm" onclick="abrirGerenciarAba('condominios')" title="Gerenciar esta aba">⚙️</button>
 </div>
 </div>
@@ -711,6 +715,7 @@ showToast('📄 Relatório gerado!');try{renderVisitas();}catch(e){}}</script>
 <button class="btn btn-gh btn-sm" id="crit-vtoggle" onclick="critToggle()">☰ Lista</button>
 <button class="btn btn-gh btn-sm" onclick="renderCriticos()">↻</button>
 <button class="btn btn-bl" onclick="abrirForm('critop',-1)">＋ Registrar</button>
+<button class="btn btn-gh btn-sm" onclick="abrirFiltrosAba('criticos')" title="Editar filtros">🔽 Filtros</button>
 <button class="btn btn-gh btn-sm" onclick="abrirGerenciarAba('criticos')" title="Gerenciar esta aba">⚙️</button>
 </div>
 </div>
@@ -882,6 +887,7 @@ showToast('📄 Relatório gerado!');try{renderVisitas();}catch(e){}}</script>
 <h1>🤝 Relacionamento</h1>
 <p>CRM de síndicos</p>
 
+<button class="btn btn-gh btn-sm" onclick="abrirFiltrosAba('relacionamento')" title="Editar filtros">🔽 Filtros</button>
 <button class="btn btn-gh btn-sm" onclick="abrirGerenciarAba('relacionamento')" title="Gerenciar esta aba" style="margin-left:auto">⚙️</button></div>
 </div>
 <div class="g3" id="kpi-rel" style="margin-bottom:14px">
@@ -970,6 +976,7 @@ showToast('📄 Relatório gerado!');try{renderVisitas();}catch(e){}}</script>
 <button class="btn btn-gh btn-sm" onclick="renderRetencao()">↻</button>
 <button class="btn btn-bl btn-sm" onclick="gerarRelAba('retencao')" style="white-space:nowrap;margin-left:4px" title="Gerar relatório">📄 Relatório</button>
 
+<button class="btn btn-gh btn-sm" onclick="abrirFiltrosAba('retencao')" title="Editar filtros">🔽 Filtros</button>
 <button class="btn btn-gh btn-sm" onclick="abrirGerenciarAba('retencao')" title="Gerenciar esta aba" style="margin-left:auto">⚙️</button></div>
 </div>
 <div class="adm-toolbar" id="adm-tb-retencao" data-perm="admin" style="display: none;">
@@ -1052,6 +1059,7 @@ showToast('📄 Relatório gerado!');try{renderVisitas();}catch(e){}}</script>
 <button class="btn btn-gh btn-sm" onclick="renderSat()">↻</button>
 <button class="btn btn-bl btn-sm" onclick="gerarRelAba('satisfacao')" style="white-space:nowrap;margin-left:4px" title="Gerar relatório">📄 Relatório</button>
 
+<button class="btn btn-gh btn-sm" onclick="abrirFiltrosAba('satisfacao')" title="Editar filtros">🔽 Filtros</button>
 <button class="btn btn-gh btn-sm" onclick="abrirGerenciarAba('satisfacao')" title="Gerenciar esta aba" style="margin-left:auto">⚙️</button></div>
 </div>
 <div class="adm-toolbar" id="adm-tb-satisfacao" data-perm="admin" style="display: none;">
@@ -1291,6 +1299,7 @@ showToast('📄 Relatório gerado!');try{renderVisitas();}catch(e){}}</script>
 <button class="btn btn-gh btn-sm" onclick="renderSLA()">↻ Atualizar</button>
 <button class="btn btn-bl btn-sm" onclick="gerarRelAba('sla')" style="white-space:nowrap;margin-left:4px" title="Gerar relatório">📄 Relatório</button>
 
+<button class="btn btn-gh btn-sm" onclick="abrirFiltrosAba('sla')" title="Editar filtros">🔽 Filtros</button>
 <button class="btn btn-gh btn-sm" onclick="abrirGerenciarAba('sla')" title="Gerenciar esta aba" style="margin-left:auto">⚙️</button></div>
 </div>
 <div class="adm-toolbar" id="adm-tb-sla" data-perm="admin" style="display: none;">
@@ -2008,7 +2017,9 @@ showToast('📄 Relatório gerado!');try{renderVisitas();}catch(e){}}</script>
 </select>
 <button class="btn btn-bl" onclick="abrirForm('fluxo',-1)" data-perm="edit">➕ Registrar</button>
 <button class="btn btn-bl btn-sm" onclick="gerarRelAba('fluxo')" style="white-space:nowrap;margin-left:4px" title="Gerar relatório">📄 Relatório</button>
-</div>
+
+<button class="btn btn-gh btn-sm" onclick="abrirFiltrosAba('fluxo')" title="Editar filtros">🔽 Filtros</button>
+<button class="btn btn-gh btn-sm" onclick="abrirGerenciarAba('fluxo')" title="Gerenciar esta aba">⚙️</button></div>
 </div>
 <div class="adm-toolbar" id="adm-tb-fluxo" data-perm="admin" style="display: none;">
 <span class="adm-toolbar-label">⚙️ ADM</span>
@@ -2092,7 +2103,9 @@ showToast('📄 Relatório gerado!');try{renderVisitas();}catch(e){}}</script>
 <button id="vbtn-adocao-cards" title="Visualização em Cards" onclick="setTabView('adocao','cards')" style="border:1px solid #1e2736;background:none;color:#64748b;border-radius:5px;padding:4px 8px;font-size:12px;cursor:pointer">⊞</button>
 <button id="vbtn-adocao-lista" title="Visualização em Lista" onclick="setTabView('adocao','lista')" style="border:1px solid #3b82f6;background:rgba(59,130,246,.2);color:#3b82f6;border-radius:5px;padding:4px 8px;font-size:12px;cursor:pointer">☰</button>
 <button id="vbtn-adocao-compact" title="Visualização Compacta" onclick="setTabView('adocao','compact')" style="border:1px solid #1e2736;background:none;color:#64748b;border-radius:5px;padding:4px 8px;font-size:12px;cursor:pointer">⊟</button>
-</div>
+
+<button class="btn btn-gh btn-sm" onclick="abrirFiltrosAba('adocao')" title="Editar filtros">🔽 Filtros</button>
+<button class="btn btn-gh btn-sm" onclick="abrirGerenciarAba('adocao')" title="Gerenciar esta aba">⚙️</button></div>
 </div>
 <div class="tbl-wrap tv-lista" id="tbl-wrap-adocao">
 <div class="tbl">
@@ -2299,6 +2312,7 @@ showToast('📄 Relatório gerado!');try{renderVisitas();}catch(e){}}</script>
 <div class="kpi-lbl">🏢 Total</div>
 <div class="kpi-val" style="color:#3b82f6">119</div>
 <div class="kpi-sub">condomínios
+<button class="btn btn-gh btn-sm" onclick="abrirFiltrosAba('preventivas')" title="Editar filtros">🔽 Filtros</button>
 <button class="btn btn-gh btn-sm" onclick="abrirGerenciarAba('preventivas')" title="Gerenciar esta aba" style="margin-left:auto">⚙️</button></div>
 </div>
 <div class="kpi" style="">
@@ -4185,6 +4199,7 @@ showToast('📄 Relatório gerado!');try{renderVisitas();}catch(e){}}</script>
 <button class="btn btn-bl" onclick="abrirForm('inc',-1)" data-perm="edit">➕ Novo</button>
 <button class="btn btn-bl btn-sm" onclick="gerarRelAba('incidentes')" style="white-space:nowrap;margin-left:4px" title="Gerar relatório">📄 Relatório</button>
 
+<button class="btn btn-gh btn-sm" onclick="abrirFiltrosAba('incidentes')" title="Editar filtros">🔽 Filtros</button>
 <button class="btn btn-gh btn-sm" onclick="abrirGerenciarAba('incidentes')" title="Gerenciar esta aba" style="margin-left:auto">⚙️</button></div>
 </div>
 <div class="adm-toolbar" id="adm-tb-incidentes" data-perm="admin" style="display: none;">
@@ -4231,6 +4246,7 @@ showToast('📄 Relatório gerado!');try{renderVisitas();}catch(e){}}</script>
 <div class="kpi" style="">
 <div class="kpi-lbl">📋 Total OS</div>
 <div class="kpi-val" style="color:#3b82f6">4
+<button class="btn btn-gh btn-sm" onclick="abrirFiltrosAba('os')" title="Editar filtros">🔽 Filtros</button>
 <button class="btn btn-gh btn-sm" onclick="abrirGerenciarAba('os')" title="Gerenciar esta aba" style="margin-left:auto">⚙️</button></div>
 </div>
 <div class="kpi" style="">
@@ -4402,7 +4418,8 @@ showToast('📄 Relatório gerado!');try{renderVisitas();}catch(e){}}</script>
   <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
     <button class="btn btn-bl btn-sm" onclick="abrirFormRadar(-1)">+ Nova Ocorrência</button>
     <button class="btn btn-bl btn-sm" onclick="gerarRelAba('radar')" style="white-space:nowrap" title="Relatório">📄 Relatório</button>
-    <button class="btn btn-gh btn-sm" onclick="abrirGerenciarAba('radar')" title="Gerenciar esta aba">⚙️</button>
+    <button class="btn btn-gh btn-sm" onclick="abrirFiltrosAba('radar')" title="Editar filtros">🔽 Filtros</button>
+<button class="btn btn-gh btn-sm" onclick="abrirGerenciarAba('radar')" title="Gerenciar esta aba">⚙️</button>
   </div>
 </div>
 
@@ -9596,7 +9613,7 @@ function abrirLegendaNPS() {
 
       </div>`;
     document.body.appendChild(d);
-    d.addEventListener('click', function(e){ if(e.target===d) d.style.display='none'; });
+    d.addEventListener('click', function(e){ if(e.target===d) fecharModalFiltros(); });
     modal = d;
   }
   modal.style.display = 'flex';
@@ -9649,7 +9666,7 @@ function _renderPersonalizacao() {
 function _buildPersonalizacaoHTML(motivosRadar, motivosOS, statusOS, filiais, responsaveis, tiposDemanda, statusDemanda, perguntasSat) {
   function secao(id, titulo, emoji, lista) {
     return '<div style="border:1px solid #1e2736;border-radius:10px;margin-bottom:8px;overflow:hidden">' +
-      '<div onclick="_pToggle(\''+id+'\');" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;cursor:pointer;background:#0d1117;user-select:none">' +
+      '<div data-ptoggle="'+id+'" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;cursor:pointer;background:#0d1117;user-select:none">' +
         '<div style="display:flex;align-items:center;gap:8px">' +
           '<span style="font-size:15px">'+emoji+'</span>' +
           '<span style="font-size:12px;font-weight:700;color:#f1f5f9">'+titulo+'</span>' +
@@ -9661,7 +9678,7 @@ function _buildPersonalizacaoHTML(motivosRadar, motivosOS, statusOS, filiais, re
         '<div id="plist-'+id+'" style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px">' +
           lista.map(function(item,i){return _pItemRow(id,item,i);}).join('') +
         '</div>' +
-        '<button class="btn btn-bl btn-sm" onclick="event.stopPropagation();_pAddItem(\''+id+'\')">➕ Adicionar item</button>' +
+        '<button class="btn btn-bl btn-sm" data-padditem="'+id+'">➕ Adicionar item</button>' +
       '</div>' +
     '</div>';
   }
@@ -10422,7 +10439,7 @@ function _switchConstrutor(tab) {
   if      (tab==='kpis')         panel.innerHTML = _buildConstrutorKPIs();
   else if (tab==='formularios')  panel.innerHTML = _buildConstrutorForms();
   else if (tab==='questionarios')panel.innerHTML = _buildConstrutorQuest();
-  else if (tab==='listas')       panel.innerHTML = _buildConstrutorListas();
+  else if (tab==='listas')       { panel.innerHTML = _buildConstrutorListas(); setTimeout(_initListasPanel, 50); }
   else if (tab==='backup')       panel.innerHTML = _buildConstrutorBackup();
 }
 
@@ -10817,20 +10834,111 @@ function _questSalvarForm(aba, id) {
 function _buildConstrutorListas() {
   garantirDB();
   garantirListasPersonalizacao();
-  var el = document.createElement('div');
-  el.innerHTML = _buildPersonalizacaoHTML(
-    getCfgLista('motivos_radar'), getCfgLista('motivos_os'), getCfgLista('status_os'),
-    getCfgLista('filiais'), getCfgLista('responsaveis'), getCfgLista('tipos_demanda'),
-    getCfgLista('status_demanda'), getCfgLista('perguntas_sat')
-  );
-  // Adicionar botão salvar no topo
-  var header = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">' +
-    '<div><h3 style="font-size:12px;color:#f1f5f9;margin:0 0 4px">📋 Listas Editáveis</h3>' +
-    '<p style="font-size:10px;color:#64748b;margin:0">Edite os itens das listas usadas em filtros e formulários.</p></div>' +
-    '<button onclick="salvarPersonalizacao()" style="padding:7px 14px;background:#3b82f6;border:none;border-radius:8px;color:#fff;cursor:pointer;font-size:11px;font-weight:700">💾 Salvar Listas</button>' +
-  '</div>';
-  return header + el.innerHTML;
+
+  var LISTAS_DEF = [
+    {id:'motivos_radar', titulo:'Motivos do Radar', emoji:'🎯'},
+    {id:'motivos_os',    titulo:'Motivos de O.S.',  emoji:'🔧'},
+    {id:'status_os',     titulo:'Status de O.S.',   emoji:'📋'},
+    {id:'filiais',       titulo:'Filiais',           emoji:'🏢'},
+    {id:'responsaveis',  titulo:'Responsáveis CS',   emoji:'👤'},
+    {id:'tipos_demanda', titulo:'Tipos de Demanda',  emoji:'📝'},
+    {id:'status_demanda',titulo:'Status de Demanda', emoji:'🔄'},
+    {id:'perguntas_sat', titulo:'Perguntas do Quest.',emoji:'⭐'},
+  ];
+
+  var html = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'
+    + '<div><h3 style="font-size:12px;color:#f1f5f9;margin:0 0 4px">📋 Listas Editáveis</h3>'
+    + '<p style="font-size:10px;color:#64748b;margin:0">Edite os itens das listas usadas em filtros e formulários.</p></div>'
+    + '<button onclick="salvarPersonalizacao()" style="padding:7px 14px;background:#3b82f6;border:none;border-radius:8px;color:#fff;cursor:pointer;font-size:11px;font-weight:700">💾 Salvar</button>'
+    + '</div>';
+
+  LISTAS_DEF.forEach(function(cfg) {
+    var lista = (DB.config_listas && DB.config_listas[cfg.id] && DB.config_listas[cfg.id].length)
+      ? DB.config_listas[cfg.id]
+      : (cfg.id==='motivos_radar' ? MOTIVOS_RADAR : cfg.id==='motivos_os' ? _osMotivos : []);
+
+    html += '<div style="border:1px solid #1e2736;border-radius:10px;margin-bottom:8px;overflow:hidden">'
+      + '<div data-cl="' + cfg.id + '" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;cursor:pointer;background:#0d1117;user-select:none">'
+        + '<div style="display:flex;align-items:center;gap:8px">'
+          + '<span style="font-size:15px">' + cfg.emoji + '</span>'
+          + '<span style="font-size:12px;font-weight:700;color:#f1f5f9">' + cfg.titulo + '</span>'
+          + '<span style="font-size:10px;color:#64748b;background:#1e2736;padding:2px 8px;border-radius:10px" id="pcount-' + cfg.id + '">' + lista.length + ' itens</span>'
+        + '</div>'
+        + '<span id="parrow-' + cfg.id + '" style="color:#64748b;font-size:11px;transition:transform .2s">▼</span>'
+      + '</div>'
+      + '<div id="pbody-' + cfg.id + '" style="display:none;padding:12px 16px;background:#080b12;border-top:1px solid #1e2736">'
+        + '<div id="plist-' + cfg.id + '" style="margin-bottom:10px"></div>'
+        + '<button data-cl-add="' + cfg.id + '" style="padding:6px 14px;background:#3b82f6;border:none;border-radius:6px;color:#fff;cursor:pointer;font-size:11px;font-weight:700">➕ Adicionar item</button>'
+      + '</div>'
+    + '</div>';
+  });
+
+  return html;
 }
+
+// Preencher itens de uma lista no painel
+function _preencherListaCL(id) {
+  var lista = (DB.config_listas && DB.config_listas[id] && DB.config_listas[id].length)
+    ? DB.config_listas[id]
+    : (id==='motivos_radar' ? MOTIVOS_RADAR : id==='motivos_os' ? _osMotivos : []);
+  var cont = document.getElementById('plist-' + id);
+  if (!cont) return;
+  cont.innerHTML = lista.map(function(item, i) {
+    return '<div id="prow-' + id + '-' + i + '" style="display:flex;gap:6px;align-items:center;margin-bottom:6px">'
+      + '<input class="fi" id="pinp-' + id + '-' + i + '" data-lid="' + id + '" value="" style="flex:1;padding:7px 10px;font-size:12px" placeholder="Digite o item...">'
+      + '<button data-mu="' + id + '|' + i + '" style="background:#1e2736;border:1px solid #334155;border-radius:6px;color:#94a3b8;padding:5px 8px;cursor:pointer;font-size:11px">▲</button>'
+      + '<button data-md="' + id + '|' + i + '" style="background:#1e2736;border:1px solid #334155;border-radius:6px;color:#94a3b8;padding:5px 8px;cursor:pointer;font-size:11px">▼</button>'
+      + '<button data-rm="' + id + '|' + i + '" style="background:rgba(239,68,68,.15);border:1px solid #ef4444;border-radius:6px;color:#ef4444;padding:5px 8px;cursor:pointer;font-size:11px">🗑</button>'
+    + '</div>';
+  }).join('');
+  // Preencher valores via JS para evitar encoding
+  lista.forEach(function(item, i) {
+    var inp = document.getElementById('pinp-' + id + '-' + i);
+    if (inp) inp.value = item;
+  });
+}
+
+// Inicializar event listener do painel construtor-panel (chamado após _switchConstrutor)
+function _initListasPanel() {
+  var panel = document.getElementById('construtor-panel');
+  if (!panel || panel._clInit) return;
+  panel._clInit = true;
+  panel.addEventListener('click', function(e) {
+    // Toggle acordeão
+    var tog = e.target.closest('[data-cl]');
+    if (tog && !e.target.closest('[data-cl-add]')) {
+      var id = tog.getAttribute('data-cl');
+      var body = document.getElementById('pbody-' + id);
+      var arrow = document.getElementById('parrow-' + id);
+      if (!body) return;
+      var aberto = body.style.display !== 'none';
+      body.style.display = aberto ? 'none' : '';
+      if (arrow) arrow.style.transform = aberto ? '' : 'rotate(180deg)';
+      if (!aberto) _preencherListaCL(id);
+      return;
+    }
+    // Adicionar item
+    var addBtn = e.target.closest('[data-cl-add]');
+    if (addBtn) { e.stopPropagation(); _pAddItem(addBtn.getAttribute('data-cl-add')); return; }
+    // Move up
+    var mu = e.target.closest('[data-mu]');
+    if (mu) { var p=mu.getAttribute('data-mu').split('|'); _pMoveUp(p[0], p[1]-0); return; }
+    // Move down
+    var md = e.target.closest('[data-md]');
+    if (md) { var p=md.getAttribute('data-md').split('|'); _pMoveDown(p[0], p[1]-0); return; }
+    // Remove
+    var rm = e.target.closest('[data-rm]');
+    if (rm) { var p=rm.getAttribute('data-rm').split('|'); _pRemoveItem(p[0], p[1]-0); return; }
+    // Input change
+    var inp = e.target.closest('[data-lid]');
+    if (inp) { _pDirty = true; }
+  });
+  panel.addEventListener('input', function(e) {
+    if (e.target && e.target.getAttribute('data-lid')) _pDirty = true;
+  });
+}
+
+
 
 function getCfgLista(id) {
   garantirDB();
@@ -10934,6 +11042,16 @@ function _backupResetar() {
 // ================================================================
 // FIM DO CONSTRUTOR
 // ================================================================
+
+
+document.getElementById("fos_status").onchange=function(){var w=document.getElementById("fos_conc_wrap");if(w)w.style.display=this.value==="Concluída"?"":"none";var s=document.getElementById("os_retorno_section");if(s)s.style.display=this.value==="Concluída"?"":"none";};
+
+// ================================================================
+
+
+
+// ================================================================
+
 
 </script><div id="adm-global-modal" class="adm-modal-full"><div class="adm-modal-box"><div class="adm-modal-hd"><h2 id="adm-gm-title">⚙️ Administrador</h2><div style="display:flex;gap:6px"><button class="btn btn-gr btn-sm" id="adm-gm-save" onclick="admGmSave()">💾 Salvar</button><button class="btn btn-gh btn-sm" onclick="admGmClose()">✕ Fechar</button></div></div><div class="adm-modal-bd" id="adm-gm-body"></div></div></div>
 
@@ -11182,121 +11300,7 @@ function _backupResetar() {
 <button class="btn btn-gh" type="button" onclick="fecharOSModal()">Cancelar</button>
 </div>
 
-<script>document.getElementById("fos_status").onchange=function(){var w=document.getElementById("fos_conc_wrap");if(w)w.style.display=this.value==="Concluída"?"":"none";var s=document.getElementById("os_retorno_section");if(s)s.style.display=this.value==="Concluída"?"":"none";};
 
-// ================================================================
-// MÓDULO: GERENCIAR ABA (drawer lateral)
-// ================================================================
-var _ABAS_CONFIG = {"condominios": {"titulo": "Condomínios", "emoji": "🏢", "kpis": ["kpi_cond_total", "kpi_cond_saud", "kpi_cond_atencao", "kpi_cond_critico", "kpi_cond_nota", "kpi_cond_app", "kpi_cond_mrr", "kpi_cond_os"], "filtros": ["cond-fil", "cond-ff", "cond-fresp", "cond-forder"]}, "criticos": {"titulo": "Central de Críticos", "emoji": "🚨", "kpis": ["kpi_crit_saud", "kpi_crit_atencao", "kpi_crit_critico", "kpi_crit_recl", "kpi_crit_inc", "kpi_crit_contratos", "cancelados"], "filtros": ["crit-fnivel", "crit-ffilial", "crit-fresp", "crit-fsort"]}, "radar": {"titulo": "Radar de Recorrência", "emoji": "🎯", "kpis": ["kpi_radar_total", "kpi_radar_rec", "kpi_radar_conds", "kpi_radar_motivos", "kpi_radar_criticos", "kpi_radar_pct"], "filtros": ["radar-ffilial", "radar-fmotivo", "radar-fstatus"]}, "os": {"titulo": "O.S e Retorno", "emoji": "🔧", "kpis": ["kpi_os_total", "kpi_os_abertas", "kpi_os_andam"], "filtros": ["os-ffilial", "os-fstatus", "os-fmotivo"]}, "satisfacao": {"titulo": "Satisfação", "emoji": "⭐", "kpis": ["kpi_cond_nota"], "filtros": ["sat-fil-global", "sat-pesq-fst"]}, "sla": {"titulo": "SLA & Operação", "emoji": "⏰", "kpis": [], "filtros": ["sla-fsetor", "sla-ffilial", "sla-ftipo", "sla-fstatus"]}, "visitas": {"titulo": "Visitas", "emoji": "🏠", "kpis": [], "filtros": []}, "preventivas": {"titulo": "Preventivas", "emoji": "🔧", "kpis": [], "filtros": ["prev-ffilial", "prev-fstatus"]}, "incidentes": {"titulo": "Incidentes", "emoji": "⚠️", "kpis": [], "filtros": ["inc-fgrav", "inc-fstatus"]}, "relacionamento": {"titulo": "Relacionamento", "emoji": "🤝", "kpis": [], "filtros": ["rel-fil", "rel-fresp"]}, "retencao": {"titulo": "Renovação", "emoji": "🔄", "kpis": [], "filtros": ["renov-fil", "renov-fst"]}};
-
-var _drawerAbaAtual = null;
-
-function abrirGerenciarAba(aba) {
-  garantirDB();
-  _drawerAbaAtual = aba;
-  var cfg = _ABAS_CONFIG[aba];
-  if (!cfg) return;
-
-  var drawer = document.getElementById('drawer-gerenciar');
-  if (!drawer) { _criarDrawerGerenciar(); drawer = document.getElementById('drawer-gerenciar'); }
-
-  // Título
-  document.getElementById('dg-titulo').textContent = cfg.emoji + ' ' + cfg.titulo;
-
-  // Seção KPIs
-  var kpiSec = document.getElementById('dg-kpis');
-  if (cfg.kpis && cfg.kpis.length > 0) {
-    kpiSec.style.display = '';
-    var kpiRows = cfg.kpis.map(function(id) {
-      var def = _KPI_LABELS_DEFAULT[id] || {};
-      var saved = (DB.config_kpi_labels && DB.config_kpi_labels[id]) || {};
-      var isOculto = !!saved.oculto;
-      var emoji = saved.emoji || def.emoji || '📊';
-      var texto = saved.texto || def.texto || id;
-      return '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #1e273640">' +
-        '<span style="font-size:18px;width:28px;text-align:center">' + emoji + '</span>' +
-        '<span style="flex:1;font-size:12px;color:' + (isOculto?'#475569':'#e2e8f0') + ';text-decoration:' + (isOculto?'line-through':'none') + '">' + texto + '</span>' +
-        '<button onclick="dg_toggleKpi(\'' + id + '\')" ' +
-          'style="padding:4px 12px;border-radius:6px;font-size:11px;cursor:pointer;border:1px solid;font-weight:600;' +
-          (isOculto ? 'background:rgba(16,185,129,.15);border-color:#10b981;color:#10b981' : 'background:rgba(239,68,68,.15);border-color:#ef4444;color:#ef4444') + '">' +
-          (isOculto ? '👁 Mostrar' : '🙈 Ocultar') +
-        '</button>' +
-      '</div>';
-    }).join('');
-    document.getElementById('dg-kpis-list').innerHTML = kpiRows;
-  } else {
-    kpiSec.style.display = 'none';
-  }
-
-  // Link para personalização completa
-  document.getElementById('dg-link-config').onclick = function() {
-    fecharDrawerGerenciar();
-    // Navegar para config > personalização
-    var nb = document.querySelector('.nb[data-p="config"]');
-    if (nb) nb.click();
-    setTimeout(function() { switchConfigTab('personalizacao'); }, 300);
-  };
-
-  // Mostrar drawer
-  drawer.style.display = 'flex';
-  setTimeout(function() { drawer.querySelector('.dg-panel').style.transform = 'translateX(0)'; }, 10);
-}
-
-function dg_toggleKpi(id) {
-  garantirDB();
-  if (!DB.config_kpi_labels) DB.config_kpi_labels = {};
-  if (!DB.config_kpi_labels[id]) DB.config_kpi_labels[id] = {};
-  DB.config_kpi_labels[id].oculto = !DB.config_kpi_labels[id].oculto;
-  salvar();
-  try { _aplicarLabelsKPI(); } catch(e) {}
-  // Re-render aba
-  try { renderPage(_drawerAbaAtual); } catch(e) {}
-  // Reabrir drawer para atualizar botões
-  abrirGerenciarAba(_drawerAbaAtual);
-}
-
-function fecharDrawerGerenciar() {
-  var drawer = document.getElementById('drawer-gerenciar');
-  if (!drawer) return;
-  var panel = drawer.querySelector('.dg-panel');
-  if (panel) panel.style.transform = 'translateX(100%)';
-  setTimeout(function() { drawer.style.display = 'none'; }, 280);
-}
-
-function _criarDrawerGerenciar() {
-  var div = document.createElement('div');
-  div.id = 'drawer-gerenciar';
-  div.style.cssText = 'display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:9998;';
-  div.innerHTML =
-    '<div onclick="fecharDrawerGerenciar()" style="position:absolute;inset:0;background:rgba(0,0,0,.5)"></div>' +
-    '<div class="dg-panel" style="position:absolute;right:0;top:0;height:100%;width:340px;background:#1e1e2e;' +
-      'box-shadow:-4px 0 30px rgba(0,0,0,.5);transform:translateX(100%);transition:transform .28s ease;' +
-      'display:flex;flex-direction:column;overflow:hidden">' +
-      '<div style="padding:16px 20px;border-bottom:1px solid #1e2736;display:flex;align-items:center;justify-content:space-between;background:#0d1117">' +
-        '<div>' +
-          '<div id="dg-titulo" style="font-size:15px;font-weight:700;color:#f1f5f9"></div>' +
-          '<div style="font-size:10px;color:#64748b;margin-top:2px">Gerenciar esta aba</div>' +
-        '</div>' +
-        '<button onclick="fecharDrawerGerenciar()" style="background:none;border:none;color:#64748b;font-size:20px;cursor:pointer;line-height:1;padding:4px">✕</button>' +
-      '</div>' +
-      '<div style="flex:1;overflow-y:auto;padding:16px 20px">' +
-        '<div id="dg-kpis">' +
-          '<div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">📊 Cards KPI</div>' +
-          '<div id="dg-kpis-list"></div>' +
-        '</div>' +
-        '<div style="margin-top:20px;padding:12px;background:#0d1117;border-radius:10px;border:1px solid #1e2736">' +
-          '<div style="font-size:11px;color:#94a3b8;margin-bottom:10px">⚙️ Para editar textos, filtros e questionários:</div>' +
-          '<button id="dg-link-config" style="width:100%;padding:8px;background:#3b82f6;border:none;border-radius:8px;color:#fff;font-size:12px;font-weight:700;cursor:pointer">🎨 Abrir Personalização</button>' +
-        '</div>' +
-      '</div>' +
-    '</div>';
-  document.body.appendChild(div);
-}
-// ================================================================
-// FIM MÓDULO GERENCIAR ABA
-// ================================================================
-
-</script>
 
 </div>
 </div>
@@ -11474,3 +11478,236 @@ function _criarDrawerGerenciar() {
 
 
 </body></html>
+<script>
+// ================================================================
+// MÓDULO: GERENCIAR ABA (drawer lateral)
+// ================================================================
+var _ABAS_CONFIG = {"condominios": {"titulo": "Condomínios", "emoji": "🏢", "kpis": ["kpi_cond_total", "kpi_cond_saud", "kpi_cond_atencao", "kpi_cond_critico", "kpi_cond_nota", "kpi_cond_app", "kpi_cond_mrr", "kpi_cond_os"], "filtros": ["cond-fil", "cond-ff", "cond-fresp", "cond-forder"]}, "criticos": {"titulo": "Central de Críticos", "emoji": "🚨", "kpis": ["kpi_crit_saud", "kpi_crit_atencao", "kpi_crit_critico", "kpi_crit_recl", "kpi_crit_inc", "kpi_crit_contratos", "cancelados"], "filtros": ["crit-fnivel", "crit-ffilial", "crit-fresp", "crit-fsort"]}, "radar": {"titulo": "Radar de Recorrência", "emoji": "🎯", "kpis": ["kpi_radar_total", "kpi_radar_rec", "kpi_radar_conds", "kpi_radar_motivos", "kpi_radar_criticos", "kpi_radar_pct"], "filtros": ["radar-ffilial", "radar-fmotivo", "radar-fstatus"]}, "os": {"titulo": "O.S e Retorno", "emoji": "🔧", "kpis": ["kpi_os_total", "kpi_os_abertas", "kpi_os_andam"], "filtros": ["os-ffilial", "os-fstatus", "os-fmotivo"]}, "satisfacao": {"titulo": "Satisfação", "emoji": "⭐", "kpis": ["kpi_cond_nota"], "filtros": ["sat-fil-global", "sat-pesq-fst"]}, "sla": {"titulo": "SLA & Operação", "emoji": "⏰", "kpis": [], "filtros": ["sla-fsetor", "sla-ffilial", "sla-ftipo", "sla-fstatus"]}, "visitas": {"titulo": "Visitas", "emoji": "🏠", "kpis": [], "filtros": []}, "preventivas": {"titulo": "Preventivas", "emoji": "🔧", "kpis": [], "filtros": ["prev-ffilial", "prev-fstatus"]}, "incidentes": {"titulo": "Incidentes", "emoji": "⚠️", "kpis": [], "filtros": ["inc-fgrav", "inc-fstatus"]}, "relacionamento": {"titulo": "Relacionamento", "emoji": "🤝", "kpis": [], "filtros": ["rel-fil", "rel-fresp"]}, "retencao": {"titulo": "Renovação", "emoji": "🔄", "kpis": [], "filtros": ["renov-fil", "renov-fst"]}};
+
+var _drawerAbaAtual = null;
+
+function abrirGerenciarAba(aba) {
+  garantirDB();
+  _drawerAbaAtual = aba;
+  var cfg = _ABAS_CONFIG[aba];
+  if (!cfg) return;
+
+  var drawer = document.getElementById('drawer-gerenciar');
+  if (!drawer) { _criarDrawerGerenciar(); drawer = document.getElementById('drawer-gerenciar'); }
+
+  // Título
+  document.getElementById('dg-titulo').textContent = cfg.emoji + ' ' + cfg.titulo;
+
+  // Seção KPIs
+  var kpiSec = document.getElementById('dg-kpis');
+  if (cfg.kpis && cfg.kpis.length > 0) {
+    kpiSec.style.display = '';
+    var kpiRows = cfg.kpis.map(function(id) {
+      var def = _KPI_LABELS_DEFAULT[id] || {};
+      var saved = (DB.config_kpi_labels && DB.config_kpi_labels[id]) || {};
+      var isOculto = !!saved.oculto;
+      var emoji = saved.emoji || def.emoji || '📊';
+      var texto = saved.texto || def.texto || id;
+      return '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #1e273640">' +
+        '<span style="font-size:18px;width:28px;text-align:center">' + emoji + '</span>' +
+        '<span style="flex:1;font-size:12px;color:' + (isOculto?'#475569':'#e2e8f0') + ';text-decoration:' + (isOculto?'line-through':'none') + '">' + texto + '</span>' +
+        '<button onclick="dg_toggleKpi(\'' + id + '\')" ' +
+          'style="padding:4px 12px;border-radius:6px;font-size:11px;cursor:pointer;border:1px solid;font-weight:600;' +
+          (isOculto ? 'background:rgba(16,185,129,.15);border-color:#10b981;color:#10b981' : 'background:rgba(239,68,68,.15);border-color:#ef4444;color:#ef4444') + '">' +
+          (isOculto ? '👁 Mostrar' : '🙈 Ocultar') +
+        '</button>' +
+      '</div>';
+    }).join('');
+    document.getElementById('dg-kpis-list').innerHTML = kpiRows;
+  } else {
+    kpiSec.style.display = 'none';
+  }
+
+  // Link para personalização completa
+  document.getElementById('dg-link-config').onclick = function() {
+    fecharDrawerGerenciar();
+    // Navegar para config > personalização
+    var nb = document.querySelector('.nb[data-p="config"]');
+    if (nb) nb.click();
+    setTimeout(function() { switchConfigTab('personalizacao'); }, 300);
+  };
+
+  // Mostrar drawer
+  drawer.style.display = 'flex';
+  setTimeout(function() { drawer.querySelector('.dg-panel').style.transform = 'translateX(0)'; }, 10);
+}
+
+function dg_toggleKpi(id) {
+  garantirDB();
+  if (!DB.config_kpi_labels) DB.config_kpi_labels = {};
+  if (!DB.config_kpi_labels[id]) DB.config_kpi_labels[id] = {};
+  DB.config_kpi_labels[id].oculto = !DB.config_kpi_labels[id].oculto;
+  salvar();
+  try { _aplicarLabelsKPI(); } catch(e) {}
+  // Re-render aba
+  try { renderPage(_drawerAbaAtual); } catch(e) {}
+  // Reabrir drawer para atualizar botões
+  abrirGerenciarAba(_drawerAbaAtual);
+}
+
+function fecharDrawerGerenciar() {
+  var drawer = document.getElementById('drawer-gerenciar');
+  if (!drawer) return;
+  var panel = drawer.querySelector('.dg-panel');
+  if (panel) panel.style.transform = 'translateX(100%)';
+  setTimeout(function() { drawer.style.display = 'none'; }, 280);
+}
+
+function _criarDrawerGerenciar() {
+  var div = document.createElement('div');
+  div.id = 'drawer-gerenciar';
+  div.style.cssText = 'display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:9998;';
+  div.innerHTML =
+    '<div onclick="fecharDrawerGerenciar()" style="position:absolute;inset:0;background:rgba(0,0,0,.5)"></div>' +
+    '<div class="dg-panel" style="position:absolute;right:0;top:0;height:100%;width:340px;background:#1e1e2e;' +
+      'box-shadow:-4px 0 30px rgba(0,0,0,.5);transform:translateX(100%);transition:transform .28s ease;' +
+      'display:flex;flex-direction:column;overflow:hidden">' +
+      '<div style="padding:16px 20px;border-bottom:1px solid #1e2736;display:flex;align-items:center;justify-content:space-between;background:#0d1117">' +
+        '<div>' +
+          '<div id="dg-titulo" style="font-size:15px;font-weight:700;color:#f1f5f9"></div>' +
+          '<div style="font-size:10px;color:#64748b;margin-top:2px">Gerenciar esta aba</div>' +
+        '</div>' +
+        '<button onclick="fecharDrawerGerenciar()" style="background:none;border:none;color:#64748b;font-size:20px;cursor:pointer;line-height:1;padding:4px">✕</button>' +
+      '</div>' +
+      '<div style="flex:1;overflow-y:auto;padding:16px 20px">' +
+        '<div id="dg-kpis">' +
+          '<div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">📊 Cards KPI</div>' +
+          '<div id="dg-kpis-list"></div>' +
+        '</div>' +
+        '<div style="margin-top:14px">' +
+        '<button onclick="fecharDrawerGerenciar();abrirFiltrosAba(_drawerAbaAtual)" style="width:100%;padding:8px;background:#1e2736;border:1px solid #334155;border-radius:8px;color:#94a3b8;font-size:12px;font-weight:600;cursor:pointer;margin-bottom:8px">🔽 Editar Filtros desta Aba</button>' +
+      '</div>' +
+      '<div style="margin-top:8px;padding:12px;background:#0d1117;border-radius:10px;border:1px solid #1e2736">' +
+          '<div style="font-size:11px;color:#94a3b8;margin-bottom:10px">⚙️ Para editar textos, filtros e questionários:</div>' +
+          '<button id="dg-link-config" style="width:100%;padding:8px;background:#3b82f6;border:none;border-radius:8px;color:#fff;font-size:12px;font-weight:700;cursor:pointer">🎨 Abrir Personalização</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  document.body.appendChild(div);
+}
+// ================================================================
+// FIM MÓDULO GERENCIAR ABA
+
+// ================================================================
+// MÓDULO: EDITAR FILTROS DA ABA (drawer)
+// ================================================================
+var _FILTROS_EDICAO = {"dashboard": [{"id": "dash-ff", "label": "Filiais", "tipo": "filial"}], "condominios": [{"id": "cond-fil", "label": "Filiais", "tipo": "filial"}, {"id": "cond-fresp", "label": "Responsáveis", "tipo": "responsavel"}, {"id": "cond-ff", "label": "Saúde", "tipo": "fixo", "opts": ["Todas saúdes", "🟢 Saudável", "🟡 Atenção", "🔴 Crítico"]}, {"id": "cond-forder", "label": "Ordenação", "tipo": "fixo", "opts": ["Críticos primeiro", "Nota ↑", "Nota ↓", "A–Z"]}], "criticos": [{"id": "crit-ffilial", "label": "Filiais", "tipo": "filial"}, {"id": "crit-fresp", "label": "Responsáveis", "tipo": "responsavel"}, {"id": "crit-fnivel", "label": "Nível", "tipo": "fixo", "opts": ["Todos os níveis", "🔴 Crítico", "🟡 Atenção", "🟢 Saudável"]}, {"id": "crit-fsort", "label": "Ordenação", "tipo": "fixo", "opts": ["📊 Maior risco", "⭐ Menor nota", "📋 Mais reclamações", "⏰ Contrato próximo"]}], "radar": [{"id": "radar-ffilial", "label": "Filiais", "tipo": "filial"}, {"id": "radar-fmotivo", "label": "Motivos", "tipo": "motivo_radar"}, {"id": "radar-fstatus", "label": "Status", "tipo": "status_radar", "opts": ["Todos os status", "Aberta", "Em tratamento", "Resolvida", "Cancelada"]}], "os": [{"id": "os-ffilial", "label": "Filiais", "tipo": "filial"}, {"id": "os-fstatus", "label": "Status", "tipo": "status_os"}, {"id": "os-fmotivo", "label": "Motivos", "tipo": "motivo_os"}], "sla": [{"id": "sla-ffilial", "label": "Filiais", "tipo": "filial"}, {"id": "sla-fsetor", "label": "Setores", "tipo": "fixo_edit", "lista_key": "setores"}, {"id": "sla-ftipo", "label": "Tipos", "tipo": "tipo_demanda"}, {"id": "sla-fstatus", "label": "Status SLA", "tipo": "fixo", "opts": ["Todos os status", "✅ No Prazo", "⚠️ Atenção", "❌ Fora do Prazo", "⏳ Pendente"]}], "satisfacao": [{"id": "sat-fil-global", "label": "Filiais", "tipo": "filial"}, {"id": "sat-pesq-fst", "label": "Status", "tipo": "fixo", "opts": ["Todos", "✅ Realizado", "⏳ Pendente", "🔴 Crítico", "🟢 Saudável"]}], "relacionamento": [{"id": "rel-fil", "label": "Filiais", "tipo": "filial"}, {"id": "rel-fresp", "label": "Responsáveis", "tipo": "responsavel"}], "retencao": [{"id": "renov-fil", "label": "Filiais", "tipo": "filial"}], "preventivas": [{"id": "prev-ffilial", "label": "Filiais", "tipo": "filial"}], "incidentes": [{"id": "inc-fgrav", "label": "Gravidade", "tipo": "fixo", "opts": ["Toda gravidade", "Alta", "Média", "Baixa"]}, {"id": "inc-fstatus", "label": "Status", "tipo": "fixo_edit", "lista_key": "status_incidentes"}], "fluxo": [{"id": "fluxo-ff", "label": "Filiais", "tipo": "filial"}], "adocao": [{"id": "ado-ffilial", "label": "Filiais", "tipo": "filial"}], "visitas": []};
+
+function abrirFiltrosAba(aba) {
+  garantirDB();
+  var filtros = _FILTROS_EDICAO[aba] || [];
+  
+  var modal = document.getElementById('modal-filtros-aba');
+  if (!modal) { _criarModalFiltros(); modal = document.getElementById('modal-filtros-aba'); }
+
+  var cfg = _ABAS_CONFIG && _ABAS_CONFIG[aba] ? _ABAS_CONFIG[aba] : {titulo:aba, emoji:'📋'};
+  document.getElementById('mf-titulo').textContent = cfg.emoji + ' Filtros — ' + cfg.titulo;
+
+  if (filtros.length === 0) {
+    document.getElementById('mf-body').innerHTML = '<p style="color:#64748b;font-size:12px;padding:20px;text-align:center">Esta aba não possui filtros configuráveis.</p>';
+  } else {
+    document.getElementById('mf-body').innerHTML = filtros.map(function(f) {
+      var lista = _getFiltroLista(f);
+      var sel = document.getElementById(f.id);
+      var valorAtual = sel ? sel.value : '';
+      return '<div style="margin-bottom:14px">' +
+        '<div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">' + f.label + '</div>' +
+        '<select class="fi" id="mfsel_' + f.id + '" style="width:100%;height:34px" onchange="_aplicarFiltroAba(\'' + aba + '\')">' +
+          lista.map(function(opt, i) {
+            var val = i === 0 ? '' : opt;
+            return '<option value="' + val + '"' + (val === valorAtual ? ' selected' : '') + '>' + opt + '</option>';
+          }).join('') +
+        '</select>' +
+        (f.tipo !== 'fixo' ? '<div style="font-size:10px;color:#3b82f6;margin-top:4px;cursor:pointer" onclick="_irParaPersonalizacao(\'' + _tipoParaSecao(f.tipo) + '\')">' +
+          '✏️ Editar opções em Personalização</div>' : '') +
+      '</div>';
+    }).join('');
+  }
+
+  modal.style.display = 'flex';
+}
+
+function _getFiltroLista(f) {
+  garantirDB();
+  var CL = DB.config_listas || {};
+  if (f.tipo === 'filial')       return ['Todas as filiais'].concat(CL.filiais || ['CEARÁ','MARANHÃO','SECOPI']);
+  if (f.tipo === 'responsavel')  return ['Todos responsáveis'].concat(CL.responsaveis || ['Rosely','Josy','Josi','Equipe CS']);
+  if (f.tipo === 'motivo_os')    return ['Todos os motivos'].concat(CL.motivos_os || window._osMotivos || []);
+  if (f.tipo === 'motivo_radar') return ['Todos os motivos'].concat(CL.motivos_radar || window.MOTIVOS_RADAR || []);
+  if (f.tipo === 'status_os')    return ['Todos os status'].concat(CL.status_os || ['Aberta','Em andamento','Concluída','Cancelada']);
+  if (f.tipo === 'tipo_demanda') return ['Todos os tipos'].concat(CL.tipos_demanda || ['SAC','Suporte','Financeiro','Operacional','Outro']);
+  if (f.tipo === 'fixo' || f.tipo === 'status_radar') return f.opts || [];
+  if (f.tipo === 'fixo_edit') {
+    var key = f.lista_key;
+    return (CL[key] ? ['Todos'].concat(CL[key]) : f.opts || []);
+  }
+  return f.opts || [];
+}
+
+function _aplicarFiltroAba(aba) {
+  var filtros = _FILTROS_EDICAO[aba] || [];
+  filtros.forEach(function(f) {
+    var mfSel = document.getElementById('mfsel_' + f.id);
+    var abaSel = document.getElementById(f.id);
+    if (mfSel && abaSel) abaSel.value = mfSel.value;
+  });
+  // Re-render da aba
+  try {
+    var fn = { condominios:renderConds, criticos:renderCriticos, radar:renderRadar,
+               os:renderOS, sla:renderSLA, satisfacao:renderSat, relacionamento:renderRelacionamento,
+               retencao:renderRetencao, preventivas:renderPreventivas, incidentes:renderIncidentes,
+               fluxo:renderFluxo, adocao:renderAdocao, dashboard:renderDash, visitas:renderVisitas };
+    if (fn[aba]) fn[aba]();
+  } catch(e) {}
+}
+
+function _tipoParaSecao(tipo) {
+  var m = {filial:'filiais',responsavel:'responsaveis',motivo_os:'motivos_os',
+            motivo_radar:'motivos_radar',status_os:'status_os',tipo_demanda:'tipos_demanda'};
+  return m[tipo] || tipo;
+}
+
+function _irParaPersonalizacao(secao) {
+  var modal = document.getElementById('modal-filtros-aba');
+  if (modal) modal.style.display = 'none';
+  var nb = document.querySelector('.nb[data-p="config"]');
+  if (nb) nb.click();
+  setTimeout(function() {
+    switchConfigTab('personalizacao');
+    setTimeout(function() { _pToggle(secao); }, 400);
+  }, 300);
+}
+
+function fecharModalFiltros() {
+  var m = document.getElementById('modal-filtros-aba');
+  if (m) m.style.display = 'none';
+}
+
+function _criarModalFiltros() {
+  var d = document.createElement('div');
+  d.id = 'modal-filtros-aba';
+  d.style.cssText = 'display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);z-index:10001;align-items:center;justify-content:center;';
+  d.innerHTML =
+    '<div style="background:#1e1e2e;border-radius:14px;padding:24px;max-width:420px;width:92%;max-height:85vh;overflow-y:auto;color:#cdd6f4;box-shadow:0 20px 60px rgba(0,0,0,.5)">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">' +
+        '<h3 id="mf-titulo" style="margin:0;font-size:14px;font-weight:700;color:#f1f5f9"></h3>' +
+        '<button onclick="fecharModalFiltros()" style="background:none;border:none;color:#94a3b8;font-size:18px;cursor:pointer">✕</button>' +
+      '</div>' +
+      '<div id="mf-body"></div>' +
+      '<div style="margin-top:16px;padding-top:16px;border-top:1px solid #1e2736;display:flex;justify-content:flex-end">' +
+        '<button onclick="fecharModalFiltros()" ' +
+          'style="padding:8px 20px;background:#3b82f6;border:none;border-radius:8px;color:#fff;font-weight:700;font-size:12px;cursor:pointer">✅ Fechar</button>' +
+      '</div>' +
+    '</div>';
+  document.body.appendChild(d);
+  d.addEventListener('click', function(e){ if(e.target===d) d.style.display='none'; });
+}
+// ================================================================
+// FIM MÓDULO FILTROS ABA
+
+</script>
