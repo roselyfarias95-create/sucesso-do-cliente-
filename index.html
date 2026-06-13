@@ -5079,14 +5079,20 @@ function clsN(n){var v=parseFloat(n)||0;if(v>=8)return{l:'Saudável',c:'#10b981'
 function clsP(p){if(p==='Alta')return{c:'#ef4444',bg:'rgba(239,68,68,.12)'};if(p==='Média')return{c:'#f59e0b',bg:'rgba(245,158,11,.12)'};return{c:'#10b981',bg:'rgba(16,185,129,.12)'};}
 function npsC(n){return n>=9?'Promotor':n>=7?'Neutro':'Detrator';}
 function isVenc(d){return d&&d.prazo&&d.prazo<hoje()&&d.status!=='Concluída';}
-function _kpiCard(lbl,val,sub,color,icon,kpiKey){var attr=kpiKey?' data-kpi="'+kpiKey+'"':'';var cur=kpiKey?'cursor:pointer;':'';return'<div class="kpi"'+attr+' style="'+cur+'">'
-+'<div class="kpi-lbl">'+(icon?icon+' ':'')+lbl+'</div>'
-+'<div class="kpi-val" style="color:'+(color||'#f1f5f9')+'">'+val+'</div>'
-+(sub?'<div class="kpi-sub">'+sub+'</div>':'')
-+'</div>';}
+function _kpiCard(lbl,val,sub,color,icon,kpiKey){
+  // Se há kpiKey e há label personalizado, usar ele
+  if(kpiKey){try{var kl=getKpiLabel(kpiKey);if(kl){icon=kl.emoji||icon;lbl=kl.texto||lbl;}}catch(e){}}
+  var attr=kpiKey?' data-kpi="'+kpiKey+'"':'';
+  var cur=kpiKey?'cursor:pointer;':'';
+  return'<div class="kpi"'+attr+' style="'+cur+'">'
+    +'<div class="kpi-lbl">'+(icon?icon+' ':'')+lbl+'</div>'
+    +'<div class="kpi-val" style="color:'+(color||'#f1f5f9')+'">'+val+'</div>'
+    +(sub?'<div class="kpi-sub">'+sub+'</div>':'')
+    +'</div>';
+}
 function addLog(m,a,d,extra){if(!DB||!DB.log)return;DB.log.unshift({dt:new Date().toISOString(),dtStr:new Date().toLocaleString('pt-BR'),user:(curUser||{}).name||'?',role:(curUser||{}).role||'—',m:m,a:a,d:d,cond:extra&&extra.cond||''});if(DB.log.length>500)DB.log=DB.log.slice(0,500);}
 function garantirDB(){if(!DB||typeof DB!=='object'){initDB();return;}
-['conds','demandas','satisfacao','visitas','criticos','retencao','incidentes','fluxo','adocao','preventivas','atendimentos','os','log','reclamacoes_avulsas','sat_tratativas','renovacoes','sla_historico','radar_ocorrencias'].forEach(function(k){if(!Array.isArray(DB[k]))DB[k]=[];});if(!DB.config_listas||typeof DB.config_listas!=='object')DB.config_listas={};if(!DB.nid||typeof DB.nid!=='object')DB.nid={};['cond','dem','sat','vis','crit','ret','inc','fluxo','ra','prev','atend','os'].forEach(function(k){if(!DB.nid[k])DB.nid[k]=10;});(DB.satisfacao||[]).forEach(function(s){if(!s.id)s.id=nid('sat');});if(!Array.isArray(DB.visitasExcluidas))DB.visitasExcluidas=[];if(!Array.isArray(DB.motivos_recl))DB.motivos_recl=["FALTA DE RETORNO","PORTÃO TRAVANDO","INTERFONE FORA","DEMORA NO ATENDIMENTO","CÂMERA COM DEFEITO","SISTEMA FORA DO AR"];if(!Array.isArray(DB.evo))DB.evo=[{mes:'Jan',nota:8.1,criticos:4},{mes:'Fev',nota:7.9,criticos:6},{mes:'Mar',nota:8.3,criticos:3},{mes:'Abr',nota:8.5,criticos:2},{mes:'Mai',nota:8.4,criticos:5}];if(!DB.adm_ui_config)DB.adm_ui_config={};if(!DB.form_config)DB.form_config={};(DB.conds||[]).forEach(function(c){if(!c.condominioId)c.condominioId=c.id||c.nome;});}
+['conds','demandas','satisfacao','visitas','criticos','retencao','incidentes','fluxo','adocao','preventivas','atendimentos','os','log','reclamacoes_avulsas','sat_tratativas','renovacoes','sla_historico','radar_ocorrencias'].forEach(function(k){if(!Array.isArray(DB[k]))DB[k]=[];});if(!DB.config_listas||typeof DB.config_listas!=='object')DB.config_listas={};if(!DB.config_kpis||typeof DB.config_kpis!=='object')DB.config_kpis={};if(!DB.config_kpi_labels||typeof DB.config_kpi_labels!=='object')DB.config_kpi_labels={};if(!DB.config_kpis_extra||typeof DB.config_kpis_extra!=='object')DB.config_kpis_extra={};if(!Array.isArray(DB.config_quest_extra))DB.config_quest_extra=[];if(!DB.config_quest_meta||typeof DB.config_quest_meta!=='object')DB.config_quest_meta={};if(!DB.config_questionarios||typeof DB.config_questionarios!=='object')DB.config_questionarios={};if(!DB.nid||typeof DB.nid!=='object')DB.nid={};['cond','dem','sat','vis','crit','ret','inc','fluxo','ra','prev','atend','os'].forEach(function(k){if(!DB.nid[k])DB.nid[k]=10;});(DB.satisfacao||[]).forEach(function(s){if(!s.id)s.id=nid('sat');});if(!Array.isArray(DB.visitasExcluidas))DB.visitasExcluidas=[];if(!Array.isArray(DB.motivos_recl))DB.motivos_recl=["FALTA DE RETORNO","PORTÃO TRAVANDO","INTERFONE FORA","DEMORA NO ATENDIMENTO","CÂMERA COM DEFEITO","SISTEMA FORA DO AR"];if(!Array.isArray(DB.evo))DB.evo=[{mes:'Jan',nota:8.1,criticos:4},{mes:'Fev',nota:7.9,criticos:6},{mes:'Mar',nota:8.3,criticos:3},{mes:'Abr',nota:8.5,criticos:2},{mes:'Mai',nota:8.4,criticos:5}];if(!DB.adm_ui_config)DB.adm_ui_config={};if(!DB.form_config)DB.form_config={};(DB.conds||[]).forEach(function(c){if(!c.condominioId)c.condominioId=c.id||c.nome;});}
 function nid(t){garantirDB();DB.nid[t]=(DB.nid[t]||10)+1;return t+'-'+DB.nid[t];}
 function initDB(){_demoLoaded=false;DB={conds:[],demandas:[],satisfacao:[],visitas:[],criticos:[],retencao:[],adocao:[],preventivas:[],atendimentos:[],os:[],incidentes:[],fluxo:[],log:[],radar_ocorrencias:[],reclamacoes_avulsas:[],sat_tratativas:[],motivos_recl:["FALTA DE RETORNO","PORTÃO TRAVANDO","INTERFONE FORA","DEMORA NO ATENDIMENTO","CÂMERA COM DEFEITO","SISTEMA FORA DO AR"],evo:[{mes:'Jan',nota:8.1,criticos:4},{mes:'Fev',nota:7.9,criticos:6},{mes:'Mar',nota:8.3,criticos:3},{mes:'Abr',nota:8.5,criticos:2},{mes:'Mai',nota:8.4,criticos:5}],nid:{cond:100,dem:100,sat:100,vis:10,crit:10,ret:10,inc:10,fluxo:10,ra:10},adm_ui_config:{},form_config:{},_savedAt:null};_loadDemoData();}
 function _loadDemoData(){if(_demoLoaded)return;_demoLoaded=true;DB.conds=[{id:901,nome:'COND. VILLA SOLARIUM',filial:'CEARÁ',nota:3.5,sac:'Crítico',resp:'Josy',humor:'😡',app:14,facial:15,gphone:'Não',recl:8,valor:4800,obs:'Sem retorno há 12 dias',unidades:48,moradores:96,os_abertas:2,cameras:4,risco_cancel:'Alto',sindico:'Carlos Melo',tel:'(85)99999-0001',timeline:[],particularidades:''},{id:902,nome:'MAISON NOVA METROPOLE',filial:'CEARÁ',nota:6.0,sac:'Em acompanhamento',resp:'Josy',humor:'😐',app:58,facial:60,gphone:'Instalado',recl:2,valor:5200,obs:'Módulo guarita fora',unidades:72,moradores:216,os_abertas:1,cameras:6,risco_cancel:'Baixo',sindico:'Ana Lima',tel:'(85)99999-0002',timeline:[],particularidades:''},{id:903,nome:'COND. COPENHAGUE',filial:'SECOPI',nota:9.0,sac:'Finalizado',resp:'Josi',humor:'😊',app:88,facial:90,gphone:'Instalado',recl:0,valor:6300,obs:'',unidades:96,moradores:384,os_abertas:0,cameras:8,risco_cancel:'Baixo',sindico:'Roberto Silva',tel:'(98)99999-0003',timeline:[],particularidades:'Delivery no armário inteligente'},{id:904,nome:'CONDOMINIO MARSOL',filial:'MARANHÃO',nota:8.5,sac:'Finalizado',resp:'Rosely',humor:'😊',app:82,facial:85,gphone:'Instalado',recl:0,valor:4200,obs:'',unidades:120,moradores:240,os_abertas:0,cameras:12,risco_cancel:'Baixo',sindico:'Patricia Costa',tel:'(98)99999-0004',timeline:[],particularidades:''},{id:905,nome:'RESIDENCIAL JARDIM AMERICA',filial:'CEARÁ',nota:9.0,sac:'Em tratamento',resp:'Rosely',humor:'😊',app:75,facial:78,gphone:'Instalado',recl:1,valor:3800,obs:'',unidades:200,moradores:800,os_abertas:1,cameras:4,risco_cancel:'Baixo',sindico:'José Santos',tel:'(85)99999-0005',timeline:[],particularidades:''},{id:906,nome:'EDIFICIO BIENE',filial:'CEARÁ',nota:8.0,sac:'Finalizado',resp:'Rosely',humor:'😊',app:65,facial:70,gphone:'Instalado',recl:0,valor:2900,obs:'',unidades:72,moradores:216,os_abertas:0,cameras:8,risco_cancel:'Baixo',sindico:'Maria Souza',tel:'(85)99999-0006',timeline:[],particularidades:''},{id:907,nome:'CONDOMINIO EDIFICIO PARMA',filial:'CEARÁ',nota:7.0,sac:'Em tratamento',resp:'Rosely',humor:'😐',app:45,facial:50,gphone:'Não',recl:3,valor:3200,obs:'Portão com barulho',unidades:96,moradores:384,os_abertas:2,cameras:12,risco_cancel:'Médio',sindico:'Paulo Ferreira',tel:'(85)99999-0007',timeline:[],particularidades:''},{id:908,nome:'SINGULAR RESIDENCIAL',filial:'MARANHÃO',nota:7.5,sac:'Em tratamento',resp:'Equipe CS',humor:'😐',app:40,facial:45,gphone:'Não',recl:2,valor:3600,obs:'',unidades:48,moradores:96,os_abertas:1,cameras:6,risco_cancel:'Médio',sindico:'Clara Rocha',tel:'(98)99999-0008',timeline:[],particularidades:''},{id:909,nome:'CONDOMINIO VILLA DI FIORI',filial:'CEARÁ',nota:9.0,sac:'Finalizado',resp:'Josi',humor:'😊',app:90,facial:92,gphone:'Instalado',recl:0,valor:5500,obs:'',unidades:144,moradores:432,os_abertas:0,cameras:16,risco_cancel:'Baixo',sindico:'Luciana Alves',tel:'(85)99999-0009',timeline:[],particularidades:''},{id:910,nome:'ISLA VERDE CONDOMINIUM',filial:'CEARÁ',nota:10.0,sac:'Finalizado',resp:'Josi',humor:'😊',app:95,facial:95,gphone:'Instalado',recl:0,valor:7200,obs:'',unidades:120,moradores:240,os_abertas:0,cameras:16,risco_cancel:'Baixo',sindico:'Fernando Gomes',tel:'(85)99999-0010',timeline:[],particularidades:''}];DB.demandas=[{id:901,cond:'COND. VILLA SOLARIUM',filial:'CEARÁ',tipo:'Retenção',desc:'Risco cancelamento — crítico ativo',resp:'Josy',prio:'Alta',status:'Aberta',abertura:'2026-05-01',prazo:'2026-05-10',obs:'',tratativa:'',conclusao:''},{id:902,cond:'MAISON NOVA METROPOLE',filial:'CEARÁ',tipo:'Técnica',desc:'Módulo guarita fora — tags com problema',resp:'Josy',prio:'Média',status:'Em andamento',abertura:'2026-05-05',prazo:'2026-05-13',obs:'',tratativa:'Técnico alocado',conclusao:''},{id:903,cond:'CONDOMINIO EDIFICIO PARMA',filial:'CEARÁ',tipo:'SAC',desc:'Portão veicular com barulho',resp:'Rosely',prio:'Média',status:'Aguardando',abertura:'2026-05-06',prazo:'2026-05-15',obs:'',tratativa:'',conclusao:''},{id:904,cond:'SINGULAR RESIDENCIAL',filial:'MARANHÃO',tipo:'SAC',desc:'App 40% de adesão',resp:'Equipe CS',prio:'Média',status:'Aberta',abertura:'2026-05-08',prazo:'2026-05-20',obs:'',tratativa:'',conclusao:''}];DB.satisfacao=[{id:901,cond:'COND. COPENHAGUE',filial:'SECOPI',nota:9,pesq_realizada:'Sim',houve_reclamacao:'sim',motivo_reclamacao:'Atendimento da Central',houve_elogio:'nao',comentario:'',resp:'Josi',data:'2026-05-15',mes:'2026-05',nps:'Promotor',classi:'saudavel',status:'Finalizado'},{id:902,cond:'CONDOMINIO MARSOL',filial:'MARANHÃO',nota:8.5,pesq_realizada:'Sim',houve_reclamacao:'nao',motivo_reclamacao:'',houve_elogio:'sim',comentario:'Equipe excelente!',resp:'Rosely',data:'2026-05-14',mes:'2026-05',nps:'Promotor',classi:'saudavel',status:'Finalizado'},{id:903,cond:'COND. VILLA SOLARIUM',filial:'CEARÁ',nota:3.5,pesq_realizada:'Sim',houve_reclamacao:'sim',motivo_reclamacao:'Falta de Retorno',houve_elogio:'nao',comentario:'Sem retorno há 12 dias',resp:'Josy',data:'2026-05-08',mes:'2026-05',nps:'Detrator',classi:'critico',status:'Em acompanhamento'},{id:904,cond:'MAISON NOVA METROPOLE',filial:'CEARÁ',nota:6,pesq_realizada:'Sim',houve_reclamacao:'sim',motivo_reclamacao:'Equipe Técnica',houve_elogio:'nao',comentario:'Módulo guarita fora',resp:'Josy',data:'2026-05-10',mes:'2026-05',nps:'Neutro',classi:'critico',status:'Em acompanhamento'},{id:905,cond:'ISLA VERDE CONDOMINIUM',filial:'CEARÁ',nota:10,pesq_realizada:'Sim',houve_reclamacao:'nao',motivo_reclamacao:'',houve_elogio:'sim',comentario:'Serviço perfeito!',resp:'Josi',data:'2026-05-12',mes:'2026-05',nps:'Promotor',classi:'saudavel',status:'Finalizado'}];DB.retencao=[{id:901,cond:'COND. VILLA SOLARIUM',filial:'CEARÁ',sit:'Em negociação',tipo_neg:'Renovação',motivo:'Insatisfação',acao:'Contato agendado',result:'',data:'2026-05-01',obs:'',valor:4800,resp:'Josy',prox_contato:'2026-05-20',vencimento:'2026-08-01',prox_vencimento:'2026-08-01',ult_contato:'2026-05-20',status_contrato:'Vigente',timeline:[]},{id:902,cond:'EDIFICIO BIENE',filial:'CEARÁ',sit:'Retido',tipo_neg:'Renovação',motivo:'',acao:'Visita + desconto',result:'Cliente retido',data:'2026-04-20',obs:'',valor:2900,resp:'Rosely',prox_contato:'',vencimento:'2026-09-15',prox_vencimento:'2026-09-15',ult_contato:'2026-04-20',status_contrato:'Vigente',timeline:[]},{id:903,cond:'CONDOMINIO MARSOL',filial:'MARANHÃO',sit:'Em contato',tipo_neg:'Renovação',motivo:'Negociação de desconto',acao:'Enviar proposta',result:'',data:'2026-05-10',obs:'',valor:3200,resp:'Josy',prox_contato:'2026-06-10',vencimento:'2026-07-20',prox_vencimento:'2026-07-20',ult_contato:'2026-05-10',status_contrato:'Vigente',timeline:[]},{id:904,cond:'CONDOMINIO EDIFICIO PARMA',filial:'CEARÁ',sit:'Proposta enviada',tipo_neg:'Renovação',motivo:'',acao:'Aguardar retorno',result:'',data:'2026-05-15',obs:'',valor:5100,resp:'Rosely',prox_contato:'2026-05-30',vencimento:'2026-07-01',prox_vencimento:'2026-07-01',ult_contato:'2026-05-15',status_contrato:'Vigente',timeline:[]}];var setores=['SAC','Técnica','Financeiro','Operacional','CS'];(DB.demandas||[]).forEach(function(d,i){if(!d.setor)d.setor=d.tipo||setores[i%setores.length];});var meses=['2026-01','2026-02','2026-03','2026-04','2025-11','2025-12'];var contatos=['2026-05-10','2026-05-15','2026-04-28','2026-05-02','2026-04-15'];(DB.conds||[]).forEach(function(c,i){if(!c.ult_preventiva||c.ult_preventiva==='undefined')
@@ -5118,7 +5124,7 @@ function _syncHumor(){if(!Array.isArray(DB.conds))return;DB.conds.forEach(functi
 function _syncNotas(){if(!Array.isArray(DB.conds))return;DB.conds.forEach(function(c){var ss=(DB.satisfacao||[]).filter(function(s){return s.cond===c.nome&&s.nota!==null&&s.nota!==undefined;});if(ss.length)c.nota=parseFloat((ss.reduce(function(a,s){return a+(parseFloat(s.nota)||0);},0)/ss.length).toFixed(1));ss.forEach(function(s){if(!s.nps&&s.nota!==null)s.nps=npsC(s.nota);if(!s.filial)s.filial=c.filial||'';});});}
 function _syncStatus(){if(!Array.isArray(DB.conds))return;DB.conds.forEach(function(c){var n=parseFloat(c.nota)||0;c.classificacao=n>=8?'Saudável':n>=6?'Atenção':'Crítico';if(!c.risco_cancel)c.risco_cancel=n<4?'Alto':n<6?'Médio':'Baixo';if(!Array.isArray(c.timeline))c.timeline=[];});}
 function doLogin(){var u=(document.getElementById('lu').value||'').trim().toLowerCase();var p=document.getElementById('lp').value||'';var err=document.getElementById('lerr');if(UPAD[u]&&UPAD[u].active===false){err.style.display='block';err.textContent='Usuário desativado.';return;}
-if(UPAD[u]&&UPAD[u].pass===p){curUser=Object.assign({},UPAD[u],{user:u});document.getElementById('login').style.display='none';var app=document.getElementById('app');app.className='visible';setText('uname',curUser.name);setText('urole',ROLE_LABELS[curUser.role]||curUser.role);var av=document.getElementById('urole');if(av)av.style.color=ROLE_COLORS[curUser.role]||'#64748b';var avEl=document.getElementById('uav');if(avEl)avEl.textContent=curUser.av||curUser.name.substring(0,2).toUpperCase();err.style.display='none';carregarDB();garantirDB();try{_aplicarListasSalvas();}catch(e){}try{_syncNotas();}catch(e){}
+if(UPAD[u]&&UPAD[u].pass===p){curUser=Object.assign({},UPAD[u],{user:u});document.getElementById('login').style.display='none';var app=document.getElementById('app');app.className='visible';setText('uname',curUser.name);setText('urole',ROLE_LABELS[curUser.role]||curUser.role);var av=document.getElementById('urole');if(av)av.style.color=ROLE_COLORS[curUser.role]||'#64748b';var avEl=document.getElementById('uav');if(avEl)avEl.textContent=curUser.av||curUser.name.substring(0,2).toUpperCase();err.style.display='none';carregarDB();garantirDB();try{_aplicarListasSalvas();}catch(e){}try{_aplicarFiltrosPersonalizados();}catch(e){}try{_syncNotas();}catch(e){}
 try{_syncHumor();}catch(e){}
 try{_syncStatus();}catch(e){}
 applyPermissions();renderAll();addLog('Sistema','Login',curUser.name+' ['+curUser.role+']');setupNav();setupProntTabs();setTimeout(function(){try{_deduplicarVisitas();}catch(e){}
@@ -6122,13 +6128,13 @@ tb.innerHTML=conds.map(function(c){var ci=DB.conds.indexOf(c);var s=c.score_crit
 +'<button class="btn btn-gh btn-sm" onclick="abrirPront('+ci+')">👁</button>'
 +'</td>'
 +'</tr>';}).join('');}
-function renderConds(){garantirDB();_syncAll();var q=(document.getElementById('cond-q')||{value:''}).value.toLowerCase();var fil=(document.getElementById('cond-fil')||{value:''}).value;var ff=(document.getElementById('cond-ff')||{value:''}).value;var fresp=(document.getElementById('cond-fresp')||{value:''}).value;var forder=(document.getElementById('cond-forder')||{value:'auto'}).value;var conds=DB.conds.filter(function(c){if(q&&!(c.nome||'').toLowerCase().includes(q))return false;if(fil&&c.filial!==fil)return false;if(ff&&c.classificacao!==ff)return false;if(fresp&&c.resp!==fresp)return false;return true;});if(forder==='nota_asc')conds.sort(function(a,b){return(a.nota||0)-(b.nota||0);});else if(forder==='nota_desc')conds.sort(function(a,b){return(b.nota||0)-(a.nota||0);});else if(forder==='nome')conds.sort(function(a,b){return(a.nome||'').localeCompare(b.nome||'');});else conds.sort(function(a,b){return(a.score_criticidade||0)-(b.score_criticidade||0);}).reverse();var ct=document.getElementById('cond-ct');if(ct)ct.textContent=conds.length+'/'+DB.conds.length+' condomínios';var res=document.getElementById('cond-res');if(res)res.textContent=conds.length+' resultado(s)';var total=DB.conds.length,saud=DB.conds.filter(function(c){return(c.nota||0)>=8;}).length;var aten=DB.conds.filter(function(c){var n=c.nota||0;return n>=6&&n<8;}).length;var crit=DB.conds.filter(function(c){return(c.nota||0)<6;}).length;var valTotal=DB.conds.reduce(function(a,c){return a+(c.valor||0);},0);var appMed=DB.conds.length?Math.round(DB.conds.reduce(function(a,c){return a+(c.app||0);},0)/DB.conds.length):0;var notas=DB.conds.filter(function(c){return c.nota;});var med=notas.length?(notas.reduce(function(a,c){return a+(c.nota||0);},0)/notas.length).toFixed(1):'—';var kpiEl=document.getElementById('kpi-cond');if(kpiEl)kpiEl.innerHTML=_kpiCard('Total',total,'','#3b82f6','🏢')
-+_kpiCard('Saudáveis',saud,Math.round(saud/total*100||0)+'%','#10b981','🟢')
-+_kpiCard('Atenção',aten,'nota 6–8','#f59e0b','🟡')
-+_kpiCard('Críticos',crit,'nota < 6','#ef4444','🔴')
-+_kpiCard('Nota Média',med,'','#f1f5f9','⭐')
-+_kpiCard('App Médio',appMed+'%','adoção','#8b5cf6','📱')
-+_kpiCard('MRR Total',fmt(valTotal),'mensal','#10b981','💰')
+function renderConds(){garantirDB();_syncAll();var q=(document.getElementById('cond-q')||{value:''}).value.toLowerCase();var fil=(document.getElementById('cond-fil')||{value:''}).value;var ff=(document.getElementById('cond-ff')||{value:''}).value;var fresp=(document.getElementById('cond-fresp')||{value:''}).value;var forder=(document.getElementById('cond-forder')||{value:'auto'}).value;var conds=DB.conds.filter(function(c){if(q&&!(c.nome||'').toLowerCase().includes(q))return false;if(fil&&c.filial!==fil)return false;if(ff&&c.classificacao!==ff)return false;if(fresp&&c.resp!==fresp)return false;return true;});if(forder==='nota_asc')conds.sort(function(a,b){return(a.nota||0)-(b.nota||0);});else if(forder==='nota_desc')conds.sort(function(a,b){return(b.nota||0)-(a.nota||0);});else if(forder==='nome')conds.sort(function(a,b){return(a.nome||'').localeCompare(b.nome||'');});else conds.sort(function(a,b){return(a.score_criticidade||0)-(b.score_criticidade||0);}).reverse();var ct=document.getElementById('cond-ct');if(ct)ct.textContent=conds.length+'/'+DB.conds.length+' condomínios';var res=document.getElementById('cond-res');if(res)res.textContent=conds.length+' resultado(s)';var total=DB.conds.length,saud=DB.conds.filter(function(c){return(c.nota||0)>=8;}).length;var aten=DB.conds.filter(function(c){var n=c.nota||0;return n>=6&&n<8;}).length;var crit=DB.conds.filter(function(c){return(c.nota||0)<6;}).length;var valTotal=DB.conds.reduce(function(a,c){return a+(c.valor||0);},0);var appMed=DB.conds.length?Math.round(DB.conds.reduce(function(a,c){return a+(c.app||0);},0)/DB.conds.length):0;var notas=DB.conds.filter(function(c){return c.nota;});var med=notas.length?(notas.reduce(function(a,c){return a+(c.nota||0);},0)/notas.length).toFixed(1):'—';var kpiEl=document.getElementById('kpi-cond');if(kpiEl)kpiEl.innerHTML=_kpiCard('Total',total,'','#3b82f6','🏢','kpi_cond_total')
++_kpiCard('Saudáveis',saud,Math.round(saud/total*100||0)+'%','#10b981','🟢','kpi_cond_saud')
++_kpiCard('Atenção',aten,'nota 6–8','#f59e0b','🟡','kpi_cond_atencao')
++_kpiCard('Críticos',crit,'nota < 6','#ef4444','🔴','kpi_cond_critico')
++_kpiCard('Nota Média',med,'','#f1f5f9','⭐','kpi_cond_nota')
++_kpiCard('App Médio',appMed+'%','adoção','#8b5cf6','📱','kpi_cond_app')
++_kpiCard('MRR Total',fmt(valTotal),'mensal','#10b981','💰','kpi_cond_mrr')
 +_kpiCard('Com OS',DB.conds.filter(function(c){return(c.os_abertas||0)>0;}).length,'abertas','#f59e0b','🔧');var cardsEl=document.getElementById('cond-cards');if(cardsEl){if(!conds.length){cardsEl.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:#334155">Nenhum condomínio encontrado.</div>';return;}
 cardsEl.innerHTML=conds.map(function(c){var ci=DB.conds.indexOf(c),cls=clsN(c.nota||0);var dd=DB.demandas.filter(function(d){return d.cond===c.nome&&d.status!=='Concluída';});var venc=dd.filter(function(d){return isVenc(d);}).length;var cc=cls.l==='Saudável'?'cc-green':cls.l==='Atenção'?'cc-yellow':'cc-red';return'<div class="ccard '+cc+'" onclick="abrirPront('+ci+')">'
 +'<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px">'
@@ -9304,6 +9310,200 @@ function _criarModalKpiRadar() {
 }
 
 // ================================================================
+// MÓDULO: PERSONALIZAÇÃO DE FILTROS, KPIs E FORMULÁRIOS
+// ================================================================
+
+// --- Mapa de todos os selects por aba ---
+var _FILTROS_MAP = {
+  condominios: [
+    { id:'cond-fil',   label:'Filiais', tipo:'filial' },
+    { id:'cond-ff',    label:'Status de Saúde', tipo:'saude',
+      fixas:['Todas saúdes','🟢 Saudável','🟡 Atenção','🔴 Crítico'] },
+    { id:'cond-fresp', label:'Responsáveis', tipo:'responsavel' },
+    { id:'cond-forder',label:'Ordenação', tipo:'fixo',
+      fixas:['Críticos primeiro','Nota ↑','Nota ↓','A–Z'] }
+  ],
+  criticos: [
+    { id:'crit-fnivel',  label:'Nível', tipo:'fixo',
+      fixas:['Todos os níveis','🔴 Crítico','🟡 Atenção','🟢 Saudável'] },
+    { id:'crit-ffilial', label:'Filiais', tipo:'filial' },
+    { id:'crit-fresp',   label:'Responsáveis', tipo:'responsavel' },
+    { id:'crit-fsort',   label:'Ordenação', tipo:'fixo',
+      fixas:['📊 Maior risco','⭐ Menor nota','📋 Mais reclamações','⏰ Contrato próximo'] }
+  ],
+  relacionamento: [
+    { id:'rel-fil',    label:'Filiais', tipo:'filial' },
+    { id:'rel-fresp',  label:'Responsáveis', tipo:'responsavel' },
+    { id:'rel-fhumor', label:'Humor do Síndico', tipo:'humor',
+      fixas:['Todos os humores','😊 Satisfeito','😐 Neutro','😟 Insatisfeito','😡 Muito Insatisfeito'] }
+  ],
+  retencao: [
+    { id:'renov-fil', label:'Filiais', tipo:'filial' },
+    { id:'renov-fst', label:'Status de Vencimento', tipo:'fixo',
+      fixas:['Todos os status','🔴 Vencido','🟠 Até 30 dias','🟡 Até 60 dias','🟡 Até 120 dias','🟢 Acima de 120 dias'] }
+  ],
+  satisfacao: [
+    { id:'sat-fil-global', label:'Filiais', tipo:'filial' },
+    { id:'sat-pesq-fst',   label:'Status da Pesquisa', tipo:'fixo',
+      fixas:['Todos','✅ Realizado','⏳ Pendente','🔴 Crítico','🟢 Saudável'] }
+  ],
+  sla: [
+    { id:'sla-ffilial', label:'Filiais', tipo:'filial' },
+    { id:'sla-fsetor',  label:'Setores', tipo:'setor',
+      editavel: true,
+      fixas:['Todos os setores','Central','Técnica','Comercial','Financeiro','TI','Sucesso do Cliente','Administrativo','Outros'] },
+    { id:'sla-ftipo',   label:'Tipos', tipo:'tipo_demanda' },
+    { id:'sla-fstatus', label:'Status SLA', tipo:'fixo',
+      fixas:['Todos os status','✅ No Prazo','⚠️ Atenção','❌ Fora do Prazo','⏳ Pendente'] }
+  ],
+  fluxo: [
+    { id:'fluxo-ff',  label:'Filiais', tipo:'filial' },
+    { id:'fluxo-fst', label:'Status', tipo:'fixo',
+      fixas:['Todos os status','✅ Preenchidos','⏳ Pendentes'] }
+  ],
+  adocao: [
+    { id:'ado-ffilial', label:'Filiais', tipo:'filial' },
+    { id:'ado-fst',     label:'Status', tipo:'fixo',
+      fixas:['Todos os status','✅ Preenchido','⏳ Pendente'] }
+  ],
+  preventivas: [
+    { id:'prev-ffilial', label:'Filiais', tipo:'filial' },
+    { id:'prev-fstatus', label:'Status', tipo:'fixo',
+      fixas:['Todos os status','🟢 Em dia','🟡 Próxima do vencimento','🔴 Vencida'] }
+  ],
+  incidentes: [
+    { id:'inc-fgrav',   label:'Gravidade', tipo:'fixo',
+      fixas:['Toda gravidade','Alta','Média','Baixa'] },
+    { id:'inc-fstatus', label:'Status', tipo:'status_inc',
+      editavel: true,
+      fixas:['Todo status','Em análise','Em tratamento','Resolvido','Escalado'] }
+  ],
+  os: [
+    { id:'os-ffilial', label:'Filiais', tipo:'filial' },
+    { id:'os-fstatus', label:'Status O.S.', tipo:'status_os' },
+    { id:'os-fmotivo', label:'Motivos O.S.', tipo:'motivo_os' }
+  ],
+  radar: [
+    { id:'radar-ffilial', label:'Filiais', tipo:'filial' },
+    { id:'radar-fmotivo', label:'Motivos Radar', tipo:'motivo_radar' },
+    { id:'radar-fstatus', label:'Status', tipo:'fixo',
+      fixas:['Todos os status','Aberta','Em tratamento','Resolvida','Cancelada'] }
+  ]
+};
+
+// Mapeia tipo → lista editável na Personalização
+var _TIPO_LISTA = {
+  filial:       function(){ return (DB.config_listas && DB.config_listas.filiais) || ['CEARÁ','MARANHÃO','SECOPI']; },
+  responsavel:  function(){ return (DB.config_listas && DB.config_listas.responsaveis) || ['Rosely','Josy','Josi','Equipe CS']; },
+  motivo_os:    function(){ return (DB.config_listas && DB.config_listas.motivos_os) || window._osMotivos || []; },
+  motivo_radar: function(){ return (DB.config_listas && DB.config_listas.motivos_radar) || window.MOTIVOS_RADAR || []; },
+  status_os:    function(){ return (DB.config_listas && DB.config_listas.status_os) || ['Aberta','Em andamento','Concluída','Cancelada']; },
+  tipo_demanda: function(){ return (DB.config_listas && DB.config_listas.tipos_demanda) || ['SAC','Suporte','Financeiro','Operacional','Outro']; },
+};
+
+// Aplicar listas salvas em todos os selects do sistema
+function _aplicarFiltrosPersonalizados() {
+  garantirDB();
+  Object.keys(_FILTROS_MAP).forEach(function(aba) {
+    _FILTROS_MAP[aba].forEach(function(f) {
+      if (f.tipo === 'fixo') return; // fixos não mudam
+      var sel = document.getElementById(f.id);
+      if (!sel) return;
+      var getLista = _TIPO_LISTA[f.tipo];
+      if (!getLista) return;
+      var lista = getLista();
+      var primeiraOpcao = sel.options[0] ? sel.options[0].text : '';
+      var valorAtual = sel.value;
+      sel.innerHTML = '<option value="">' + primeiraOpcao + '</option>' +
+        lista.map(function(v){ return '<option value="'+v+'"'+(v===valorAtual?' selected':'')+'>'+v+'</option>'; }).join('');
+    });
+  });
+}
+
+// Seção visual na aba Personalização
+function _buildFiltrosSection() {
+  garantirDB();
+  var abas = Object.keys(_FILTROS_MAP);
+  var emojiAba = {
+    condominios:'🏢',criticos:'🚨',relacionamento:'🤝',retencao:'🔄',satisfacao:'⭐',
+    sla:'⏰',fluxo:'📞',adocao:'📱',preventivas:'🔧',incidentes:'⚠️',os:'🛠',radar:'🎯'
+  };
+  var nomeAba = {
+    condominios:'Condomínios',criticos:'Central de Críticos',relacionamento:'Relacionamento',
+    retencao:'Renovação',satisfacao:'Satisfação',sla:'SLA & Operação',fluxo:'Fluxo de Atendimento',
+    adocao:'Adoção Digital',preventivas:'Preventivas',incidentes:'Incidentes',os:'O.S e Retorno',radar:'Radar de Recorrência'
+  };
+
+  var html = abas.map(function(aba) {
+    var filtros = _FILTROS_MAP[aba];
+    var listId = 'filtros_'+aba;
+    var emoji = emojiAba[aba]||'📋';
+    var nome = nomeAba[aba]||aba;
+    var editaveis = filtros.filter(function(f){ return f.tipo !== 'fixo'; });
+    if (editaveis.length === 0) return '';
+
+    var rows = editaveis.map(function(f){
+      var getLista = _TIPO_LISTA[f.tipo];
+      var lista = getLista ? getLista() : [];
+      var badges = lista.map(function(v){
+        return '<span style="background:#1e2736;border:1px solid #334155;border-radius:4px;padding:2px 8px;font-size:10px;color:#94a3b8">'+v+'</span>';
+      }).join('');
+      return '<div style="padding:8px 0;border-bottom:1px solid #1e273640">' +
+        '<div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:5px">'+f.label+'</div>' +
+        '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">'+badges+'</div>' +
+        '<div style="font-size:10px;color:#64748b">✏️ Edite em <strong style="color:#3b82f6">'+_tipoLabel(f.tipo)+'</strong> acima</div>' +
+      '</div>';
+    }).join('');
+
+    return '<div style="border:1px solid #1e2736;border-radius:10px;margin-bottom:8px;overflow:hidden">' +
+      '<div onclick="_pToggle(\''+listId+'\')" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;cursor:pointer;background:#0d1117;user-select:none">' +
+        '<div style="display:flex;align-items:center;gap:8px">' +
+          '<span style="font-size:15px">'+emoji+'</span>' +
+          '<span style="font-size:12px;font-weight:700;color:#f1f5f9">'+nome+'</span>' +
+          '<span style="font-size:10px;color:#64748b;background:#1e2736;padding:2px 8px;border-radius:10px">'+editaveis.length+' filtros</span>' +
+        '</div>' +
+        '<span id="parrow-'+listId+'" style="color:#64748b;font-size:11px;transition:transform .2s">▼</span>' +
+      '</div>' +
+      '<div id="pbody-'+listId+'" style="display:none;padding:12px 16px;background:#080b12;border-top:1px solid #1e2736">'+
+        '<p style="font-size:10px;color:#64748b;margin-bottom:10px">Os filtros desta aba são preenchidos automaticamente pelas listas editáveis acima.</p>'+
+        rows+
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  return '<div style="border:2px solid #3b82f620;border-radius:10px;margin-bottom:8px;overflow:hidden">' +
+    '<div onclick="_pToggle(\'filtros_abas\')" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;cursor:pointer;background:#0a1020;user-select:none">' +
+      '<div style="display:flex;align-items:center;gap:8px">' +
+        '<span style="font-size:15px">🔍</span>' +
+        '<span style="font-size:12px;font-weight:700;color:#3b82f6">Filtros de Todas as Abas</span>' +
+        '<span style="font-size:10px;color:#3b82f6;background:#3b82f620;padding:2px 8px;border-radius:10px">'+abas.length+' abas</span>' +
+      '</div>' +
+      '<span id="parrow-filtros_abas" style="color:#3b82f6;font-size:11px;transition:transform .2s">▼</span>' +
+    '</div>' +
+    '<div id="pbody-filtros_abas" style="display:none;padding:12px 16px;background:#080b12;border-top:1px solid #1e2736">'+
+      '<div style="background:#3b82f615;border:1px solid #3b82f640;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:11px;color:#94a3b8">'+
+        '💡 <strong style="color:#3b82f6">Como funciona:</strong> Os filtros das abas são preenchidos automaticamente pelas listas que você edita acima (Filiais, Responsáveis CS, Motivos de O.S., etc). '+
+        'Edite as listas correspondentes e os filtros de todas as abas serão atualizados ao salvar.'+
+      '</div>'+
+      html+
+    '</div>' +
+  '</div>';
+}
+
+function _tipoLabel(tipo) {
+  var map = {
+    filial:'Filiais',responsavel:'Responsáveis CS',motivo_os:'Motivos de O.S.',
+    motivo_radar:'Motivos do Radar',status_os:'Status de O.S.',tipo_demanda:'Tipos de Demanda',
+    setor:'Setores',status_inc:'Status de Incidentes',humor:'Humor do Síndico'
+  };
+  return map[tipo]||tipo;
+}
+
+// ================================================================
+// FIM MÓDULO FILTROS
+// ================================================================
+
+// ================================================================
 // FIM DO MÓDULO RADAR
 // ================================================================
 
@@ -9440,6 +9640,8 @@ function _renderPersonalizacao() {
       motivosRadar, motivosOS, statusOS,
       filiais, responsaveis, tiposDemanda, statusDemanda, perguntasSat
     );
+    // Preencher inputs de KPI label via JS para evitar problema de encoding
+    try { _preencherInputsKpiLabel(); } catch(ex) {}
   } catch(e) {
     console.error('Erro _renderPersonalizacao:', e);
     el.innerHTML = '<div style="padding:20px;color:#ef4444;background:rgba(239,68,68,.1);border-radius:10px;font-size:12px">' +
@@ -9477,50 +9679,226 @@ function _buildPersonalizacaoHTML(motivosRadar, motivosOS, statusOS, filiais, re
     secao('tipos_demanda',  'Tipos de Demanda',                '📝', tiposDemanda) +
     secao('status_demanda', 'Status de Demanda',               '🔄', statusDemanda) +
     secao('perguntas_sat',  'Perguntas do Questionário de Satisfação', '⭐', perguntasSat)
-  ) + _buildKPIsSection() + _buildQuestionariosSection();
+  ) + _buildFiltrosSection() + _buildKPIsSection() + _buildQuestionariosSection();
 }
 
 // === SEÇÃO KPIs EDITÁVEIS ===
+function _kpiAdicionarExtra(grupoId) {
+  garantirDB();
+  if (!DB.config_kpis_extra) DB.config_kpis_extra = {};
+  if (!DB.config_kpis_extra[grupoId]) DB.config_kpis_extra[grupoId] = [];
+  var emoji = prompt('Emoji do novo KPI (ex: 🔥):', '📊');
+  if (!emoji) return;
+  var texto = prompt('Nome do novo KPI (ex: Alertas):', '');
+  if (!texto || !texto.trim()) return;
+  var newId = 'kpi_custom_' + grupoId + '_' + Date.now();
+  DB.config_kpis_extra[grupoId].push({ id: newId, emoji: emoji.trim(), texto: texto.trim() });
+  if (!DB.config_kpi_labels) DB.config_kpi_labels = {};
+  DB.config_kpi_labels[newId] = { emoji: emoji.trim(), texto: texto.trim() };
+  salvar();
+  _renderPersonalizacao();
+  showToast('✅ KPI "' + texto.trim() + '" adicionado!');
+}
+
+function _kpiRemoverExtra(grupoId, kpiId) {
+  if (!confirm('Remover este KPI?')) return;
+  garantirDB();
+  if (DB.config_kpis_extra && DB.config_kpis_extra[grupoId]) {
+    DB.config_kpis_extra[grupoId] = DB.config_kpis_extra[grupoId].filter(function(k){ return k.id !== kpiId; });
+  }
+  if (DB.config_kpi_labels) delete DB.config_kpi_labels[kpiId];
+  salvar();
+  _renderPersonalizacao();
+  showToast('🗑 KPI removido.');
+}
+
+
+function _excluirKpiLabel(id) {
+  if (!confirm('Excluir o KPI "' + id + '"?\nEle voltará ao padrão do sistema.')) return;
+  garantirDB();
+  if (DB.config_kpi_labels) delete DB.config_kpi_labels[id];
+  if (_KPI_LABELS_DEFAULT[id]) delete _KPI_LABELS_DEFAULT[id];
+  var row = document.getElementById('kpi_row_' + id);
+  if (row) row.remove();
+  _pDirty = true;
+  showToast('KPI removido. Salve para confirmar.');
+}
+
+function _adicionarKpiLabel(grupoTitulo) {
+  var id = 'kpi_custom_' + Date.now();
+  _KPI_LABELS_DEFAULT[id] = {emoji:'📊', texto:'Novo KPI'};
+  var grupoId = grupoTitulo.replace(/[^a-z]/gi,'_');
+  var cont = document.getElementById('kpi_grupo_' + grupoId);
+  if (!cont) { showToast('Grupo nao encontrado'); return; }
+  var row = document.createElement('div');
+  row.id = 'kpi_row_' + id;
+  row.style.cssText = 'display:flex;align-items:center;gap:6px;padding:6px 0;border-bottom:1px solid #1e273630';
+  var inpEmoji = document.createElement('input');
+  inpEmoji.className = 'fi'; inpEmoji.id = 'kpi_emoji_'+id; inpEmoji.value = '📊';
+  inpEmoji.style.cssText = 'width:46px;padding:4px 6px;font-size:14px;text-align:center';
+  inpEmoji.placeholder = '📊'; inpEmoji.onchange = function(){ _pDirty=true; };
+  var inpTexto = document.createElement('input');
+  inpTexto.className = 'fi'; inpTexto.id = 'kpi_texto_'+id; inpTexto.value = 'Novo KPI';
+  inpTexto.style.cssText = 'flex:1;padding:4px 10px;font-size:12px';
+  inpTexto.placeholder = 'Nome do KPI'; inpTexto.onchange = function(){ _pDirty=true; };
+  var lbl = document.createElement('span');
+  lbl.style.cssText = 'font-size:10px;color:#3b82f6;white-space:nowrap;min-width:80px';
+  lbl.textContent = 'novo';
+  var btnDel = document.createElement('button');
+  btnDel.title = 'Excluir KPI';
+  btnDel.style.cssText = 'background:rgba(239,68,68,.15);border:1px solid #ef4444;border-radius:6px;color:#ef4444;padding:4px 7px;cursor:pointer;font-size:11px;flex-shrink:0';
+  btnDel.textContent = String.fromCodePoint(0x1F5D1);
+  var capturedId = id;
+  btnDel.onclick = function(){ _excluirKpiLabel(capturedId); };
+  row.appendChild(inpEmoji); row.appendChild(inpTexto);
+  row.appendChild(lbl); row.appendChild(btnDel);
+  cont.appendChild(row);
+  setTimeout(function(){ inpTexto.select(); inpTexto.focus(); }, 50);
+  _pDirty = true;
+}
+
+
+function _preencherInputsKpiLabel() {
+  garantirDB();
+  if (!DB.config_kpi_labels) DB.config_kpi_labels = {};
+  var ids = Object.keys(_KPI_LABELS_DEFAULT);
+  ids.forEach(function(id) {
+    var def = _KPI_LABELS_DEFAULT[id] || {};
+    var saved = DB.config_kpi_labels[id] || {};
+    var emoji = saved.emoji || def.emoji || '📊';
+    var texto = saved.texto || def.texto || id;
+    var eEmoji = document.getElementById('kpi_emoji_' + id);
+    var eTexto = document.getElementById('kpi_texto_' + id);
+    if (eEmoji) eEmoji.value = emoji;
+    if (eTexto) eTexto.value = texto;
+  });
+}
+
+
+var _KPI_LABELS_DEFAULT = {
+  kpi_cond_total:    {emoji:'🏢', texto:'Total',           cor:'#3b82f6'},
+  kpi_cond_saud:     {emoji:'🟢', texto:'Saudáveis',       cor:'#10b981'},
+  kpi_cond_atencao:  {emoji:'🟡', texto:'Atenção',         cor:'#f59e0b'},
+  kpi_cond_critico:  {emoji:'🔴', texto:'Críticos',        cor:'#ef4444'},
+  kpi_cond_nota:     {emoji:'⭐', texto:'Nota Média',      cor:'#f59e0b'},
+  kpi_cond_app:      {emoji:'📱', texto:'App Médio',       cor:'#8b5cf6'},
+  kpi_cond_mrr:      {emoji:'💰', texto:'MRR Total',       cor:'#10b981'},
+  kpi_cond_os:       {emoji:'🔧', texto:'Com O.S.',        cor:'#f97316'},
+  kpi_crit_saud:     {emoji:'🟢', texto:'Saudáveis',       cor:'#10b981'},
+  kpi_crit_atencao:  {emoji:'🟡', texto:'Atenção',         cor:'#f59e0b'},
+  kpi_crit_critico:  {emoji:'🔴', texto:'Críticos',        cor:'#ef4444'},
+  kpi_crit_recl:     {emoji:'📋', texto:'Recl.',           cor:'#ef4444'},
+  kpi_crit_inc:      {emoji:'⚠️', texto:'Incid.',          cor:'#8b5cf6'},
+  kpi_crit_contratos:{emoji:'📄', texto:'Contratos',       cor:'#f97316'},
+  kpi_radar_total:   {emoji:'📋', texto:'Total Ocorrências',cor:'#3b82f6'},
+  kpi_radar_rec:     {emoji:'🔁', texto:'Recorrentes',     cor:'#f59e0b'},
+  kpi_radar_conds:   {emoji:'🏢', texto:'Conds c/ Rec.',   cor:'#8b5cf6'},
+  kpi_radar_motivos: {emoji:'⚠️', texto:'Motivos Reinc.',  cor:'#f97316'},
+  kpi_radar_criticos:{emoji:'🔴', texto:'Conds Críticos',  cor:'#ef4444'},
+  kpi_radar_pct:     {emoji:'📉', texto:'% Reincidência',  cor:'#10b981'},
+};
+
+function getKpiLabel(id) {
+  garantirDB();
+  if (DB.config_kpi_labels && DB.config_kpi_labels[id]) return DB.config_kpi_labels[id];
+  return _KPI_LABELS_DEFAULT[id] || {emoji:'📊', texto:id, cor:'#f1f5f9'};
+}
+
 function _buildKPIsSection() {
   garantirDB();
   if (!DB.config_kpis) DB.config_kpis = {};
-  var kpis = [
-    { id:'sla_meta',    label:'Meta de SLA (%)',              default:'95' },
-    { id:'nps_meta',    label:'Meta de NPS',                  default:'50' },
-    { id:'vis_freq',    label:'Frequência de visitas (dias)', default:'30' },
-    { id:'crit_score',  label:'Score mínimo para Crítico',    default:'6'  },
-    { id:'atencao_score',label:'Score mínimo para Atenção',   default:'3'  },
-    { id:'sem_pesq_dias',label:'Alerta sem pesquisa (dias)',  default:'120' },
-    { id:'sem_vis_dias', label:'Alerta sem visita (dias)',    default:'90'  },
-    { id:'sem_contato_dias',label:'Alerta sem contato (dias)',default:'90'  },
-    { id:'tma_grave',   label:'TMA grave (segundos)',         default:'600' },
-    { id:'tma_medio',   label:'TMA médio (segundos)',         default:'300' },
-    { id:'contrato_venc1',label:'Alerta vencimento contrato 1 (dias)', default:'30' },
-    { id:'contrato_venc2',label:'Alerta vencimento contrato 2 (dias)', default:'60' },
-    { id:'contrato_venc3',label:'Alerta vencimento contrato 3 (dias)', default:'120'},
+  if (!DB.config_kpi_labels) DB.config_kpi_labels = {};
+
+  // --- Parâmetros numéricos ---
+  var params = [
+    { id:'sla_meta',         label:'Meta de SLA (%)',               default:'95' },
+    { id:'nps_meta',         label:'Meta de NPS',                   default:'50' },
+    { id:'vis_freq',         label:'Frequência de visitas (dias)',   default:'30' },
+    { id:'crit_score',       label:'Score mínimo para Crítico',     default:'6'  },
+    { id:'atencao_score',    label:'Score mínimo para Atenção',     default:'3'  },
+    { id:'sem_pesq_dias',    label:'Alerta sem pesquisa (dias)',     default:'120'},
+    { id:'sem_vis_dias',     label:'Alerta sem visita (dias)',       default:'90' },
+    { id:'sem_contato_dias', label:'Alerta sem contato (dias)',      default:'90' },
+    { id:'tma_grave',        label:'TMA grave (segundos)',           default:'600'},
+    { id:'tma_medio',        label:'TMA médio (segundos)',           default:'300'},
+    { id:'contrato_venc1',   label:'Alerta venc. contrato 1 (dias)',default:'30' },
+    { id:'contrato_venc2',   label:'Alerta venc. contrato 2 (dias)',default:'60' },
+    { id:'contrato_venc3',   label:'Alerta venc. contrato 3 (dias)',default:'120'},
   ];
-  var rows = kpis.map(function(k){
+  var paramRows = params.map(function(k){
     var val = DB.config_kpis[k.id] !== undefined ? DB.config_kpis[k.id] : k.default;
     return '<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #1e273640">' +
       '<span style="flex:1;font-size:12px;color:#e2e8f0">'+k.label+'</span>' +
       '<input class="fi" id="kpi_cfg_'+k.id+'" value="'+val+'" style="width:90px;padding:5px 10px;font-size:12px;text-align:center" '+
         'placeholder="'+k.default+'" onchange="_pDirty=true">' +
-      '<span style="font-size:10px;color:#64748b;min-width:40px">padrão: '+k.default+'</span>' +
+      '<span style="font-size:10px;color:#64748b;min-width:50px">padrão: '+k.default+'</span>' +
     '</div>';
   }).join('');
+
+  // --- Labels visuais dos KPIs ---
+  // Carregar KPIs customizados do DB (merge com defaults)
+  garantirDB();
+  if (!DB.config_kpis_extra) DB.config_kpis_extra = {};
+  var grupos = [
+    { id:'condominios', titulo:'KPIs — Condomínios', ids:['kpi_cond_total','kpi_cond_saud','kpi_cond_atencao','kpi_cond_critico','kpi_cond_nota','kpi_cond_app','kpi_cond_mrr','kpi_cond_os'] },
+    { id:'criticos',    titulo:'KPIs — Central de Críticos', ids:['kpi_crit_saud','kpi_crit_atencao','kpi_crit_critico','kpi_crit_recl','kpi_crit_inc','kpi_crit_contratos'] },
+    { id:'radar',       titulo:'KPIs — Radar de Recorrência', ids:['kpi_radar_total','kpi_radar_rec','kpi_radar_conds','kpi_radar_motivos','kpi_radar_criticos','kpi_radar_pct'] },
+  ];
+  // Adicionar KPIs extras do DB a cada grupo
+  grupos.forEach(function(g) {
+    var extras = (DB.config_kpis_extra[g.id] || []).map(function(k){ return k.id; });
+    g.ids = g.ids.concat(extras);
+  });
+
+  var labelRows = grupos.map(function(g) {
+    var rows = g.ids.map(function(id) {
+      var isDefault = !!_KPI_LABELS_DEFAULT[id];
+      var def = _KPI_LABELS_DEFAULT[id] || (function(){
+        // KPI extra: buscar no DB
+        var extras = DB.config_kpis_extra[g.id] || [];
+        var ex = extras.find(function(k){ return k.id===id; }) || {};
+        return { emoji: ex.emoji||'📊', texto: ex.texto||id };
+      })();
+      return '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #1e273630">' +
+        '<input class="fi" id="kpi_emoji_'+id+'" value="" style="width:50px;padding:4px 8px;font-size:14px;text-align:center" onchange="_pDirty=true" placeholder="📊">' +
+        '<input class="fi" id="kpi_texto_'+id+'" value="" style="flex:1;padding:4px 10px;font-size:12px" onchange="_pDirty=true" placeholder="Nome do KPI">' +
+        (isDefault
+          ? '<span style="font-size:9px;color:#64748b;padding:2px 7px;background:#1e2736;border-radius:4px;white-space:nowrap">padrão</span>'
+          : '<button onclick="_kpiRemoverExtra(\''+g.id+'\',\''+id+'\')" style="background:rgba(239,68,68,.15);border:1px solid #ef4444;border-radius:6px;color:#ef4444;padding:3px 8px;cursor:pointer;font-size:11px;white-space:nowrap">🗑 Remover</button>') +
+      '</div>';
+    }).join('');
+
+    return '<div style="margin-bottom:16px">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">' +
+        '<div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.5px">'+g.titulo+'</div>' +
+        '<button onclick="_kpiAdicionarExtra(\''+g.id+'\')" style="background:#3b82f622;border:1px solid #3b82f6;border-radius:6px;color:#3b82f6;padding:3px 10px;cursor:pointer;font-size:11px">➕ Adicionar KPI</button>' +
+      '</div>' +
+      '<div id="kpi-grupo-'+g.id+'">'+rows+'</div>' +
+    '</div>';
+  }).join('');
+
+  var bodyHtml =
+    '<div style="margin-bottom:16px">' +
+      '<div style="font-size:11px;font-weight:700;color:#f1f5f9;margin-bottom:10px">⚙️ Parâmetros e Metas</div>' +
+      paramRows +
+    '</div>' +
+    '<div>' +
+      '<div style="font-size:11px;font-weight:700;color:#f1f5f9;margin-bottom:4px">🏷️ Rótulos Visuais dos KPIs</div>' +
+      '<p style="font-size:10px;color:#64748b;margin-bottom:10px">Personalize o emoji e o texto exibido em cada card KPI.</p>' +
+      labelRows +
+    '</div>';
 
   return '<div style="border:1px solid #1e2736;border-radius:10px;margin-bottom:8px;overflow:hidden">' +
     '<div onclick="_pToggle(\'kpis_config\')" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;cursor:pointer;background:#0d1117;user-select:none">' +
       '<div style="display:flex;align-items:center;gap:8px">' +
         '<span style="font-size:15px">📊</span>' +
-        '<span style="font-size:12px;font-weight:700;color:#f1f5f9">Metas e Parâmetros dos KPIs</span>' +
-        '<span style="font-size:10px;color:#64748b;background:#1e2736;padding:2px 8px;border-radius:10px">'+kpis.length+' parâmetros</span>' +
+        '<span style="font-size:12px;font-weight:700;color:#f1f5f9">Metas, Parâmetros e Labels dos KPIs</span>' +
+        '<span style="font-size:10px;color:#64748b;background:#1e2736;padding:2px 8px;border-radius:10px">'+params.length+' parâmetros · '+(grupos.reduce(function(a,g){return a+g.ids.length;},0))+' KPIs</span>' +
       '</div>' +
       '<span id="parrow-kpis_config" style="color:#64748b;font-size:11px;transition:transform .2s">▼</span>' +
     '</div>' +
-    '<div id="pbody-kpis_config" style="display:none;padding:12px 16px;background:#080b12;border-top:1px solid #1e2736">' +
-      '<p style="font-size:10px;color:#64748b;margin-bottom:10px">Estes valores controlam quando o sistema dispara alertas e classifica condomínios.</p>' +
-      rows +
+    '<div id="pbody-kpis_config" style="display:none;padding:14px 16px;background:#080b12;border-top:1px solid #1e2736">' +
+      bodyHtml +
     '</div>' +
   '</div>';
 }
@@ -9528,83 +9906,144 @@ function _buildKPIsSection() {
 function _salvarKPIs() {
   garantirDB();
   if (!DB.config_kpis) DB.config_kpis = {};
-  var ids = ['sla_meta','nps_meta','vis_freq','crit_score','atencao_score','sem_pesq_dias','sem_vis_dias',
+  if (!DB.config_kpi_labels) DB.config_kpi_labels = {};
+  var paramIds = ['sla_meta','nps_meta','vis_freq','crit_score','atencao_score','sem_pesq_dias','sem_vis_dias',
              'sem_contato_dias','tma_grave','tma_medio','contrato_venc1','contrato_venc2','contrato_venc3'];
-  ids.forEach(function(id){
+  paramIds.forEach(function(id){
     var el = document.getElementById('kpi_cfg_'+id);
     if (el && el.value.trim()) DB.config_kpis[id] = el.value.trim();
   });
+  var kpiIds = Object.keys(_KPI_LABELS_DEFAULT);
+  kpiIds.forEach(function(id){
+    var eEmoji = document.getElementById('kpi_emoji_'+id);
+    var eTexto = document.getElementById('kpi_texto_'+id);
+    if (eEmoji || eTexto) {
+      DB.config_kpi_labels[id] = {
+        emoji: eEmoji ? (eEmoji.value||_KPI_LABELS_DEFAULT[id].emoji) : _KPI_LABELS_DEFAULT[id].emoji,
+        texto: eTexto ? (eTexto.value.trim()||_KPI_LABELS_DEFAULT[id].texto) : _KPI_LABELS_DEFAULT[id].texto,
+      };
+    }
+  });
 }
+
 
 // === SEÇÃO QUESTIONÁRIOS ===
 function _buildQuestionariosSection() {
   garantirDB();
   if (!DB.config_questionarios) DB.config_questionarios = {};
+  if (!DB.config_quest_meta) DB.config_quest_meta = {};
   var Q = DB.config_questionarios;
+  var M = DB.config_quest_meta;
 
-  var questionarios = [
-    { id:'sat',   titulo:'Pesquisa de Satisfação',    emoji:'⭐',
-      perguntas: Q.sat || [
-        'De 0 a 10, qual nota você daria para o atendimento da portaria remota?',
+  // Questionários padrão
+  var questDefault = [
+    { id:'sat',  titulo:'Pesquisa de Satisfação', emoji:'⭐', removivel: false,
+      perguntas: ['De 0 a 10, qual nota você daria para o atendimento da portaria remota?',
         'Houve alguma reclamação ou problema neste período?',
         'O síndico ou moradores entraram em contato com reclamações?',
-        'Deseja registrar algum comentário ou observação?'
-      ]},
-    { id:'vis',   titulo:'Checklist de Visita',       emoji:'🏠',
-      perguntas: Q.vis || [
-        'Equipamentos de portaria estão funcionando?',
-        'Câmeras operacionais e com boa visibilidade?',
-        'Interfone testado e aprovado?',
-        'Facial calibrado e funcionando?',
-        'Síndico satisfeito com o atendimento?',
-        'Há pendências a registrar?'
-      ]},
-    { id:'ret',   titulo:'Questionário de Retenção',  emoji:'🔄',
-      perguntas: Q.ret || [
-        'Qual o motivo de insatisfação?',
-        'Houve comparação com concorrência?',
-        'O cliente tem proposta de outro fornecedor?',
-        'Qual o prazo para decisão do cliente?',
-        'Quais ações foram propostas para retenção?'
-      ]},
-    { id:'prev',  titulo:'Checklist de Preventiva',   emoji:'🔧',
-      perguntas: Q.prev || [
-        'Portão principal verificado?',
-        'Sistema de acesso testado?',
-        'Câmeras limpas e ajustadas?',
-        'Nobreak/bateria verificado?',
-        'Cerca elétrica testada?',
-        'Interfones testados?',
-        'Relatório fotográfico realizado?'
-      ]},
+        'Deseja registrar algum comentário ou observação?']},
+    { id:'vis',  titulo:'Checklist de Visita', emoji:'🏠', removivel: false,
+      perguntas: ['Equipamentos de portaria estão funcionando?','Câmeras operacionais e com boa visibilidade?',
+        'Interfone testado e aprovado?','Facial calibrado e funcionando?',
+        'Síndico satisfeito com o atendimento?','Há pendências a registrar?']},
+    { id:'ret',  titulo:'Questionário de Retenção', emoji:'🔄', removivel: false,
+      perguntas: ['Qual o motivo de insatisfação?','Houve comparação com concorrência?',
+        'O cliente tem proposta de outro fornecedor?','Qual o prazo para decisão do cliente?',
+        'Quais ações foram propostas para retenção?']},
+    { id:'prev', titulo:'Checklist de Preventiva', emoji:'🔧', removivel: false,
+      perguntas: ['Portão principal verificado?','Sistema de acesso testado?',
+        'Câmeras limpas e ajustadas?','Nobreak/bateria verificado?',
+        'Cerca elétrica testada?','Interfones testados?','Relatório fotográfico realizado?']},
   ];
 
-  return questionarios.map(function(q){
-    var listId = 'quest_'+q.id;
-    var rows = q.perguntas.map(function(p,i){ return _pItemRow(listId,p,i); }).join('');
+  // Questionários extras criados pelo usuário
+  var extras = DB.config_quest_extra || [];
+
+  var todos = questDefault.concat(extras.map(function(q){ return Object.assign({}, q, {removivel:true}); }));
+
+  var html = todos.map(function(q) {
+    var listId = 'quest_' + q.id;
+    var perguntas = (Q[q.id] && Q[q.id].length) ? Q[q.id] : q.perguntas;
+    var emojiVal = (M[q.id] && M[q.id].emoji) || q.emoji;
+    var tituloVal = (M[q.id] && M[q.id].titulo) || q.titulo;
+    var rows = perguntas.map(function(p,i){ return _pItemRow(listId,p,i); }).join('');
+
     return '<div style="border:1px solid #1e2736;border-radius:10px;margin-bottom:8px;overflow:hidden">' +
-      '<div onclick="_pToggle(\''+listId+'\')" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;cursor:pointer;background:#0d1117;user-select:none">' +
+      '<div onclick="_pToggle(\''+listId+'\')" style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;cursor:pointer;background:#0d1117;user-select:none">' +
         '<div style="display:flex;align-items:center;gap:8px">' +
-          '<span style="font-size:15px">'+q.emoji+'</span>' +
-          '<span style="font-size:12px;font-weight:700;color:#f1f5f9">'+q.titulo+'</span>' +
-          '<span style="font-size:10px;color:#64748b;background:#1e2736;padding:2px 8px;border-radius:10px" id="pcount-'+listId+'">'+q.perguntas.length+' perguntas</span>' +
+          '<span style="font-size:15px">'+emojiVal+'</span>' +
+          '<span style="font-size:12px;font-weight:700;color:#f1f5f9">'+tituloVal+'</span>' +
+          '<span style="font-size:10px;color:#64748b;background:#1e2736;padding:2px 8px;border-radius:10px" id="pcount-'+listId+'">'+perguntas.length+' perguntas</span>' +
         '</div>' +
-        '<span id="parrow-'+listId+'" style="color:#64748b;font-size:11px;transition:transform .2s">▼</span>' +
+        '<div style="display:flex;align-items:center;gap:6px" onclick="event.stopPropagation()">' +
+          (q.removivel ? '<button onclick="_questRemover(\''+q.id+'\')" style="background:rgba(239,68,68,.15);border:1px solid #ef4444;border-radius:6px;color:#ef4444;padding:3px 8px;cursor:pointer;font-size:11px">🗑</button>' : '') +
+          '<span id="parrow-'+listId+'" style="color:#64748b;font-size:11px;transition:transform .2s;pointer-events:none">▼</span>' +
+        '</div>' +
       '</div>' +
       '<div id="pbody-'+listId+'" style="display:none;padding:12px 16px;background:#080b12;border-top:1px solid #1e2736">' +
+        '<div style="display:flex;gap:8px;margin-bottom:10px">' +
+          '<input class="fi" id="qmeta_emoji_'+q.id+'" value="'+emojiVal+'" style="width:50px;padding:4px 8px;font-size:14px;text-align:center" placeholder="⭐" title="Emoji do questionário" onchange="_pDirty=true">' +
+          '<input class="fi" id="qmeta_titulo_'+q.id+'" value="'+tituloVal+'" style="flex:1;padding:4px 10px;font-size:12px" placeholder="Título do questionário" onchange="_pDirty=true">' +
+        '</div>' +
         '<div id="plist-'+listId+'" style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px">'+rows+'</div>' +
         '<button class="btn btn-bl btn-sm" onclick="event.stopPropagation();_pAddItem(\''+listId+'\')">➕ Adicionar pergunta</button>' +
       '</div>' +
     '</div>';
   }).join('');
+
+  return html +
+    '<button onclick="_questAdicionar()" style="width:100%;padding:10px;background:#3b82f622;border:1px dashed #3b82f6;border-radius:10px;color:#3b82f6;cursor:pointer;font-size:12px;font-weight:700;margin-top:4px">➕ Criar novo questionário</button>';
 }
+
+function _questAdicionar() {
+  var emoji  = prompt('Emoji do questionário (ex: 📋):', '📋');
+  if (!emoji) return;
+  var titulo = prompt('Nome do questionário:', '');
+  if (!titulo || !titulo.trim()) return;
+  garantirDB();
+  if (!DB.config_quest_extra) DB.config_quest_extra = [];
+  var newId = 'custom_' + Date.now();
+  DB.config_quest_extra.push({ id: newId, emoji: emoji.trim(), titulo: titulo.trim(), perguntas: ['Nova pergunta...'] });
+  if (!DB.config_questionarios) DB.config_questionarios = {};
+  DB.config_questionarios[newId] = ['Nova pergunta...'];
+  salvar();
+  _renderPersonalizacao();
+  showToast('✅ Questionário "' + titulo.trim() + '" criado!');
+}
+
+function _questRemover(questId) {
+  if (!confirm('Remover este questionário e todas as suas perguntas?')) return;
+  garantirDB();
+  if (DB.config_quest_extra)
+    DB.config_quest_extra = DB.config_quest_extra.filter(function(q){ return q.id !== questId; });
+  if (DB.config_questionarios) delete DB.config_questionarios[questId];
+  salvar();
+  _renderPersonalizacao();
+  showToast('🗑 Questionário removido.');
+}
+
 
 function _salvarQuestionarios() {
   garantirDB();
   if (!DB.config_questionarios) DB.config_questionarios = {};
-  ['sat','vis','ret','prev'].forEach(function(id){
+  if (!DB.config_quest_meta) DB.config_quest_meta = {};
+  // Padrões
+  var idsBase = ['sat','vis','ret','prev'];
+  // Extras
+  var idsExtra = (DB.config_quest_extra||[]).map(function(q){ return q.id; });
+  var todos = idsBase.concat(idsExtra);
+  todos.forEach(function(id){
     var items = _pGetLista('quest_'+id);
     if (items.length) DB.config_questionarios[id] = items;
+    // Salvar emoji e título
+    var eEmoji  = document.getElementById('qmeta_emoji_'+id);
+    var eTitulo = document.getElementById('qmeta_titulo_'+id);
+    if (eEmoji || eTitulo) {
+      DB.config_quest_meta[id] = {
+        emoji:  eEmoji  ? eEmoji.value.trim()  : '',
+        titulo: eTitulo ? eTitulo.value.trim() : '',
+      };
+    }
   });
 }
 // === FIM SEÇÕES EXTRAS ===
@@ -9710,9 +10149,18 @@ function salvarPersonalizacao() {
     window.MOTIVOS_RADAR = DB.config_listas.motivos_radar.slice();
   if (DB.config_listas.motivos_os && DB.config_listas.motivos_os.length)
     window._osMotivos = DB.config_listas.motivos_os.slice();
+  try { _aplicarFiltrosPersonalizados(); } catch(e) {}
   salvar();
   _pDirty = false;
-  showToast('✅ Personalização salva com sucesso!');
+  // Re-renderizar a aba atual para refletir mudanças imediatamente
+  try {
+    var pAtiva = document.querySelector('.page[style*="flex"], .page:not([style])');
+    if (typeof renderAll === 'function') renderAll();
+    else if (typeof renderConds === 'function') renderConds();
+  } catch(e) {}
+  // Atualizar filtros nas abas
+  try { _aplicarFiltrosPersonalizados(); } catch(e) {}
+  showToast('✅ Personalização salva! Abas atualizadas.');
   addLog('Config', 'Personalização salva', 'Admin');
 }
 
