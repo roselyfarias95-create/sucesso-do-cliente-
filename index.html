@@ -4741,15 +4741,9 @@ Realizada visita ao Condomínio Miron Dias com. Sem visita há mais de 90 dias</
 
 <!-- Painel Personalização -->
 <div id="config-panel-personalizacao" style="display:none">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
-    <div>
-      <h2 style="font-size:14px;font-weight:700;color:#f1f5f9;margin:0">🎨 Personalização do Sistema</h2>
-      <p style="font-size:11px;color:#64748b;margin:4px 0 0">Edite, adicione ou remova itens das listas usadas em todo o sistema.</p>
-    </div>
-    <div style="display:flex;gap:8px">
-      <button class="btn btn-gh btn-sm" onclick="resetarPersonalizacao()">↺ Resetar padrão</button>
-      <button class="btn btn-bl" onclick="salvarPersonalizacao()">💾 Salvar alterações</button>
-    </div>
+  <div style="margin-bottom:12px">
+    <h2 style="font-size:14px;font-weight:700;color:#f1f5f9;margin:0">🎨 Construtor do Sistema</h2>
+    <p style="font-size:11px;color:#64748b;margin:4px 0 0">Personalize KPIs, formulários, questionários e listas sem alterar código.</p>
   </div>
   <div id="config-personalizacao"></div>
 </div>
@@ -5092,7 +5086,7 @@ function _kpiCard(lbl,val,sub,color,icon,kpiKey){
 }
 function addLog(m,a,d,extra){if(!DB||!DB.log)return;DB.log.unshift({dt:new Date().toISOString(),dtStr:new Date().toLocaleString('pt-BR'),user:(curUser||{}).name||'?',role:(curUser||{}).role||'—',m:m,a:a,d:d,cond:extra&&extra.cond||''});if(DB.log.length>500)DB.log=DB.log.slice(0,500);}
 function garantirDB(){if(!DB||typeof DB!=='object'){initDB();return;}
-['conds','demandas','satisfacao','visitas','criticos','retencao','incidentes','fluxo','adocao','preventivas','atendimentos','os','log','reclamacoes_avulsas','sat_tratativas','renovacoes','sla_historico','radar_ocorrencias'].forEach(function(k){if(!Array.isArray(DB[k]))DB[k]=[];});if(!DB.config_listas||typeof DB.config_listas!=='object')DB.config_listas={};if(!DB.config_kpis||typeof DB.config_kpis!=='object')DB.config_kpis={};if(!DB.config_kpi_labels||typeof DB.config_kpi_labels!=='object')DB.config_kpi_labels={};if(!DB.config_kpis_extra||typeof DB.config_kpis_extra!=='object')DB.config_kpis_extra={};if(!Array.isArray(DB.config_quest_extra))DB.config_quest_extra=[];if(!DB.config_quest_meta||typeof DB.config_quest_meta!=='object')DB.config_quest_meta={};if(!DB.config_questionarios||typeof DB.config_questionarios!=='object')DB.config_questionarios={};if(!DB.nid||typeof DB.nid!=='object')DB.nid={};['cond','dem','sat','vis','crit','ret','inc','fluxo','ra','prev','atend','os'].forEach(function(k){if(!DB.nid[k])DB.nid[k]=10;});(DB.satisfacao||[]).forEach(function(s){if(!s.id)s.id=nid('sat');});if(!Array.isArray(DB.visitasExcluidas))DB.visitasExcluidas=[];if(!Array.isArray(DB.motivos_recl))DB.motivos_recl=["FALTA DE RETORNO","PORTÃO TRAVANDO","INTERFONE FORA","DEMORA NO ATENDIMENTO","CÂMERA COM DEFEITO","SISTEMA FORA DO AR"];if(!Array.isArray(DB.evo))DB.evo=[{mes:'Jan',nota:8.1,criticos:4},{mes:'Fev',nota:7.9,criticos:6},{mes:'Mar',nota:8.3,criticos:3},{mes:'Abr',nota:8.5,criticos:2},{mes:'Mai',nota:8.4,criticos:5}];if(!DB.adm_ui_config)DB.adm_ui_config={};if(!DB.form_config)DB.form_config={};(DB.conds||[]).forEach(function(c){if(!c.condominioId)c.condominioId=c.id||c.nome;});}
+['conds','demandas','satisfacao','visitas','criticos','retencao','incidentes','fluxo','adocao','preventivas','atendimentos','os','log','reclamacoes_avulsas','sat_tratativas','renovacoes','sla_historico','radar_ocorrencias'].forEach(function(k){if(!Array.isArray(DB[k]))DB[k]=[];});if(!DB.config_listas||typeof DB.config_listas!=='object')DB.config_listas={};if(!DB.construtor||typeof DB.construtor!=='object')DB.construtor={};if(!DB.config_kpis||typeof DB.config_kpis!=='object')DB.config_kpis={};if(!DB.config_kpi_labels||typeof DB.config_kpi_labels!=='object')DB.config_kpi_labels={};if(!DB.config_kpis_extra||typeof DB.config_kpis_extra!=='object')DB.config_kpis_extra={};if(!Array.isArray(DB.config_quest_extra))DB.config_quest_extra=[];if(!DB.config_quest_meta||typeof DB.config_quest_meta!=='object')DB.config_quest_meta={};if(!DB.config_questionarios||typeof DB.config_questionarios!=='object')DB.config_questionarios={};if(!DB.nid||typeof DB.nid!=='object')DB.nid={};['cond','dem','sat','vis','crit','ret','inc','fluxo','ra','prev','atend','os'].forEach(function(k){if(!DB.nid[k])DB.nid[k]=10;});(DB.satisfacao||[]).forEach(function(s){if(!s.id)s.id=nid('sat');});if(!Array.isArray(DB.visitasExcluidas))DB.visitasExcluidas=[];if(!Array.isArray(DB.motivos_recl))DB.motivos_recl=["FALTA DE RETORNO","PORTÃO TRAVANDO","INTERFONE FORA","DEMORA NO ATENDIMENTO","CÂMERA COM DEFEITO","SISTEMA FORA DO AR"];if(!Array.isArray(DB.evo))DB.evo=[{mes:'Jan',nota:8.1,criticos:4},{mes:'Fev',nota:7.9,criticos:6},{mes:'Mar',nota:8.3,criticos:3},{mes:'Abr',nota:8.5,criticos:2},{mes:'Mai',nota:8.4,criticos:5}];if(!DB.adm_ui_config)DB.adm_ui_config={};if(!DB.form_config)DB.form_config={};(DB.conds||[]).forEach(function(c){if(!c.condominioId)c.condominioId=c.id||c.nome;});}
 function nid(t){garantirDB();DB.nid[t]=(DB.nid[t]||10)+1;return t+'-'+DB.nid[t];}
 function initDB(){_demoLoaded=false;DB={conds:[],demandas:[],satisfacao:[],visitas:[],criticos:[],retencao:[],adocao:[],preventivas:[],atendimentos:[],os:[],incidentes:[],fluxo:[],log:[],radar_ocorrencias:[],reclamacoes_avulsas:[],sat_tratativas:[],motivos_recl:["FALTA DE RETORNO","PORTÃO TRAVANDO","INTERFONE FORA","DEMORA NO ATENDIMENTO","CÂMERA COM DEFEITO","SISTEMA FORA DO AR"],evo:[{mes:'Jan',nota:8.1,criticos:4},{mes:'Fev',nota:7.9,criticos:6},{mes:'Mar',nota:8.3,criticos:3},{mes:'Abr',nota:8.5,criticos:2},{mes:'Mai',nota:8.4,criticos:5}],nid:{cond:100,dem:100,sat:100,vis:10,crit:10,ret:10,inc:10,fluxo:10,ra:10},adm_ui_config:{},form_config:{},_savedAt:null};_loadDemoData();}
 function _loadDemoData(){if(_demoLoaded)return;_demoLoaded=true;DB.conds=[{id:901,nome:'COND. VILLA SOLARIUM',filial:'CEARÁ',nota:3.5,sac:'Crítico',resp:'Josy',humor:'😡',app:14,facial:15,gphone:'Não',recl:8,valor:4800,obs:'Sem retorno há 12 dias',unidades:48,moradores:96,os_abertas:2,cameras:4,risco_cancel:'Alto',sindico:'Carlos Melo',tel:'(85)99999-0001',timeline:[],particularidades:''},{id:902,nome:'MAISON NOVA METROPOLE',filial:'CEARÁ',nota:6.0,sac:'Em acompanhamento',resp:'Josy',humor:'😐',app:58,facial:60,gphone:'Instalado',recl:2,valor:5200,obs:'Módulo guarita fora',unidades:72,moradores:216,os_abertas:1,cameras:6,risco_cancel:'Baixo',sindico:'Ana Lima',tel:'(85)99999-0002',timeline:[],particularidades:''},{id:903,nome:'COND. COPENHAGUE',filial:'SECOPI',nota:9.0,sac:'Finalizado',resp:'Josi',humor:'😊',app:88,facial:90,gphone:'Instalado',recl:0,valor:6300,obs:'',unidades:96,moradores:384,os_abertas:0,cameras:8,risco_cancel:'Baixo',sindico:'Roberto Silva',tel:'(98)99999-0003',timeline:[],particularidades:'Delivery no armário inteligente'},{id:904,nome:'CONDOMINIO MARSOL',filial:'MARANHÃO',nota:8.5,sac:'Finalizado',resp:'Rosely',humor:'😊',app:82,facial:85,gphone:'Instalado',recl:0,valor:4200,obs:'',unidades:120,moradores:240,os_abertas:0,cameras:12,risco_cancel:'Baixo',sindico:'Patricia Costa',tel:'(98)99999-0004',timeline:[],particularidades:''},{id:905,nome:'RESIDENCIAL JARDIM AMERICA',filial:'CEARÁ',nota:9.0,sac:'Em tratamento',resp:'Rosely',humor:'😊',app:75,facial:78,gphone:'Instalado',recl:1,valor:3800,obs:'',unidades:200,moradores:800,os_abertas:1,cameras:4,risco_cancel:'Baixo',sindico:'José Santos',tel:'(85)99999-0005',timeline:[],particularidades:''},{id:906,nome:'EDIFICIO BIENE',filial:'CEARÁ',nota:8.0,sac:'Finalizado',resp:'Rosely',humor:'😊',app:65,facial:70,gphone:'Instalado',recl:0,valor:2900,obs:'',unidades:72,moradores:216,os_abertas:0,cameras:8,risco_cancel:'Baixo',sindico:'Maria Souza',tel:'(85)99999-0006',timeline:[],particularidades:''},{id:907,nome:'CONDOMINIO EDIFICIO PARMA',filial:'CEARÁ',nota:7.0,sac:'Em tratamento',resp:'Rosely',humor:'😐',app:45,facial:50,gphone:'Não',recl:3,valor:3200,obs:'Portão com barulho',unidades:96,moradores:384,os_abertas:2,cameras:12,risco_cancel:'Médio',sindico:'Paulo Ferreira',tel:'(85)99999-0007',timeline:[],particularidades:''},{id:908,nome:'SINGULAR RESIDENCIAL',filial:'MARANHÃO',nota:7.5,sac:'Em tratamento',resp:'Equipe CS',humor:'😐',app:40,facial:45,gphone:'Não',recl:2,valor:3600,obs:'',unidades:48,moradores:96,os_abertas:1,cameras:6,risco_cancel:'Médio',sindico:'Clara Rocha',tel:'(98)99999-0008',timeline:[],particularidades:''},{id:909,nome:'CONDOMINIO VILLA DI FIORI',filial:'CEARÁ',nota:9.0,sac:'Finalizado',resp:'Josi',humor:'😊',app:90,facial:92,gphone:'Instalado',recl:0,valor:5500,obs:'',unidades:144,moradores:432,os_abertas:0,cameras:16,risco_cancel:'Baixo',sindico:'Luciana Alves',tel:'(85)99999-0009',timeline:[],particularidades:''},{id:910,nome:'ISLA VERDE CONDOMINIUM',filial:'CEARÁ',nota:10.0,sac:'Finalizado',resp:'Josi',humor:'😊',app:95,facial:95,gphone:'Instalado',recl:0,valor:7200,obs:'',unidades:120,moradores:240,os_abertas:0,cameras:16,risco_cancel:'Baixo',sindico:'Fernando Gomes',tel:'(85)99999-0010',timeline:[],particularidades:''}];DB.demandas=[{id:901,cond:'COND. VILLA SOLARIUM',filial:'CEARÁ',tipo:'Retenção',desc:'Risco cancelamento — crítico ativo',resp:'Josy',prio:'Alta',status:'Aberta',abertura:'2026-05-01',prazo:'2026-05-10',obs:'',tratativa:'',conclusao:''},{id:902,cond:'MAISON NOVA METROPOLE',filial:'CEARÁ',tipo:'Técnica',desc:'Módulo guarita fora — tags com problema',resp:'Josy',prio:'Média',status:'Em andamento',abertura:'2026-05-05',prazo:'2026-05-13',obs:'',tratativa:'Técnico alocado',conclusao:''},{id:903,cond:'CONDOMINIO EDIFICIO PARMA',filial:'CEARÁ',tipo:'SAC',desc:'Portão veicular com barulho',resp:'Rosely',prio:'Média',status:'Aguardando',abertura:'2026-05-06',prazo:'2026-05-15',obs:'',tratativa:'',conclusao:''},{id:904,cond:'SINGULAR RESIDENCIAL',filial:'MARANHÃO',tipo:'SAC',desc:'App 40% de adesão',resp:'Equipe CS',prio:'Média',status:'Aberta',abertura:'2026-05-08',prazo:'2026-05-20',obs:'',tratativa:'',conclusao:''}];DB.satisfacao=[{id:901,cond:'COND. COPENHAGUE',filial:'SECOPI',nota:9,pesq_realizada:'Sim',houve_reclamacao:'sim',motivo_reclamacao:'Atendimento da Central',houve_elogio:'nao',comentario:'',resp:'Josi',data:'2026-05-15',mes:'2026-05',nps:'Promotor',classi:'saudavel',status:'Finalizado'},{id:902,cond:'CONDOMINIO MARSOL',filial:'MARANHÃO',nota:8.5,pesq_realizada:'Sim',houve_reclamacao:'nao',motivo_reclamacao:'',houve_elogio:'sim',comentario:'Equipe excelente!',resp:'Rosely',data:'2026-05-14',mes:'2026-05',nps:'Promotor',classi:'saudavel',status:'Finalizado'},{id:903,cond:'COND. VILLA SOLARIUM',filial:'CEARÁ',nota:3.5,pesq_realizada:'Sim',houve_reclamacao:'sim',motivo_reclamacao:'Falta de Retorno',houve_elogio:'nao',comentario:'Sem retorno há 12 dias',resp:'Josy',data:'2026-05-08',mes:'2026-05',nps:'Detrator',classi:'critico',status:'Em acompanhamento'},{id:904,cond:'MAISON NOVA METROPOLE',filial:'CEARÁ',nota:6,pesq_realizada:'Sim',houve_reclamacao:'sim',motivo_reclamacao:'Equipe Técnica',houve_elogio:'nao',comentario:'Módulo guarita fora',resp:'Josy',data:'2026-05-10',mes:'2026-05',nps:'Neutro',classi:'critico',status:'Em acompanhamento'},{id:905,cond:'ISLA VERDE CONDOMINIUM',filial:'CEARÁ',nota:10,pesq_realizada:'Sim',houve_reclamacao:'nao',motivo_reclamacao:'',houve_elogio:'sim',comentario:'Serviço perfeito!',resp:'Josi',data:'2026-05-12',mes:'2026-05',nps:'Promotor',classi:'saudavel',status:'Finalizado'}];DB.retencao=[{id:901,cond:'COND. VILLA SOLARIUM',filial:'CEARÁ',sit:'Em negociação',tipo_neg:'Renovação',motivo:'Insatisfação',acao:'Contato agendado',result:'',data:'2026-05-01',obs:'',valor:4800,resp:'Josy',prox_contato:'2026-05-20',vencimento:'2026-08-01',prox_vencimento:'2026-08-01',ult_contato:'2026-05-20',status_contrato:'Vigente',timeline:[]},{id:902,cond:'EDIFICIO BIENE',filial:'CEARÁ',sit:'Retido',tipo_neg:'Renovação',motivo:'',acao:'Visita + desconto',result:'Cliente retido',data:'2026-04-20',obs:'',valor:2900,resp:'Rosely',prox_contato:'',vencimento:'2026-09-15',prox_vencimento:'2026-09-15',ult_contato:'2026-04-20',status_contrato:'Vigente',timeline:[]},{id:903,cond:'CONDOMINIO MARSOL',filial:'MARANHÃO',sit:'Em contato',tipo_neg:'Renovação',motivo:'Negociação de desconto',acao:'Enviar proposta',result:'',data:'2026-05-10',obs:'',valor:3200,resp:'Josy',prox_contato:'2026-06-10',vencimento:'2026-07-20',prox_vencimento:'2026-07-20',ult_contato:'2026-05-10',status_contrato:'Vigente',timeline:[]},{id:904,cond:'CONDOMINIO EDIFICIO PARMA',filial:'CEARÁ',sit:'Proposta enviada',tipo_neg:'Renovação',motivo:'',acao:'Aguardar retorno',result:'',data:'2026-05-15',obs:'',valor:5100,resp:'Rosely',prox_contato:'2026-05-30',vencimento:'2026-07-01',prox_vencimento:'2026-07-01',ult_contato:'2026-05-15',status_contrato:'Vigente',timeline:[]}];var setores=['SAC','Técnica','Financeiro','Operacional','CS'];(DB.demandas||[]).forEach(function(d,i){if(!d.setor)d.setor=d.tipo||setores[i%setores.length];});var meses=['2026-01','2026-02','2026-03','2026-04','2025-11','2025-12'];var contatos=['2026-05-10','2026-05-15','2026-04-28','2026-05-02','2026-04-15'];(DB.conds||[]).forEach(function(c,i){if(!c.ult_preventiva||c.ult_preventiva==='undefined')
@@ -9619,35 +9613,10 @@ function garantirListasPersonalizacao() {
 }
 
 function _renderPersonalizacao() {
-  garantirDB();
-  garantirListasPersonalizacao();
-
-  var el = document.getElementById('config-personalizacao');
-  if (!el) { console.error('Div config-personalizacao não encontrada'); return; }
-
-  try {
-    var CL = DB.config_listas;
-    var motivosRadar   = (CL.motivos_radar   && CL.motivos_radar.length)   ? CL.motivos_radar   : MOTIVOS_RADAR.slice();
-    var motivosOS      = (CL.motivos_os      && CL.motivos_os.length)      ? CL.motivos_os      : _osMotivos.slice();
-    var statusOS       = (CL.status_os       && CL.status_os.length)       ? CL.status_os       : ['Aberta','Em andamento','Concluída','Cancelada'];
-    var filiais        = (CL.filiais         && CL.filiais.length)         ? CL.filiais         : ['CEARÁ','MARANHÃO','SECOPI'];
-    var responsaveis   = (CL.responsaveis    && CL.responsaveis.length)    ? CL.responsaveis    : ['Rosely','Josy','Josi','Equipe CS'];
-    var tiposDemanda   = (CL.tipos_demanda   && CL.tipos_demanda.length)   ? CL.tipos_demanda   : ['SAC','Suporte','Financeiro','Operacional','Outro'];
-    var statusDemanda  = (CL.status_demanda  && CL.status_demanda.length)  ? CL.status_demanda  : ['Aberta','Em andamento','Aguardando cliente','Concluída','Cancelada'];
-    var perguntasSat   = (CL.perguntas_sat   && CL.perguntas_sat.length)   ? CL.perguntas_sat   : ['De 0 a 10, qual nota você daria para o atendimento da portaria?','Houve alguma reclamação neste período?','Deseja fazer algum comentário?'];
-
-    el.innerHTML = _buildPersonalizacaoHTML(
-      motivosRadar, motivosOS, statusOS,
-      filiais, responsaveis, tiposDemanda, statusDemanda, perguntasSat
-    );
-    // Preencher inputs de KPI label via JS para evitar problema de encoding
-    try { _preencherInputsKpiLabel(); } catch(ex) {}
-  } catch(e) {
-    console.error('Erro _renderPersonalizacao:', e);
-    el.innerHTML = '<div style="padding:20px;color:#ef4444;background:rgba(239,68,68,.1);border-radius:10px;font-size:12px">' +
-      '⚠️ Erro ao carregar personalização: ' + e.message + '<br><br>' +
-      '<button class="btn btn-gh btn-sm" onclick="_renderPersonalizacao()">🔄 Tentar novamente</button>' +
-    '</div>';
+  try { renderConstrutor(); } catch(e) {
+    var el = document.getElementById('config-personalizacao');
+    if (el) el.innerHTML = '<div style="padding:20px;color:#ef4444">Erro: '+e.message+'</div>';
+    console.error('renderConstrutor erro:', e);
   }
 }
 
@@ -10187,6 +10156,694 @@ function _aplicarListasSalvas() {
 
 // ================================================================
 // FIM MÓDULO PERSONALIZAÇÃO
+// ================================================================
+
+
+// ================================================================
+// CONSTRUTOR DO SISTEMA — Configurações > Personalização
+// ================================================================
+
+// ───────────────────────────────────────────────────────────────
+// ESTRUTURA PADRÃO DE CONFIGURAÇÕES
+// ───────────────────────────────────────────────────────────────
+var _CFG_DEFAULT = {
+
+  kpis: {
+    condominios: [
+      {id:'cond_total',   emoji:'🏢', nome:'Total',      cor:'#3b82f6', visivel:true,  ordem:1},
+      {id:'cond_saud',    emoji:'🟢', nome:'Saudáveis',  cor:'#10b981', visivel:true,  ordem:2},
+      {id:'cond_atencao', emoji:'🟡', nome:'Atenção',    cor:'#f59e0b', visivel:true,  ordem:3},
+      {id:'cond_critico', emoji:'🔴', nome:'Críticos',   cor:'#ef4444', visivel:true,  ordem:4},
+      {id:'cond_nota',    emoji:'⭐', nome:'Nota Média', cor:'#f59e0b', visivel:true,  ordem:5},
+      {id:'cond_app',     emoji:'📱', nome:'App Médio',  cor:'#8b5cf6', visivel:true,  ordem:6},
+      {id:'cond_mrr',     emoji:'💰', nome:'MRR Total',  cor:'#10b981', visivel:true,  ordem:7},
+      {id:'cond_os',      emoji:'🔧', nome:'Com O.S.',   cor:'#f97316', visivel:true,  ordem:8},
+    ],
+    criticos: [
+      {id:'crit_saud',    emoji:'🟢', nome:'Saudáveis',  cor:'#10b981', visivel:true, ordem:1},
+      {id:'crit_atencao', emoji:'🟡', nome:'Atenção',    cor:'#f59e0b', visivel:true, ordem:2},
+      {id:'crit_critico', emoji:'🔴', nome:'Críticos',   cor:'#ef4444', visivel:true, ordem:3},
+      {id:'crit_recl',    emoji:'📋', nome:'Recl.',      cor:'#ef4444', visivel:true, ordem:4},
+      {id:'crit_inc',     emoji:'⚠️', nome:'Incid.',     cor:'#8b5cf6', visivel:true, ordem:5},
+      {id:'crit_contr',   emoji:'📄', nome:'Contratos',  cor:'#f97316', visivel:true, ordem:6},
+    ],
+    radar: [
+      {id:'radar_total',  emoji:'📋', nome:'Total Ocorr.',    cor:'#3b82f6', visivel:true, ordem:1},
+      {id:'radar_rec',    emoji:'🔁', nome:'Recorrentes',     cor:'#f59e0b', visivel:true, ordem:2},
+      {id:'radar_conds',  emoji:'🏢', nome:'Conds c/ Rec.',   cor:'#8b5cf6', visivel:true, ordem:3},
+      {id:'radar_motivos',emoji:'⚠️', nome:'Motivos Reinc.',  cor:'#f97316', visivel:true, ordem:4},
+      {id:'radar_crit',   emoji:'🔴', nome:'Conds Críticos',  cor:'#ef4444', visivel:true, ordem:5},
+      {id:'radar_pct',    emoji:'📉', nome:'% Reincidência',  cor:'#10b981', visivel:true, ordem:6},
+    ]
+  },
+
+  formularios: {
+    condominios: [
+      {id:'fnome',   nome:'Nome',                obrigatorio:true,  visivel:true,  ordem:1},
+      {id:'fcodigo', nome:'Código do Cliente',   obrigatorio:false, visivel:true,  ordem:2},
+      {id:'ffilial', nome:'Filial',              obrigatorio:true,  visivel:true,  ordem:3},
+      {id:'funid',   nome:'Qtd Unidades',        obrigatorio:false, visivel:true,  ordem:4},
+      {id:'fmor',    nome:'Qtd Moradores',       obrigatorio:false, visivel:true,  ordem:5},
+      {id:'fdata',   nome:'Data de Implantação', obrigatorio:false, visivel:true,  ordem:6},
+      {id:'fsind',   nome:'Síndico',             obrigatorio:false, visivel:true,  ordem:7},
+      {id:'fresp',   nome:'Responsável CS',      obrigatorio:false, visivel:true,  ordem:8},
+      {id:'fhum',    nome:'Humor Síndico',       obrigatorio:false, visivel:true,  ordem:9},
+      {id:'frisco',  nome:'Risco Cancelamento',  obrigatorio:false, visivel:true,  ordem:10},
+      {id:'fdtinicio',nome:'Data Início Contrato',obrigatorio:false,visivel:true,  ordem:11},
+      {id:'fdur',    nome:'Duração (meses)',      obrigatorio:false, visivel:true,  ordem:12},
+      {id:'fval',    nome:'Valor Mensal (R$)',    obrigatorio:false, visivel:true,  ordem:13},
+    ]
+  },
+
+  questionarios: {
+    satisfacao: {
+      titulo:'Pesquisa de Satisfação',
+      perguntas:[
+        {id:'sat_q1', texto:'De 0 a 10, qual nota você daria ao atendimento da portaria?', tipo:'nota',    obrigatorio:true,  ordem:1},
+        {id:'sat_q2', texto:'Houve alguma reclamação neste período?',                      tipo:'simnao',  obrigatorio:true,  ordem:2},
+        {id:'sat_q3', texto:'Deseja registrar algum comentário?',                          tipo:'texto',   obrigatorio:false, ordem:3},
+      ]
+    },
+    visita: {
+      titulo:'Checklist de Visita',
+      perguntas:[
+        {id:'vis_q1', texto:'Equipamentos de portaria funcionando?',      tipo:'simnao', obrigatorio:true,  ordem:1},
+        {id:'vis_q2', texto:'Câmeras operacionais?',                      tipo:'simnao', obrigatorio:true,  ordem:2},
+        {id:'vis_q3', texto:'Interfone testado e aprovado?',              tipo:'simnao', obrigatorio:true,  ordem:3},
+        {id:'vis_q4', texto:'Facial calibrado?',                          tipo:'simnao', obrigatorio:false, ordem:4},
+        {id:'vis_q5', texto:'Síndico satisfeito com o atendimento?',      tipo:'simnao', obrigatorio:false, ordem:5},
+        {id:'vis_q6', texto:'Há pendências a registrar?',                 tipo:'texto',  obrigatorio:false, ordem:6},
+      ]
+    },
+    retencao: {
+      titulo:'Questionário de Retenção',
+      perguntas:[
+        {id:'ret_q1', texto:'Qual o motivo de insatisfação?',             tipo:'texto',  obrigatorio:true,  ordem:1},
+        {id:'ret_q2', texto:'Houve comparação com concorrência?',         tipo:'simnao', obrigatorio:false, ordem:2},
+        {id:'ret_q3', texto:'O cliente tem proposta de outro fornecedor?',tipo:'simnao', obrigatorio:false, ordem:3},
+        {id:'ret_q4', texto:'Qual o prazo para decisão?',                 tipo:'texto',  obrigatorio:false, ordem:4},
+        {id:'ret_q5', texto:'Quais ações foram propostas?',               tipo:'texto',  obrigatorio:false, ordem:5},
+      ]
+    },
+    preventiva: {
+      titulo:'Checklist de Preventiva',
+      perguntas:[
+        {id:'prv_q1', texto:'Portão principal verificado?',    tipo:'simnao', obrigatorio:true, ordem:1},
+        {id:'prv_q2', texto:'Sistema de acesso testado?',      tipo:'simnao', obrigatorio:true, ordem:2},
+        {id:'prv_q3', texto:'Câmeras limpas e ajustadas?',     tipo:'simnao', obrigatorio:true, ordem:3},
+        {id:'prv_q4', texto:'Nobreak/bateria verificado?',     tipo:'simnao', obrigatorio:true, ordem:4},
+        {id:'prv_q5', texto:'Cerca elétrica testada?',         tipo:'simnao', obrigatorio:false,ordem:5},
+        {id:'prv_q6', texto:'Interfones testados?',            tipo:'simnao', obrigatorio:false,ordem:6},
+        {id:'prv_q7', texto:'Relatório fotográfico realizado?',tipo:'simnao', obrigatorio:false,ordem:7},
+      ]
+    }
+  }
+};
+
+// ───────────────────────────────────────────────────────────────
+// ACESSO ÀS CONFIGS
+// ───────────────────────────────────────────────────────────────
+function getCfg(secao, chave) {
+  garantirDB();
+  if (!DB.construtor) DB.construtor = {};
+  if (chave !== undefined) {
+    if (DB.construtor[secao] && DB.construtor[secao][chave] !== undefined)
+      return DB.construtor[secao][chave];
+    return (_CFG_DEFAULT[secao]||{})[chave];
+  }
+  return DB.construtor[secao] !== undefined ? DB.construtor[secao] : _CFG_DEFAULT[secao];
+}
+
+function setCfg(secao, chave, valor) {
+  garantirDB();
+  if (!DB.construtor) DB.construtor = {};
+  if (!DB.construtor[secao]) DB.construtor[secao] = {};
+  DB.construtor[secao][chave] = valor;
+  salvar();
+}
+
+// ───────────────────────────────────────────────────────────────
+// RENDER PRINCIPAL DO CONSTRUTOR
+// ───────────────────────────────────────────────────────────────
+var _construtorTab = 'kpis';
+
+function renderConstrutor() {
+  var el = document.getElementById('config-personalizacao');
+  if (!el) return;
+  garantirDB();
+  if (!DB.construtor) DB.construtor = {};
+
+  el.innerHTML =
+    // Sub-nav do construtor
+    '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:16px;border-bottom:1px solid #1e2736;padding-bottom:10px">' +
+      _cTab('kpis',        '📊', 'KPI Cards') +
+      _cTab('formularios', '📝', 'Formulários') +
+      _cTab('questionarios','❓', 'Questionários') +
+      _cTab('listas',      '📋', 'Listas & Filtros') +
+      _cTab('backup',      '💾', 'Backup') +
+    '</div>' +
+    '<div id="construtor-panel"></div>';
+
+  _switchConstrutor(_construtorTab);
+}
+
+function _cTab(id, emoji, nome) {
+  var active = _construtorTab === id;
+  return '<button onclick="_switchConstrutor(\''+id+'\')" '+
+    'style="padding:7px 14px;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700;transition:all .2s;' +
+    (active ? 'background:#3b82f6;color:#fff;' : 'background:#1e2736;color:#64748b;') + '">' +
+    emoji + ' ' + nome + '</button>';
+}
+
+function _switchConstrutor(tab) {
+  _construtorTab = tab;
+  // Re-renderizar só o painel
+  var panel = document.getElementById('construtor-panel');
+  if (!panel) { renderConstrutor(); return; }
+  // Atualizar botões
+  var el = document.getElementById('config-personalizacao');
+  if (el) {
+    var btns = el.querySelectorAll('button[onclick^="_switchConstrutor"]');
+    btns.forEach(function(b){
+      var t = b.getAttribute('onclick').replace("_switchConstrutor('","").replace("')","");
+      b.style.background = t===tab ? '#3b82f6' : '#1e2736';
+      b.style.color = t===tab ? '#fff' : '#64748b';
+    });
+  }
+  if      (tab==='kpis')         panel.innerHTML = _buildConstrutorKPIs();
+  else if (tab==='formularios')  panel.innerHTML = _buildConstrutorForms();
+  else if (tab==='questionarios')panel.innerHTML = _buildConstrutorQuest();
+  else if (tab==='listas')       panel.innerHTML = _buildConstrutorListas();
+  else if (tab==='backup')       panel.innerHTML = _buildConstrutorBackup();
+}
+
+// ───────────────────────────────────────────────────────────────
+// 1. CONSTRUTOR DE KPIs
+// ───────────────────────────────────────────────────────────────
+function _buildConstrutorKPIs() {
+  garantirDB();
+  var abas = ['condominios','criticos','radar'];
+  var nomesAbas = {condominios:'🏢 Condomínios', criticos:'🚨 Críticos', radar:'🎯 Radar'};
+  var _kpiAbaAtual = window._kpiAbaAtual || 'condominios';
+
+  var abaTabs = abas.map(function(a){
+    var active = a===_kpiAbaAtual;
+    return '<button onclick="window._kpiAbaAtual=\''+a+'\';_switchConstrutor(\'kpis\')" '+
+      'style="padding:5px 12px;border:none;border-radius:6px;cursor:pointer;font-size:11px;'+
+      (active?'background:#1e3a5f;color:#3b82f6;font-weight:700;':'background:transparent;color:#64748b;')+'">'+
+      nomesAbas[a]+'</button>';
+  }).join('');
+
+  var kpis = getCfg('kpis', _kpiAbaAtual) || _CFG_DEFAULT.kpis[_kpiAbaAtual] || [];
+  kpis = JSON.parse(JSON.stringify(kpis)); // clone
+  kpis.sort(function(a,b){return (a.ordem||0)-(b.ordem||0);});
+
+  var rows = kpis.map(function(k,i){
+    var vis = k.visivel!==false;
+    return '<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:'+(i%2?'#0d1117':'#080b12')+';border-radius:6px;margin-bottom:4px">' +
+      '<span style="font-size:18px;min-width:26px">'+k.emoji+'</span>' +
+      '<span style="flex:1;font-size:12px;font-weight:600;color:'+(vis?'#f1f5f9':'#334155')+'">'+k.nome+'</span>' +
+      '<span style="width:14px;height:14px;border-radius:50%;background:'+k.cor+';display:inline-block;flex-shrink:0"></span>' +
+      '<span style="font-size:10px;padding:2px 7px;border-radius:10px;background:'+(vis?'#10b98120':'#33415520')+';color:'+(vis?'#10b981':'#64748b')+'">'+(vis?'Visível':'Oculto')+'</span>' +
+      '<button onclick="_kpiToggle(\''+_kpiAbaAtual+'\',\''+k.id+'\')" title="Mostrar/Ocultar" style="'+_btnStyle('#1e2736')+'">👁</button>' +
+      '<button onclick="_kpiMover(\''+_kpiAbaAtual+'\',\''+k.id+'\',-1)" title="Subir" style="'+_btnStyle('#1e2736')+'">▲</button>' +
+      '<button onclick="_kpiMover(\''+_kpiAbaAtual+'\',\''+k.id+'\',1)" title="Descer" style="'+_btnStyle('#1e2736')+'">▼</button>' +
+      '<button onclick="_kpiEditar(\''+_kpiAbaAtual+'\',\''+k.id+'\')" title="Editar" style="'+_btnStyle('#1e3a5f')+'">✏️</button>' +
+      '<button onclick="_kpiExcluir(\''+_kpiAbaAtual+'\',\''+k.id+'\')" title="Excluir" style="'+_btnStyle('#3a1a1a')+'">🗑</button>' +
+    '</div>';
+  }).join('');
+
+  if (!rows) rows = '<div style="padding:20px;text-align:center;color:#64748b;font-size:12px">Nenhum KPI configurado.</div>';
+
+  return '<div>'+
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">'+
+      '<div style="display:flex;gap:4px">'+abaTabs+'</div>'+
+      '<button onclick="_kpiNovo(\''+_kpiAbaAtual+'\')" style="padding:7px 14px;background:#3b82f6;border:none;border-radius:8px;color:#fff;cursor:pointer;font-size:11px;font-weight:700">➕ Novo KPI</button>'+
+    '</div>'+
+    rows+
+  '</div>';
+}
+
+function _btnStyle(bg) {
+  return 'background:'+bg+';border:1px solid #334155;border-radius:6px;color:#94a3b8;padding:4px 8px;cursor:pointer;font-size:11px;';
+}
+
+function _kpiGetLista(aba) {
+  garantirDB();
+  if (!DB.construtor) DB.construtor = {};
+  if (!DB.construtor.kpis) DB.construtor.kpis = {};
+  if (!DB.construtor.kpis[aba]) DB.construtor.kpis[aba] = JSON.parse(JSON.stringify(_CFG_DEFAULT.kpis[aba]||[]));
+  return DB.construtor.kpis[aba];
+}
+
+function _kpiSalvarLista(aba, lista) {
+  garantirDB();
+  if (!DB.construtor) DB.construtor = {};
+  if (!DB.construtor.kpis) DB.construtor.kpis = {};
+  DB.construtor.kpis[aba] = lista;
+  salvar();
+  _switchConstrutor('kpis');
+}
+
+function _kpiToggle(aba, id) {
+  var lista = _kpiGetLista(aba);
+  var k = lista.find(function(x){return x.id===id;});
+  if (k) k.visivel = !( k.visivel!==false );
+  _kpiSalvarLista(aba, lista);
+}
+
+function _kpiMover(aba, id, dir) {
+  var lista = _kpiGetLista(aba);
+  lista.sort(function(a,b){return (a.ordem||0)-(b.ordem||0);});
+  var idx = lista.findIndex(function(x){return x.id===id;});
+  var outro = idx + dir;
+  if (outro < 0 || outro >= lista.length) return;
+  var tmpOrdem = lista[idx].ordem; lista[idx].ordem = lista[outro].ordem; lista[outro].ordem = tmpOrdem;
+  _kpiSalvarLista(aba, lista);
+}
+
+function _kpiExcluir(aba, id) {
+  if (!confirm('Excluir este KPI?')) return;
+  var lista = _kpiGetLista(aba);
+  _kpiSalvarLista(aba, lista.filter(function(x){return x.id!==id;}));
+}
+
+function _kpiNovo(aba) { _kpiEditar(aba, null); }
+
+function _kpiEditar(aba, id) {
+  var lista = _kpiGetLista(aba);
+  var k = id ? (lista.find(function(x){return x.id===id;}) || {}) : {};
+  var isNovo = !id;
+
+  var modal = document.getElementById('modal-kpi-editor');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'modal-kpi-editor';
+    modal.style.cssText = 'display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.8);z-index:10002;align-items:center;justify-content:center;';
+    document.body.appendChild(modal);
+  }
+  modal.innerHTML =
+    '<div style="background:#1e1e2e;border-radius:14px;padding:24px;max-width:420px;width:92%;color:#cdd6f4;box-shadow:0 20px 60px rgba(0,0,0,.6)">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">' +
+        '<h3 style="margin:0;font-size:14px;font-weight:700">'+(isNovo?'➕ Novo KPI':'✏️ Editar KPI')+'</h3>' +
+        '<button onclick="document.getElementById(\'modal-kpi-editor\').style.display=\'none\'" style="background:none;border:none;color:#94a3b8;font-size:18px;cursor:pointer">✕</button>' +
+      '</div>' +
+      '<div style="display:flex;flex-direction:column;gap:10px">' +
+        _fld('Emoji / Ícone','kpi_e_emoji',k.emoji||'📊','text') +
+        _fld('Nome do KPI','kpi_e_nome',k.nome||'','text','ex: Total de Condomínios') +
+        _fld('Cor (hex)','kpi_e_cor',k.cor||'#3b82f6','color') +
+        _fld('Meta (opcional)','kpi_e_meta',k.meta||'','text','ex: 95%') +
+        '<label style="font-size:10px;color:#64748b;font-weight:700">VISÍVEL<br>'+
+          '<select id="kpi_e_vis" class="fi" style="width:100%;margin-top:4px;height:32px">'+
+            '<option value="1"'+(k.visivel!==false?' selected':'')+'>Sim — exibir na aba</option>'+
+            '<option value="0"'+(k.visivel===false?' selected':'')+'>Não — ocultar</option>'+
+          '</select></label>' +
+      '</div>' +
+      '<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:18px">' +
+        '<button onclick="document.getElementById(\'modal-kpi-editor\').style.display=\'none\'" style="'+_btnStyle('#1e2736')+';padding:8px 16px;">Cancelar</button>' +
+        '<button onclick="_kpiSalvarForm(\''+aba+'\',\''+( id||''  )+'\')" style="padding:8px 20px;background:#3b82f6;border:none;border-radius:8px;color:#fff;cursor:pointer;font-weight:700;font-size:12px">💾 Salvar</button>' +
+      '</div>' +
+    '</div>';
+  modal.style.display = 'flex';
+  modal.onclick = function(e){ if(e.target===modal) modal.style.display='none'; };
+}
+
+function _fld(label, id, val, tipo, ph) {
+  return '<label style="font-size:10px;color:#64748b;font-weight:700">'+label.toUpperCase()+
+    '<br><input id="'+id+'" type="'+(tipo||'text')+'" value="'+(val||'')+'" class="fi" '+
+    'style="width:100%;margin-top:4px;'+(tipo==='color'?'height:40px;padding:2px 4px;':'')+'font-size:12px" '+
+    (ph?'placeholder="'+ph+'"':'')+'/></label>';
+}
+
+function _kpiSalvarForm(aba, id) {
+  var gv = function(i){ var el=document.getElementById(i); return el?el.value.trim():''; };
+  var nome = gv('kpi_e_nome');
+  if (!nome) { alert('Informe o nome do KPI.'); return; }
+  var lista = _kpiGetLista(aba);
+  if (id) {
+    var k = lista.find(function(x){return x.id===id;});
+    if (k) { k.emoji=gv('kpi_e_emoji'); k.nome=nome; k.cor=gv('kpi_e_cor'); k.meta=gv('kpi_e_meta'); k.visivel=gv('kpi_e_vis')==='1'; }
+  } else {
+    lista.push({id:'custom_'+Date.now(), emoji:gv('kpi_e_emoji')||'📊', nome:nome, cor:gv('kpi_e_cor')||'#3b82f6', meta:gv('kpi_e_meta'), visivel:true, ordem:lista.length+1, custom:true});
+  }
+  document.getElementById('modal-kpi-editor').style.display='none';
+  _kpiSalvarLista(aba, lista);
+  showToast('✅ KPI salvo!');
+}
+
+// ───────────────────────────────────────────────────────────────
+// 2. CONSTRUTOR DE FORMULÁRIOS
+// ───────────────────────────────────────────────────────────────
+function _buildConstrutorForms() {
+  garantirDB();
+  if (!DB.construtor) DB.construtor = {};
+  if (!DB.construtor.formularios) DB.construtor.formularios = {};
+  var campos = DB.construtor.formularios.condominios ||
+               JSON.parse(JSON.stringify(_CFG_DEFAULT.formularios.condominios));
+  campos.sort(function(a,b){return(a.ordem||0)-(b.ordem||0);});
+
+  var rows = campos.map(function(c,i){
+    var vis = c.visivel!==false;
+    var obr = c.obrigatorio===true;
+    return '<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:'+(i%2?'#0d1117':'#080b12')+';border-radius:6px;margin-bottom:4px">' +
+      '<span style="flex:1;font-size:12px;font-weight:600;color:'+(vis?'#f1f5f9':'#334155')+'">'+c.nome+'</span>' +
+      '<span style="font-size:9px;padding:2px 6px;border-radius:8px;background:'+(obr?'#ef444420':'#33415520')+';color:'+(obr?'#ef4444':'#64748b')+'">'+(obr?'Obrig.':'Opcional')+'</span>' +
+      '<span style="font-size:9px;padding:2px 6px;border-radius:8px;background:'+(vis?'#10b98120':'#33415520')+';color:'+(vis?'#10b981':'#64748b')+'">'+(vis?'Visível':'Oculto')+'</span>' +
+      '<button onclick="_formToggleVis(\''+c.id+'\')" title="Mostrar/Ocultar" style="'+_btnStyle('#1e2736')+'">👁</button>' +
+      '<button onclick="_formToggleObr(\''+c.id+'\')" title="Obrigatório" style="'+_btnStyle('#1e2736')+'">❗</button>' +
+      '<button onclick="_formMover(\''+c.id+'\',-1)" style="'+_btnStyle('#1e2736')+'">▲</button>' +
+      '<button onclick="_formMover(\''+c.id+'\',1)" style="'+_btnStyle('#1e2736')+'">▼</button>' +
+      '<button onclick="_formRenomear(\''+c.id+'\',\''+c.nome+'\')" style="'+_btnStyle('#1e3a5f')+'">✏️</button>' +
+    '</div>';
+  }).join('');
+
+  return '<div>' +
+    '<div style="margin-bottom:12px">' +
+      '<h3 style="font-size:12px;color:#f1f5f9;margin:0 0 4px">📝 Campos — Formulário de Condomínio</h3>' +
+      '<p style="font-size:10px;color:#64748b;margin:0">Mostre, oculte, renomeie e reordene os campos do formulário de cadastro de condomínio.</p>' +
+    '</div>' +
+    rows +
+  '</div>';
+}
+
+function _formGetLista() {
+  garantirDB();
+  if (!DB.construtor) DB.construtor = {};
+  if (!DB.construtor.formularios) DB.construtor.formularios = {};
+  if (!DB.construtor.formularios.condominios)
+    DB.construtor.formularios.condominios = JSON.parse(JSON.stringify(_CFG_DEFAULT.formularios.condominios));
+  return DB.construtor.formularios.condominios;
+}
+
+function _formSalvarLista(lista) {
+  garantirDB();
+  if (!DB.construtor) DB.construtor = {};
+  if (!DB.construtor.formularios) DB.construtor.formularios = {};
+  DB.construtor.formularios.condominios = lista;
+  salvar();
+  _switchConstrutor('formularios');
+  showToast('✅ Configuração salva!');
+}
+
+function _formToggleVis(id) {
+  var l = _formGetLista();
+  var c = l.find(function(x){return x.id===id;});
+  if (c) c.visivel = !(c.visivel!==false);
+  _formSalvarLista(l);
+}
+
+function _formToggleObr(id) {
+  var l = _formGetLista();
+  var c = l.find(function(x){return x.id===id;});
+  if (c) c.obrigatorio = !c.obrigatorio;
+  _formSalvarLista(l);
+}
+
+function _formMover(id, dir) {
+  var l = _formGetLista();
+  l.sort(function(a,b){return(a.ordem||0)-(b.ordem||0);});
+  var idx = l.findIndex(function(x){return x.id===id;});
+  var outro = idx+dir;
+  if (outro<0||outro>=l.length) return;
+  var t=l[idx].ordem; l[idx].ordem=l[outro].ordem; l[outro].ordem=t;
+  _formSalvarLista(l);
+}
+
+function _formRenomear(id, nomeAtual) {
+  var novo = prompt('Novo nome para o campo:', nomeAtual);
+  if (!novo || !novo.trim()) return;
+  var l = _formGetLista();
+  var c = l.find(function(x){return x.id===id;});
+  if (c) c.nome = novo.trim();
+  _formSalvarLista(l);
+}
+
+// ───────────────────────────────────────────────────────────────
+// 3. CONSTRUTOR DE QUESTIONÁRIOS
+// ───────────────────────────────────────────────────────────────
+var _questAbaAtual = 'satisfacao';
+
+function _buildConstrutorQuest() {
+  garantirDB();
+  if (!DB.construtor) DB.construtor = {};
+  if (!DB.construtor.questionarios) DB.construtor.questionarios = {};
+  var abas = ['satisfacao','visita','retencao','preventiva'];
+  var nomesAbas = {satisfacao:'⭐ Satisfação',visita:'🏠 Visita',retencao:'🔄 Retenção',preventiva:'🔧 Preventiva'};
+  var aba = _questAbaAtual;
+
+  var abaTabs = abas.map(function(a){
+    var active = a===aba;
+    return '<button onclick="window._questAbaAtual=\''+a+'\';_switchConstrutor(\'questionarios\')" '+
+      'style="padding:5px 12px;border:none;border-radius:6px;cursor:pointer;font-size:11px;'+
+      (active?'background:#1e3a5f;color:#3b82f6;font-weight:700;':'background:transparent;color:#64748b;')+'">'+
+      nomesAbas[a]+'</button>';
+  }).join('');
+
+  var questDef = _CFG_DEFAULT.questionarios[aba] || {titulo:'',perguntas:[]};
+  var quest = DB.construtor.questionarios[aba] || JSON.parse(JSON.stringify(questDef));
+  var perguntas = quest.perguntas || [];
+  perguntas.sort(function(a,b){return(a.ordem||0)-(b.ordem||0);});
+
+  var tipoIcon = {texto:'T',numero:'#',simnao:'✓',nota:'⭐',select:'▾',multipla:'☑',data:'📅'};
+  var tipoLabel = {texto:'Texto',numero:'Número',simnao:'Sim/Não',nota:'Nota 0-10',select:'Select',multipla:'Múltipla',data:'Data'};
+
+  var rows = perguntas.map(function(p,i){
+    var obr = p.obrigatorio===true;
+    return '<div style="display:flex;align-items:flex-start;gap:8px;padding:10px 12px;background:'+(i%2?'#0d1117':'#080b12')+';border-radius:6px;margin-bottom:4px">' +
+      '<span style="font-size:10px;background:#1e2736;border-radius:4px;padding:3px 7px;color:#64748b;margin-top:1px;flex-shrink:0">'+(tipoIcon[p.tipo]||'T')+'</span>' +
+      '<span style="flex:1;font-size:12px;color:#e2e8f0;line-height:1.4">'+p.texto+'</span>' +
+      '<span style="font-size:9px;padding:2px 6px;border-radius:8px;background:'+(obr?'#ef444420':'#33415520')+';color:'+(obr?'#ef4444':'#64748b');+';flex-shrink:0">'+(obr?'Obrig.':'Opcional')+'</span>' +
+      '<button onclick="_questMover(\''+aba+'\',\''+p.id+'\',-1)" style="'+_btnStyle('#1e2736')+'">▲</button>' +
+      '<button onclick="_questMover(\''+aba+'\',\''+p.id+'\',1)" style="'+_btnStyle('#1e2736')+'">▼</button>' +
+      '<button onclick="_questEditar(\''+aba+'\',\''+p.id+'\')" style="'+_btnStyle('#1e3a5f')+'">✏️</button>' +
+      '<button onclick="_questExcluir(\''+aba+'\',\''+p.id+'\')" style="'+_btnStyle('#3a1a1a')+'">🗑</button>' +
+    '</div>';
+  }).join('') || '<div style="padding:20px;text-align:center;color:#64748b;font-size:12px">Nenhuma pergunta. Clique em ➕ para adicionar.</div>';
+
+  return '<div>'+
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">'+
+      '<div style="display:flex;gap:4px">'+abaTabs+'</div>'+
+      '<button onclick="_questEditar(\''+aba+'\',null)" style="padding:7px 14px;background:#3b82f6;border:none;border-radius:8px;color:#fff;cursor:pointer;font-size:11px;font-weight:700">➕ Nova Pergunta</button>'+
+    '</div>'+
+    rows+
+  '</div>';
+}
+
+function _questGetLista(aba) {
+  garantirDB();
+  if (!DB.construtor) DB.construtor = {};
+  if (!DB.construtor.questionarios) DB.construtor.questionarios = {};
+  if (!DB.construtor.questionarios[aba])
+    DB.construtor.questionarios[aba] = JSON.parse(JSON.stringify(_CFG_DEFAULT.questionarios[aba]||{titulo:'',perguntas:[]}));
+  return DB.construtor.questionarios[aba];
+}
+
+function _questSalvar(aba, quest) {
+  garantirDB();
+  if (!DB.construtor) DB.construtor = {};
+  if (!DB.construtor.questionarios) DB.construtor.questionarios = {};
+  DB.construtor.questionarios[aba] = quest;
+  salvar();
+  _switchConstrutor('questionarios');
+  showToast('✅ Questionário salvo!');
+}
+
+function _questMover(aba, id, dir) {
+  var q = _questGetLista(aba);
+  q.perguntas.sort(function(a,b){return(a.ordem||0)-(b.ordem||0);});
+  var idx = q.perguntas.findIndex(function(x){return x.id===id;});
+  var outro = idx+dir;
+  if (outro<0||outro>=q.perguntas.length) return;
+  var t=q.perguntas[idx].ordem; q.perguntas[idx].ordem=q.perguntas[outro].ordem; q.perguntas[outro].ordem=t;
+  _questSalvar(aba, q);
+}
+
+function _questExcluir(aba, id) {
+  if (!confirm('Excluir esta pergunta?')) return;
+  var q = _questGetLista(aba);
+  q.perguntas = q.perguntas.filter(function(x){return x.id!==id;});
+  _questSalvar(aba, q);
+}
+
+function _questEditar(aba, id) {
+  var q = _questGetLista(aba);
+  var p = id ? (q.perguntas.find(function(x){return x.id===id;}) || {}) : {};
+  var isNovo = !id;
+  var tipos = ['texto','numero','simnao','nota','select','multipla','data'];
+  var tipoLabel = {texto:'Texto livre',numero:'Número',simnao:'Sim / Não',nota:'Nota (0 a 10)',select:'Seleção única',multipla:'Múltipla escolha',data:'Data'};
+
+  var modal = document.getElementById('modal-quest-editor');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'modal-quest-editor';
+    modal.style.cssText = 'display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.8);z-index:10002;align-items:center;justify-content:center;';
+    document.body.appendChild(modal);
+  }
+  modal.innerHTML =
+    '<div style="background:#1e1e2e;border-radius:14px;padding:24px;max-width:480px;width:92%;color:#cdd6f4;box-shadow:0 20px 60px rgba(0,0,0,.6)">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">' +
+        '<h3 style="margin:0;font-size:14px;font-weight:700">'+(isNovo?'➕ Nova Pergunta':'✏️ Editar Pergunta')+'</h3>' +
+        '<button onclick="document.getElementById(\'modal-quest-editor\').style.display=\'none\'" style="background:none;border:none;color:#94a3b8;font-size:18px;cursor:pointer">✕</button>' +
+      '</div>' +
+      '<div style="display:flex;flex-direction:column;gap:10px">' +
+        '<label style="font-size:10px;color:#64748b;font-weight:700">TEXTO DA PERGUNTA *<br>'+
+          '<textarea id="qe_texto" class="fi" style="width:100%;margin-top:4px;min-height:70px;resize:vertical;font-size:12px" placeholder="Digite a pergunta...">'+( p.texto||'')+'</textarea></label>' +
+        '<label style="font-size:10px;color:#64748b;font-weight:700">TIPO DE RESPOSTA<br>'+
+          '<select id="qe_tipo" class="fi" style="width:100%;margin-top:4px;height:34px">'+
+            tipos.map(function(t){ return '<option value="'+t+'"'+(p.tipo===t?' selected':'')+'>'+tipoLabel[t]+'</option>'; }).join('')+
+          '</select></label>' +
+        '<label style="font-size:10px;color:#64748b;font-weight:700">OBRIGATÓRIA<br>'+
+          '<select id="qe_obr" class="fi" style="width:100%;margin-top:4px;height:34px">'+
+            '<option value="1"'+(p.obrigatorio?' selected':'')+'>Sim</option>'+
+            '<option value="0"'+(!p.obrigatorio?' selected':'')+'>Não</option>'+
+          '</select></label>' +
+      '</div>' +
+      '<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:18px">' +
+        '<button onclick="document.getElementById(\'modal-quest-editor\').style.display=\'none\'" style="'+_btnStyle('#1e2736')+';padding:8px 16px;">Cancelar</button>' +
+        '<button onclick="_questSalvarForm(\''+aba+'\',\''+( id||'')+'\')" style="padding:8px 20px;background:#3b82f6;border:none;border-radius:8px;color:#fff;cursor:pointer;font-weight:700;font-size:12px">💾 Salvar</button>' +
+      '</div>' +
+    '</div>';
+  modal.style.display = 'flex';
+  modal.onclick = function(e){ if(e.target===modal) modal.style.display='none'; };
+}
+
+function _questSalvarForm(aba, id) {
+  var gv = function(i){ var el=document.getElementById(i); return el?el.value.trim():''; };
+  var texto = gv('qe_texto');
+  if (!texto) { alert('Digite o texto da pergunta.'); return; }
+  var q = _questGetLista(aba);
+  if (id) {
+    var p = q.perguntas.find(function(x){return x.id===id;});
+    if (p) { p.texto=texto; p.tipo=gv('qe_tipo'); p.obrigatorio=gv('qe_obr')==='1'; }
+  } else {
+    q.perguntas.push({id:'q_'+Date.now(), texto:texto, tipo:gv('qe_tipo')||'texto', obrigatorio:gv('qe_obr')==='1', ordem:q.perguntas.length+1});
+  }
+  document.getElementById('modal-quest-editor').style.display='none';
+  _questSalvar(aba, q);
+}
+
+// ───────────────────────────────────────────────────────────────
+// 4. LISTAS & FILTROS (reaproveitando o existente)
+// ───────────────────────────────────────────────────────────────
+function _buildConstrutorListas() {
+  garantirDB();
+  garantirListasPersonalizacao();
+  var el = document.createElement('div');
+  el.innerHTML = _buildPersonalizacaoHTML(
+    getCfgLista('motivos_radar'), getCfgLista('motivos_os'), getCfgLista('status_os'),
+    getCfgLista('filiais'), getCfgLista('responsaveis'), getCfgLista('tipos_demanda'),
+    getCfgLista('status_demanda'), getCfgLista('perguntas_sat')
+  );
+  // Adicionar botão salvar no topo
+  var header = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">' +
+    '<div><h3 style="font-size:12px;color:#f1f5f9;margin:0 0 4px">📋 Listas Editáveis</h3>' +
+    '<p style="font-size:10px;color:#64748b;margin:0">Edite os itens das listas usadas em filtros e formulários.</p></div>' +
+    '<button onclick="salvarPersonalizacao()" style="padding:7px 14px;background:#3b82f6;border:none;border-radius:8px;color:#fff;cursor:pointer;font-size:11px;font-weight:700">💾 Salvar Listas</button>' +
+  '</div>';
+  return header + el.innerHTML;
+}
+
+function getCfgLista(id) {
+  garantirDB();
+  if (DB.config_listas && DB.config_listas[id] && DB.config_listas[id].length) return DB.config_listas[id];
+  return null; // _buildPersonalizacaoHTML usa o padrão quando null
+}
+
+// ───────────────────────────────────────────────────────────────
+// 5. BACKUP
+// ───────────────────────────────────────────────────────────────
+function _buildConstrutorBackup() {
+  return '<div>' +
+    '<div style="margin-bottom:16px">' +
+      '<h3 style="font-size:12px;color:#f1f5f9;margin:0 0 4px">💾 Backup das Personalizações</h3>' +
+      '<p style="font-size:10px;color:#64748b;margin:0">Exporte, importe ou restaure todas as configurações do construtor.</p>' +
+    '</div>' +
+    '<div style="display:flex;flex-direction:column;gap:10px">' +
+
+      '<div style="background:#0d1117;border:1px solid #1e2736;border-radius:10px;padding:16px">' +
+        '<div style="font-size:12px;font-weight:700;color:#10b981;margin-bottom:6px">📥 Exportar Configurações</div>' +
+        '<p style="font-size:11px;color:#64748b;margin:0 0 10px">Gera um arquivo JSON com todas as suas personalizações (KPIs, questionários, listas, formulários).</p>' +
+        '<button onclick="_backupExportar()" style="padding:8px 20px;background:#10b981;border:none;border-radius:8px;color:#fff;cursor:pointer;font-weight:700;font-size:12px">📥 Exportar</button>' +
+      '</div>' +
+
+      '<div style="background:#0d1117;border:1px solid #1e2736;border-radius:10px;padding:16px">' +
+        '<div style="font-size:12px;font-weight:700;color:#3b82f6;margin-bottom:6px">📤 Importar Configurações</div>' +
+        '<p style="font-size:11px;color:#64748b;margin:0 0 10px">Carrega um arquivo JSON exportado anteriormente.</p>' +
+        '<input type="file" id="backup-file" accept=".json" style="display:none" onchange="_backupImportar(this)">' +
+        '<button onclick="document.getElementById(\'backup-file\').click()" style="padding:8px 20px;background:#3b82f6;border:none;border-radius:8px;color:#fff;cursor:pointer;font-weight:700;font-size:12px">📤 Importar</button>' +
+      '</div>' +
+
+      '<div style="background:#0d1117;border:1px solid #3a1a1a;border-radius:10px;padding:16px">' +
+        '<div style="font-size:12px;font-weight:700;color:#ef4444;margin-bottom:6px">↺ Restaurar Padrão</div>' +
+        '<p style="font-size:11px;color:#64748b;margin:0 0 10px">Remove todas as personalizações e volta ao estado original do sistema.</p>' +
+        '<button onclick="_backupResetar()" style="padding:8px 20px;background:#ef4444;border:none;border-radius:8px;color:#fff;cursor:pointer;font-weight:700;font-size:12px">↺ Restaurar Padrão</button>' +
+      '</div>' +
+
+    '</div>' +
+  '</div>';
+}
+
+function _backupExportar() {
+  garantirDB();
+  var backup = {
+    versao: '1.0',
+    data: new Date().toISOString(),
+    construtor: DB.construtor || {},
+    config_listas: DB.config_listas || {},
+    config_kpis: DB.config_kpis || {},
+    config_kpi_labels: DB.config_kpi_labels || {},
+    config_questionarios: DB.config_questionarios || {},
+  };
+  var blob = new Blob([JSON.stringify(backup, null, 2)], {type:'application/json'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'personalizacao_' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  showToast('✅ Arquivo exportado!');
+}
+
+function _backupImportar(input) {
+  var file = input.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      var data = JSON.parse(e.target.result);
+      if (!data.versao) { alert('Arquivo inválido. Use um arquivo exportado por este sistema.'); return; }
+      garantirDB();
+      if (data.construtor)           DB.construtor = data.construtor;
+      if (data.config_listas)        DB.config_listas = data.config_listas;
+      if (data.config_kpis)          DB.config_kpis = data.config_kpis;
+      if (data.config_kpi_labels)    DB.config_kpi_labels = data.config_kpi_labels;
+      if (data.config_questionarios) DB.config_questionarios = data.config_questionarios;
+      salvar();
+      renderConstrutor();
+      showToast('✅ Configurações importadas com sucesso!');
+    } catch(err) {
+      alert('Erro ao ler o arquivo: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+function _backupResetar() {
+  if (!confirm('Tem certeza? Isso apagará TODAS as personalizações e restaurará o padrão.')) return;
+  garantirDB();
+  DB.construtor = {};
+  DB.config_listas = {};
+  DB.config_kpis = {};
+  DB.config_kpi_labels = {};
+  DB.config_questionarios = {};
+  salvar();
+  renderConstrutor();
+  showToast('✅ Sistema restaurado para o padrão!');
+}
+
+// garantirDB incluir construtor
+// (chamado no patch de garantirDB existente)
+
+// ================================================================
+// FIM DO CONSTRUTOR
 // ================================================================
 
 </script><div id="adm-global-modal" class="adm-modal-full"><div class="adm-modal-box"><div class="adm-modal-hd"><h2 id="adm-gm-title">⚙️ Administrador</h2><div style="display:flex;gap:6px"><button class="btn btn-gr btn-sm" id="adm-gm-save" onclick="admGmSave()">💾 Salvar</button><button class="btn btn-gh btn-sm" onclick="admGmClose()">✕ Fechar</button></div></div><div class="adm-modal-bd" id="adm-gm-body"></div></div></div>
