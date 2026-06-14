@@ -5369,7 +5369,7 @@ function _buildPerDrop(fid,rf){var slot=document.getElementById('pfdd-slot-'+fid
 function _buildDemFilters(){_buildDrop('dem-fil','Filial',_getFiliais(),'renderDemandas');_buildDrop('dem-resp','Responsável',_getResps(['Jovem Aprendiz']),'renderDemandas');_buildDrop('dem-status','Status',['Aberta','Em andamento','Aguardando','Concluída'],'renderDemandas');_buildDrop('dem-prio','Prioridade',['Alta','Média','Baixa'],'renderDemandas');_buildDrop('dem-tipo','Tipo',['SAC','Técnica','Adoção Digital','Retenção','Relacionamento','Operação','Financeiro'],'renderDemandas');_buildPerDrop('dem-per','renderDemandas');}
 function _buildSatFilters(){_buildDrop('sat-fil','Filial',_getFiliais(),'renderSatTabela');_buildDrop('sat-cls','Classificação',['Saudável','Atenção','Crítico'],'renderSatTabela');_buildDrop('sat-nps','NPS',['Promotor','Neutro','Detrator'],'renderSatTabela');_buildDrop('sat-pesq','Realizada',['Sim','Não'],'renderSatTabela');_buildDrop('sat-resp','Responsável',_getResps(),'renderSatTabela');_buildPerDrop('sat-per','renderSatTabela');}
 function _buildVisFilters(){_buildDrop('vis-fil','Filial',_getFiliais(),'renderVisitas');_buildDrop('vis-status','Status',['Agendada','Realizada','Cancelada','Pendente retorno'],'renderVisitas');_buildPerDrop('vis-per','renderVisitas');}
-function abrirForm(tipo,idx){try{_aplicarFiltrosPersonalizados();}catch(e){}if(tipo==='vis'){abrirFrmVis(typeof idx==='number'?idx:(idx===-1?-1:Number(idx)||0));return;}
+function abrirForm(tipo,idx){try{_aplicarFiltrosPersonalizados();}catch(e){}try{setTimeout(function(){_sincronizarSistema();},300);}catch(e){}if(tipo==='vis'){abrirFrmVis(typeof idx==='number'?idx:(idx===-1?-1:Number(idx)||0));return;}
 if(!podeEd()){showToast('⚠️ Sem permissão para editar',1);return;}
 fType=tipo;fIdx=idx;var tits={cond:'Condomínio',dem:'Demanda',sat:'Pesquisa',critop:'Crítico',ret:'Retenção',inc:'Incidente',fluxo:'Fluxo'};var _titulo=(idx===-1?'➕ Novo ':'✏️ Editar ')+(tits[tipo]||tipo);var _formHtml;try{_formHtml=_buildForm(tipo,idx);}
 catch(e){showToast('Erro: '+e.message,1);console.error(e);return;}
@@ -9841,6 +9841,84 @@ function _atualizarEmbedded() {
   } catch(e) { console.warn('_atualizarEmbedded:', e); }
 }
 
+
+// ================================================================
+// SINCRONIZAÇÃO TOTAL DO SISTEMA
+// Chamada sempre que qualquer personalização é salva
+// ================================================================
+function _sincronizarSistema() {
+  garantirDB();
+
+  // 1. Atualizar variáveis globais com as listas salvas
+  try {
+    if (DB.config_listas) {
+      if (DB.config_listas.motivos_radar && DB.config_listas.motivos_radar.length)
+        window.MOTIVOS_RADAR = DB.config_listas.motivos_radar.slice();
+      if (DB.config_listas.motivos_os && DB.config_listas.motivos_os.length)
+        window._osMotivos = DB.config_listas.motivos_os.slice();
+    }
+  } catch(e) {}
+
+  // 2. Atualizar TODOS os selects do DOM que estejam visíveis
+  try { _aplicarFiltrosPersonalizados(); } catch(e) {}
+
+  // 3. Atualizar labels dos KPIs em todo o DOM
+  try { _aplicarLabelsKPI(); } catch(e) {}
+
+  // 4. Re-renderizar a aba atual para refletir mudanças
+  try {
+    var nbAtivo = document.querySelector('.nb.on');
+    if (nbAtivo) {
+      var pAtivo = nbAtivo.getAttribute('data-p');
+      if (pAtivo && pAtivo !== 'config') {
+        renderPage(pAtivo);
+      }
+    }
+  } catch(e) {}
+
+  // 5. Atualizar também quaisquer formulários abertos no DOM
+  // (selects dentro de modais/drawers visíveis)
+  try {
+    var CL = DB.config_listas || {};
+    var resps = _getResps ? _getResps() : (CL.responsaveis || ['Rosely','Josy','Josi','Equipe CS']);
+    var filiais = _getFiliais ? _getFiliais() : (CL.filiais || ['CEARÁ','MARANHÃO','SECOPI']);
+
+    // Selects de responsável em formulários abertos
+    var selIds = ['fresp','ra-resp','fos_resp','fret_resp','dl-resp','rel-resp',
+                  'sat-f-resp','sat-f-resp-nao','rm-resp','fvis_resp'];
+    selIds.forEach(function(id) {
+      var sel = document.getElementById(id);
+      if (!sel) return;
+      var vAtual = sel.value;
+      var primeiraOpc = sel.options[0] ? sel.options[0].text : '';
+      var temTodos = primeiraOpc.indexOf('Todos') >= 0 || primeiraOpc.indexOf('Selecione') >= 0;
+      sel.innerHTML = (temTodos ? '<option value="">'+primeiraOpc+'</option>' : '') +
+        resps.map(function(v){
+          return '<option value="'+v+'"'+(v===vAtual?' selected':'')+'>'+v+'</option>';
+        }).join('');
+    });
+
+    // Selects de filial em formulários abertos
+    var filSelIds = ['ff','fos_filial','fvis_filial','finc_filial'];
+    filSelIds.forEach(function(id) {
+      var sel = document.getElementById(id);
+      if (!sel) return;
+      var vAtual = sel.value;
+      var primeiraOpc = sel.options[0] ? sel.options[0].text : 'Todas as filiais';
+      sel.innerHTML = '<option value="">'+primeiraOpc+'</option>' +
+        filiais.map(function(v){
+          return '<option value="'+v+'"'+(v===vAtual?' selected':'')+'>'+v+'</option>';
+        }).join('');
+    });
+  } catch(e) {}
+
+  // 6. Atualizar badges
+  try { updateBadges(); } catch(e) {}
+}
+// ================================================================
+// FIM SINCRONIZAÇÃO
+// ================================================================
+
 function salvarPersonalizacao() {
   garantirDB();
 
@@ -9886,11 +9964,11 @@ function salvarPersonalizacao() {
   _atualizarEmbedded(); // Atualiza HTML inline para próximo download
   _pDirty = false;
 
-  // 7. Aplicar em ordem correta (sem re-render que sobrescreva)
-  try { _aplicarListasSalvas(); }        catch(e) { console.error('_aplicarListasSalvas:', e); }
-  try { _aplicarFiltrosPersonalizados(); } catch(e) { console.error('_aplicarFiltros:', e); }
-  try { _aplicarLabelsKPI(); }           catch(e) { console.error('_aplicarLabelsKPI:', e); }
-  try { updateBadges(); }                catch(e) {}
+  // 7. Sincronizar todo o sistema
+  try { _aplicarListasSalvas(); } catch(e) {}
+  setTimeout(function() {
+    try { _sincronizarSistema(); } catch(e) { console.error('_sincronizarSistema:', e); }
+  }, 100);
 
   // 8. Aviso para salvar no arquivo HTML
   if (erros.length === 0) {
