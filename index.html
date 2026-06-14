@@ -5091,7 +5091,7 @@ function _kpiCard(lbl,val,sub,color,icon,kpiKey){
 }
 function addLog(m,a,d,extra){if(!DB||!DB.log)return;DB.log.unshift({dt:new Date().toISOString(),dtStr:new Date().toLocaleString('pt-BR'),user:(curUser||{}).name||'?',role:(curUser||{}).role||'—',m:m,a:a,d:d,cond:extra&&extra.cond||''});if(DB.log.length>500)DB.log=DB.log.slice(0,500);}
 function garantirDB(){if(!DB||typeof DB!=='object'){initDB();return;}
-['conds','demandas','satisfacao','visitas','criticos','retencao','incidentes','fluxo','adocao','preventivas','atendimentos','os','log','reclamacoes_avulsas','sat_tratativas','renovacoes','sla_historico','radar_ocorrencias'].forEach(function(k){if(!Array.isArray(DB[k]))DB[k]=[];});if(!DB.config_listas||typeof DB.config_listas!=='object')DB.config_listas={};if(!DB.construtor||typeof DB.construtor!=='object')DB.construtor={};if(!DB.config_kpis||typeof DB.config_kpis!=='object')DB.config_kpis={};if(!DB.config_kpi_labels||typeof DB.config_kpi_labels!=='object')DB.config_kpi_labels={};if(!DB.config_kpis_extra||typeof DB.config_kpis_extra!=='object')DB.config_kpis_extra={};if(!Array.isArray(DB.config_quest_extra))DB.config_quest_extra=[];if(!DB.config_quest_meta||typeof DB.config_quest_meta!=='object')DB.config_quest_meta={};if(!DB.config_questionarios||typeof DB.config_questionarios!=='object')DB.config_questionarios={};if(!DB.nid||typeof DB.nid!=='object')DB.nid={};['cond','dem','sat','vis','crit','ret','inc','fluxo','ra','prev','atend','os'].forEach(function(k){if(!DB.nid[k])DB.nid[k]=10;});(DB.satisfacao||[]).forEach(function(s){if(!s.id)s.id=nid('sat');});if(!Array.isArray(DB.visitasExcluidas))DB.visitasExcluidas=[];if(!Array.isArray(DB.motivos_recl))DB.motivos_recl=["FALTA DE RETORNO","PORTÃO TRAVANDO","INTERFONE FORA","DEMORA NO ATENDIMENTO","CÂMERA COM DEFEITO","SISTEMA FORA DO AR"];if(!Array.isArray(DB.evo))DB.evo=[{mes:'Jan',nota:8.1,criticos:4},{mes:'Fev',nota:7.9,criticos:6},{mes:'Mar',nota:8.3,criticos:3},{mes:'Abr',nota:8.5,criticos:2},{mes:'Mai',nota:8.4,criticos:5}];if(!DB.adm_ui_config)DB.adm_ui_config={};if(!DB.form_config)DB.form_config={};(DB.conds||[]).forEach(function(c){if(!c.condominioId)c.condominioId=c.id||c.nome;});}
+['conds','demandas','satisfacao','visitas','criticos','retencao','incidentes','fluxo','adocao','preventivas','atendimentos','os','log','reclamacoes_avulsas','sat_tratativas','renovacoes','sla_historico','radar_ocorrencias'].forEach(function(k){if(!Array.isArray(DB[k]))DB[k]=[];});if(!DB.config_listas||typeof DB.config_listas!=='object')DB.config_listas={};if(!DB.construtor||typeof DB.construtor!=='object')DB.construtor={};if(!DB.config_kpis||typeof DB.config_kpis!=='object')DB.config_kpis={};if(!DB.config_kpi_labels||typeof DB.config_kpi_labels!=='object')DB.config_kpi_labels={};if(!DB.form_fields||typeof DB.form_fields!=='object')DB.form_fields={};if(!DB.config_kpis_extra||typeof DB.config_kpis_extra!=='object')DB.config_kpis_extra={};if(!Array.isArray(DB.config_quest_extra))DB.config_quest_extra=[];if(!DB.config_quest_meta||typeof DB.config_quest_meta!=='object')DB.config_quest_meta={};if(!DB.config_questionarios||typeof DB.config_questionarios!=='object')DB.config_questionarios={};if(!DB.nid||typeof DB.nid!=='object')DB.nid={};['cond','dem','sat','vis','crit','ret','inc','fluxo','ra','prev','atend','os'].forEach(function(k){if(!DB.nid[k])DB.nid[k]=10;});(DB.satisfacao||[]).forEach(function(s){if(!s.id)s.id=nid('sat');});if(!Array.isArray(DB.visitasExcluidas))DB.visitasExcluidas=[];if(!Array.isArray(DB.motivos_recl))DB.motivos_recl=["FALTA DE RETORNO","PORTÃO TRAVANDO","INTERFONE FORA","DEMORA NO ATENDIMENTO","CÂMERA COM DEFEITO","SISTEMA FORA DO AR"];if(!Array.isArray(DB.evo))DB.evo=[{mes:'Jan',nota:8.1,criticos:4},{mes:'Fev',nota:7.9,criticos:6},{mes:'Mar',nota:8.3,criticos:3},{mes:'Abr',nota:8.5,criticos:2},{mes:'Mai',nota:8.4,criticos:5}];if(!DB.adm_ui_config)DB.adm_ui_config={};if(!DB.form_config)DB.form_config={};(DB.conds||[]).forEach(function(c){if(!c.condominioId)c.condominioId=c.id||c.nome;});}
 function nid(t){garantirDB();DB.nid[t]=(DB.nid[t]||10)+1;return t+'-'+DB.nid[t];}
 function initDB(){_demoLoaded=false;DB={conds:[],demandas:[],satisfacao:[],visitas:[],criticos:[],retencao:[],adocao:[],preventivas:[],atendimentos:[],os:[],incidentes:[],fluxo:[],log:[],radar_ocorrencias:[],reclamacoes_avulsas:[],sat_tratativas:[],motivos_recl:["FALTA DE RETORNO","PORTÃO TRAVANDO","INTERFONE FORA","DEMORA NO ATENDIMENTO","CÂMERA COM DEFEITO","SISTEMA FORA DO AR"],evo:[{mes:'Jan',nota:8.1,criticos:4},{mes:'Fev',nota:7.9,criticos:6},{mes:'Mar',nota:8.3,criticos:3},{mes:'Abr',nota:8.5,criticos:2},{mes:'Mai',nota:8.4,criticos:5}],nid:{cond:100,dem:100,sat:100,vis:10,crit:10,ret:10,inc:10,fluxo:10,ra:10},adm_ui_config:{},form_config:{},_savedAt:null};_loadDemoData();}
 function _loadDemoData(){if(_demoLoaded)return;_demoLoaded=true;DB.conds=[{id:901,nome:'COND. VILLA SOLARIUM',filial:'CEARÁ',nota:3.5,sac:'Crítico',resp:'Josy',humor:'😡',app:14,facial:15,gphone:'Não',recl:8,valor:4800,obs:'Sem retorno há 12 dias',unidades:48,moradores:96,os_abertas:2,cameras:4,risco_cancel:'Alto',sindico:'Carlos Melo',tel:'(85)99999-0001',timeline:[],particularidades:''},{id:902,nome:'MAISON NOVA METROPOLE',filial:'CEARÁ',nota:6.0,sac:'Em acompanhamento',resp:'Josy',humor:'😐',app:58,facial:60,gphone:'Instalado',recl:2,valor:5200,obs:'Módulo guarita fora',unidades:72,moradores:216,os_abertas:1,cameras:6,risco_cancel:'Baixo',sindico:'Ana Lima',tel:'(85)99999-0002',timeline:[],particularidades:''},{id:903,nome:'COND. COPENHAGUE',filial:'SECOPI',nota:9.0,sac:'Finalizado',resp:'Josi',humor:'😊',app:88,facial:90,gphone:'Instalado',recl:0,valor:6300,obs:'',unidades:96,moradores:384,os_abertas:0,cameras:8,risco_cancel:'Baixo',sindico:'Roberto Silva',tel:'(98)99999-0003',timeline:[],particularidades:'Delivery no armário inteligente'},{id:904,nome:'CONDOMINIO MARSOL',filial:'MARANHÃO',nota:8.5,sac:'Finalizado',resp:'Rosely',humor:'😊',app:82,facial:85,gphone:'Instalado',recl:0,valor:4200,obs:'',unidades:120,moradores:240,os_abertas:0,cameras:12,risco_cancel:'Baixo',sindico:'Patricia Costa',tel:'(98)99999-0004',timeline:[],particularidades:''},{id:905,nome:'RESIDENCIAL JARDIM AMERICA',filial:'CEARÁ',nota:9.0,sac:'Em tratamento',resp:'Rosely',humor:'😊',app:75,facial:78,gphone:'Instalado',recl:1,valor:3800,obs:'',unidades:200,moradores:800,os_abertas:1,cameras:4,risco_cancel:'Baixo',sindico:'José Santos',tel:'(85)99999-0005',timeline:[],particularidades:''},{id:906,nome:'EDIFICIO BIENE',filial:'CEARÁ',nota:8.0,sac:'Finalizado',resp:'Rosely',humor:'😊',app:65,facial:70,gphone:'Instalado',recl:0,valor:2900,obs:'',unidades:72,moradores:216,os_abertas:0,cameras:8,risco_cancel:'Baixo',sindico:'Maria Souza',tel:'(85)99999-0006',timeline:[],particularidades:''},{id:907,nome:'CONDOMINIO EDIFICIO PARMA',filial:'CEARÁ',nota:7.0,sac:'Em tratamento',resp:'Rosely',humor:'😐',app:45,facial:50,gphone:'Não',recl:3,valor:3200,obs:'Portão com barulho',unidades:96,moradores:384,os_abertas:2,cameras:12,risco_cancel:'Médio',sindico:'Paulo Ferreira',tel:'(85)99999-0007',timeline:[],particularidades:''},{id:908,nome:'SINGULAR RESIDENCIAL',filial:'MARANHÃO',nota:7.5,sac:'Em tratamento',resp:'Equipe CS',humor:'😐',app:40,facial:45,gphone:'Não',recl:2,valor:3600,obs:'',unidades:48,moradores:96,os_abertas:1,cameras:6,risco_cancel:'Médio',sindico:'Clara Rocha',tel:'(98)99999-0008',timeline:[],particularidades:''},{id:909,nome:'CONDOMINIO VILLA DI FIORI',filial:'CEARÁ',nota:9.0,sac:'Finalizado',resp:'Josi',humor:'😊',app:90,facial:92,gphone:'Instalado',recl:0,valor:5500,obs:'',unidades:144,moradores:432,os_abertas:0,cameras:16,risco_cancel:'Baixo',sindico:'Luciana Alves',tel:'(85)99999-0009',timeline:[],particularidades:''},{id:910,nome:'ISLA VERDE CONDOMINIUM',filial:'CEARÁ',nota:10.0,sac:'Finalizado',resp:'Josi',humor:'😊',app:95,facial:95,gphone:'Instalado',recl:0,valor:7200,obs:'',unidades:120,moradores:240,os_abertas:0,cameras:16,risco_cancel:'Baixo',sindico:'Fernando Gomes',tel:'(85)99999-0010',timeline:[],particularidades:''}];DB.demandas=[{id:901,cond:'COND. VILLA SOLARIUM',filial:'CEARÁ',tipo:'Retenção',desc:'Risco cancelamento — crítico ativo',resp:'Josy',prio:'Alta',status:'Aberta',abertura:'2026-05-01',prazo:'2026-05-10',obs:'',tratativa:'',conclusao:''},{id:902,cond:'MAISON NOVA METROPOLE',filial:'CEARÁ',tipo:'Técnica',desc:'Módulo guarita fora — tags com problema',resp:'Josy',prio:'Média',status:'Em andamento',abertura:'2026-05-05',prazo:'2026-05-13',obs:'',tratativa:'Técnico alocado',conclusao:''},{id:903,cond:'CONDOMINIO EDIFICIO PARMA',filial:'CEARÁ',tipo:'SAC',desc:'Portão veicular com barulho',resp:'Rosely',prio:'Média',status:'Aguardando',abertura:'2026-05-06',prazo:'2026-05-15',obs:'',tratativa:'',conclusao:''},{id:904,cond:'SINGULAR RESIDENCIAL',filial:'MARANHÃO',tipo:'SAC',desc:'App 40% de adesão',resp:'Equipe CS',prio:'Média',status:'Aberta',abertura:'2026-05-08',prazo:'2026-05-20',obs:'',tratativa:'',conclusao:''}];DB.satisfacao=[{id:901,cond:'COND. COPENHAGUE',filial:'SECOPI',nota:9,pesq_realizada:'Sim',houve_reclamacao:'sim',motivo_reclamacao:'Atendimento da Central',houve_elogio:'nao',comentario:'',resp:'Josi',data:'2026-05-15',mes:'2026-05',nps:'Promotor',classi:'saudavel',status:'Finalizado'},{id:902,cond:'CONDOMINIO MARSOL',filial:'MARANHÃO',nota:8.5,pesq_realizada:'Sim',houve_reclamacao:'nao',motivo_reclamacao:'',houve_elogio:'sim',comentario:'Equipe excelente!',resp:'Rosely',data:'2026-05-14',mes:'2026-05',nps:'Promotor',classi:'saudavel',status:'Finalizado'},{id:903,cond:'COND. VILLA SOLARIUM',filial:'CEARÁ',nota:3.5,pesq_realizada:'Sim',houve_reclamacao:'sim',motivo_reclamacao:'Falta de Retorno',houve_elogio:'nao',comentario:'Sem retorno há 12 dias',resp:'Josy',data:'2026-05-08',mes:'2026-05',nps:'Detrator',classi:'critico',status:'Em acompanhamento'},{id:904,cond:'MAISON NOVA METROPOLE',filial:'CEARÁ',nota:6,pesq_realizada:'Sim',houve_reclamacao:'sim',motivo_reclamacao:'Equipe Técnica',houve_elogio:'nao',comentario:'Módulo guarita fora',resp:'Josy',data:'2026-05-10',mes:'2026-05',nps:'Neutro',classi:'critico',status:'Em acompanhamento'},{id:905,cond:'ISLA VERDE CONDOMINIUM',filial:'CEARÁ',nota:10,pesq_realizada:'Sim',houve_reclamacao:'nao',motivo_reclamacao:'',houve_elogio:'sim',comentario:'Serviço perfeito!',resp:'Josi',data:'2026-05-12',mes:'2026-05',nps:'Promotor',classi:'saudavel',status:'Finalizado'}];DB.retencao=[{id:901,cond:'COND. VILLA SOLARIUM',filial:'CEARÁ',sit:'Em negociação',tipo_neg:'Renovação',motivo:'Insatisfação',acao:'Contato agendado',result:'',data:'2026-05-01',obs:'',valor:4800,resp:'Josy',prox_contato:'2026-05-20',vencimento:'2026-08-01',prox_vencimento:'2026-08-01',ult_contato:'2026-05-20',status_contrato:'Vigente',timeline:[]},{id:902,cond:'EDIFICIO BIENE',filial:'CEARÁ',sit:'Retido',tipo_neg:'Renovação',motivo:'',acao:'Visita + desconto',result:'Cliente retido',data:'2026-04-20',obs:'',valor:2900,resp:'Rosely',prox_contato:'',vencimento:'2026-09-15',prox_vencimento:'2026-09-15',ult_contato:'2026-04-20',status_contrato:'Vigente',timeline:[]},{id:903,cond:'CONDOMINIO MARSOL',filial:'MARANHÃO',sit:'Em contato',tipo_neg:'Renovação',motivo:'Negociação de desconto',acao:'Enviar proposta',result:'',data:'2026-05-10',obs:'',valor:3200,resp:'Josy',prox_contato:'2026-06-10',vencimento:'2026-07-20',prox_vencimento:'2026-07-20',ult_contato:'2026-05-10',status_contrato:'Vigente',timeline:[]},{id:904,cond:'CONDOMINIO EDIFICIO PARMA',filial:'CEARÁ',sit:'Proposta enviada',tipo_neg:'Renovação',motivo:'',acao:'Aguardar retorno',result:'',data:'2026-05-15',obs:'',valor:5100,resp:'Rosely',prox_contato:'2026-05-30',vencimento:'2026-07-01',prox_vencimento:'2026-07-01',ult_contato:'2026-05-15',status_contrato:'Vigente',timeline:[]}];var setores=['SAC','Técnica','Financeiro','Operacional','CS'];(DB.demandas||[]).forEach(function(d,i){if(!d.setor)d.setor=d.tipo||setores[i%setores.length];});var meses=['2026-01','2026-02','2026-03','2026-04','2025-11','2025-12'];var contatos=['2026-05-10','2026-05-15','2026-04-28','2026-05-02','2026-04-15'];(DB.conds||[]).forEach(function(c,i){if(!c.ult_preventiva||c.ult_preventiva==='undefined')
@@ -5373,9 +5373,27 @@ function abrirForm(tipo,idx){try{_aplicarFiltrosPersonalizados();}catch(e){}try{
 if(!podeEd()){showToast('⚠️ Sem permissão para editar',1);return;}
 fType=tipo;fIdx=idx;var tits={cond:'Condomínio',dem:'Demanda',sat:'Pesquisa',critop:'Crítico',ret:'Retenção',inc:'Incidente',fluxo:'Fluxo'};var _titulo=(idx===-1?'➕ Novo ':'✏️ Editar ')+(tits[tipo]||tipo);var _formHtml;try{_formHtml=_buildForm(tipo,idx);}
 catch(e){showToast('Erro: '+e.message,1);console.error(e);return;}
-_abrirDrawer(_titulo,_formHtml);setTimeout(function(){var fc=document.getElementById('fc');if(fc&&!fc.value)try{fc.focus();}catch(e){}},250);}
-function _abrirDrawer(titulo,html){var dbEl=document.getElementById('dbody');var dfEl=document.getElementById('drawer-factions');var dtEl=document.getElementById('dtit');var dr=document.getElementById('drawer');var ov=document.getElementById('overlay');var factionsStart=html.lastIndexOf('<div class="factions">');var bodyHtml=factionsStart>=0?html.substring(0,factionsStart):html;var factionsHtml=factionsStart>=0?html.substring(factionsStart):'';var factionsInner='';if(factionsHtml){var m1=factionsHtml.indexOf('>')+1;var m2=factionsHtml.lastIndexOf('</div>');factionsInner=m2>m1?factionsHtml.substring(m1,m2):factionsHtml;}
-if(dtEl)dtEl.textContent=titulo||'Formulário';if(dbEl){dbEl.innerHTML=bodyHtml;dbEl.scrollTop=0;}
+_abrirDrawer(_titulo,_formHtml,tipo);setTimeout(function(){var fc=document.getElementById('fc');if(fc&&!fc.value)try{fc.focus();}catch(e){}},250);}
+function _abrirDrawer(titulo,html,tipoForm){var dbEl=document.getElementById('dbody');var dfEl=document.getElementById('drawer-factions');var dtEl=document.getElementById('dtit');var dr=document.getElementById('drawer');var ov=document.getElementById('overlay');var factionsStart=html.lastIndexOf('<div class="factions">');var bodyHtml=factionsStart>=0?html.substring(0,factionsStart):html;var factionsHtml=factionsStart>=0?html.substring(factionsStart):'';var factionsInner='';if(factionsHtml){var m1=factionsHtml.indexOf('>')+1;var m2=factionsHtml.lastIndexOf('</div>');factionsInner=m2>m1?factionsHtml.substring(m1,m2):factionsHtml;}
+if(dtEl){
+  dtEl.textContent=titulo||'Formulário';
+  // Botão gerenciar no header do drawer
+  var _btnGFHeader = document.getElementById('drawer-gf-btn');
+  if (!_btnGFHeader) {
+    _btnGFHeader = document.createElement('button');
+    _btnGFHeader.id = 'drawer-gf-btn';
+    _btnGFHeader.type = 'button';
+    _btnGFHeader.style.cssText = 'background:none;border:1px solid #334155;border-radius:6px;color:#64748b;padding:3px 8px;font-size:10px;cursor:pointer;margin-left:8px;vertical-align:middle';
+    _btnGFHeader.textContent = '⚙️ Campos';
+    dtEl.parentNode && dtEl.parentNode.appendChild && dtEl.parentNode.appendChild(_btnGFHeader);
+  }
+  if (tipoForm && ['cond','sat','dem','inc','ret','sla','os','vis'].indexOf(tipoForm) >= 0) {
+    _btnGFHeader.style.display = '';
+    _btnGFHeader.onclick = function(){ abrirGerenciarFormulario(tipoForm); };
+  } else {
+    _btnGFHeader.style.display = 'none';
+  }
+}if(dbEl){dbEl.innerHTML=bodyHtml;dbEl.scrollTop=0;}
 if(dfEl){dfEl.innerHTML=factionsInner;}
 if(dr)dr.classList.add('on');if(ov)ov.classList.add('on');}
 function _abrirMainModal(titulo,bodyHtml){var el=document.getElementById('main-modal');var titl=document.getElementById('main-modal-title');var body=document.getElementById('main-modal-body');if(!el||!body)return;if(titl)titl.textContent=titulo||'Modal';body.innerHTML=bodyHtml||'';el.style.display='flex';}
@@ -5547,7 +5565,9 @@ else{DB.demandas[fIdx]=obj;addLog('SLA','Editou',cond);}
 salvar();fecharForm();try{renderSLA&&renderSLA();}catch(e){}
 try{renderDash();}catch(e){}
 showToast('✅ Registro SLA salvo!');}
-function _buildForm(tipo,idx){var cols={cond:'conds',dem:'demandas',sat:'satisfacao',vis:'visitas',critop:'criticos',ret:'retencao',inc:'incidentes',fluxo:'fluxo'};var col=cols[tipo],d=idx===-1?{}:((DB[col]&&DB[col][idx])||{});var v=function(f,dv){if(dv===undefined)dv='';return d[f]!==undefined&&d[f]!==null?d[f]:dv;};var REQ='<span class="req"> *</span>';var del=idx!==-1&&PERMS.canDelete()?'<button class="btn btn-rd" type="button" onclick="_del(\''+col+'\','+idx+')" data-perm="delete">🗑 Excluir</button>':'';if(tipo==='sat')return _satForm(d,v,REQ,del);if(tipo==='cond')return _condForm(d,v,REQ,del);if(tipo==='dem')return _demForm(d,v,REQ,del);if(tipo==='fluxo')return _fluxoForm(d,v,REQ,del);if(tipo==='adocao')return _adocaoForm(d,v,REQ,del);if(tipo==='inc')return _incForm(d,v,REQ,del);if(tipo==='vis')return _visForm(d,v,REQ,del);if(tipo==='ret')return _renForm(d,v,REQ,del);if(tipo==='sla')return _slaForm(d,v,REQ,del);var fields=(DB.form_config&&DB.form_config[tipo]||[]).filter(function(f){return f.active!==false;}).sort(function(a,b){return(a.order||0)-(b.order||0);});if(!fields.length)return'<p style="color:#334155;padding:16px">Formulário não configurado para: '+tipo+'</p>';var html='<div class="fgrid">';if(['critop','ret','vis','inc','fluxo'].indexOf(tipo)>=0){html+='<div class="fg full"><label>Condomínio'+REQ+'</label>'+buildCondAutocomplete('fc',v('cond'))+'</div>';html+='<div id="form-mini-dash" style="grid-column:1/-1">'+(v('cond')?_showMiniDash(v('cond'),true):'')+'</div>';html+='<div class="fg"><label>Filial</label><select class="fi" id="ff">'+_getFiliais().map(function(f){return'<option'+(v('filial','CEARÁ')===f?' selected':'')+'>'+f+'</option>';}).join('')+'</select></div>';if(tipo==='fluxo')html+='<div class="fg"><label>Mês'+REQ+'</label><input class="fi" id="fmes" value="'+esc(v('mes',hoje().substring(0,7)))+'" placeholder="YYYY-MM"></div>';}
+function _buildForm(tipo,idx){var cols={cond:'conds',dem:'demandas',sat:'satisfacao',vis:'visitas',critop:'criticos',ret:'retencao',inc:'incidentes',fluxo:'fluxo'};var col=cols[tipo],d=idx===-1?{}:((DB[col]&&DB[col][idx])||{});var v=function(f,dv){if(dv===undefined)dv='';return d[f]!==undefined&&d[f]!==null?d[f]:dv;};var REQ='<span class="req"> *</span>';var del=idx!==-1&&PERMS.canDelete()?'<button class="btn btn-rd" type="button" onclick="_del(\''+col+'\','+idx+')" data-perm="delete">🗑 Excluir</button>':'';var _TIPOS_GERENCIAVEIS = ['cond','sat','dem','inc','ret','sla'];
+  var _btnGF = (_TIPOS_GERENCIAVEIS.indexOf(tipo) >= 0) ? _btnGerenciarForm(tipo) : '';
+  if(tipo==='sat')return _btnGF + _satForm(d,v,REQ,del);if(tipo==='cond')return _btnGF + _condForm(d,v,REQ,del);if(tipo==='dem')return _btnGF + _demForm(d,v,REQ,del);if(tipo==='fluxo')return _fluxoForm(d,v,REQ,del);if(tipo==='adocao')return _adocaoForm(d,v,REQ,del);if(tipo==='inc')return _btnGF + _incForm(d,v,REQ,del);if(tipo==='vis')return _visForm(d,v,REQ,del);if(tipo==='ret')return _btnGF + _renForm(d,v,REQ,del);if(tipo==='sla')return _btnGF + _slaForm(d,v,REQ,del);var fields=(DB.form_config&&DB.form_config[tipo]||[]).filter(function(f){return f.active!==false;}).sort(function(a,b){return(a.order||0)-(b.order||0);});if(!fields.length)return'<p style="color:#334155;padding:16px">Formulário não configurado para: '+tipo+'</p>';var html='<div class="fgrid">';if(['critop','ret','vis','inc','fluxo'].indexOf(tipo)>=0){html+='<div class="fg full"><label>Condomínio'+REQ+'</label>'+buildCondAutocomplete('fc',v('cond'))+'</div>';html+='<div id="form-mini-dash" style="grid-column:1/-1">'+(v('cond')?_showMiniDash(v('cond'),true):'')+'</div>';html+='<div class="fg"><label>Filial</label><select class="fi" id="ff">'+_getFiliais().map(function(f){return'<option'+(v('filial','CEARÁ')===f?' selected':'')+'>'+f+'</option>';}).join('')+'</select></div>';if(tipo==='fluxo')html+='<div class="fg"><label>Mês'+REQ+'</label><input class="fi" id="fmes" value="'+esc(v('mes',hoje().substring(0,7)))+'" placeholder="YYYY-MM"></div>';}
 fields.forEach(function(f){var fv=v(f.id,''),ph=esc(f.placeholder||''),cls=f.fullrow?' full':'';html+='<div class="fg'+cls+'"><label>'+esc(f.label)+(f.req?REQ:'')+'</label>';switch(f.type){case'text':html+='<input class="fi" id="f_'+f.id+'" value="'+esc(fv)+'" placeholder="'+ph+'">';break;case'number':html+='<input class="fi" type="number" id="f_'+f.id+'" value="'+esc(fv)+'">';break;case'date':html+='<input class="fi" type="date" id="f_'+f.id+'" value="'+esc(fv)+'">';break;case'textarea':html+='<textarea class="fi" id="f_'+f.id+'" placeholder="'+ph+'">'+esc(fv)+'</textarea>';break;case'autocomplete':html+=buildCondAutocomplete('f_'+f.id,fv);break;case'nota_visual':var nv=fv!==''&&fv!==null?parseFloat(fv):null;html+='<div class="nota-visual">'+[0,1,2,3,4,5,6,7,8,9,10].map(function(n){var nc=n>=9?'sel-prom':n>=7?'sel-neut':'sel-detr';var act=(nv!==null&&parseInt(nv)===n)?nc:'';return'<button type="button" class="nota-btn '+act+'" onclick="_sn('+n+')">'+n+'</button>';}).join('')+'</div><input type="hidden" id="f_nota" value="'+(nv!==null?nv:'')+'">';break;case'select':html+='<select class="fi" id="f_'+f.id+'">'+(f.opts||[]).map(function(o){return'<option'+(String(fv)===String(o)?' selected':'')+'>'+esc(o)+'</option>';}).join('')+'</select>';break;default:html+='<input class="fi" id="f_'+f.id+'" value="'+esc(fv)+'" placeholder="'+ph+'">';break;}
 html+='</div>';});html+='</div><div class="factions"><button class="btn btn-bl" type="button" onclick="_sg(\''+tipo+'\')">💾 Salvar</button>'+del+'<button class="btn btn-gh" type="button" onclick="fecharForm()">Cancelar</button></div>';return html;}
 function _tp(){var val=(document.getElementById('fpesq_real')||{value:'Sim'}).value;var n=document.getElementById('sc-nota'),m=document.getElementById('sc-motivo-nao');if(n)n.style.display=val==='Não'?'none':'';if(m)m.style.display=val==='Não'?'':'none';}
@@ -9843,6 +9863,374 @@ function _atualizarEmbedded() {
 
 
 // ================================================================
+// GERENCIADOR DE FORMULÁRIOS
+// Botão ⚙️ dentro de cada formulário para editar campos
+// ================================================================
+
+// Definição padrão dos campos de cada formulário
+var _FORM_FIELDS_DEFAULT = {
+  cond: [
+    {id:'nome',       label:'Nome',              type:'text',     req:true,  fullrow:true,  active:true, ordem:1},
+    {id:'cod',        label:'Código do Cliente', type:'text',     req:false, fullrow:false, active:true, ordem:2},
+    {id:'filial',     label:'Filial',            type:'select',   req:true,  fullrow:false, active:true, ordem:3, fonte:'filiais'},
+    {id:'unidades',   label:'Qtd Unidades',      type:'number',   req:false, fullrow:false, active:true, ordem:4},
+    {id:'moradores',  label:'Qtd Moradores',     type:'number',   req:false, fullrow:false, active:true, ordem:5},
+    {id:'implantacao',label:'Data de Implantação',type:'date',    req:false, fullrow:false, active:true, ordem:6},
+    {id:'sindico',    label:'Síndico',           type:'text',     req:false, fullrow:false, active:true, ordem:7},
+    {id:'resp',       label:'Responsável CS',    type:'select',   req:false, fullrow:false, active:true, ordem:8, fonte:'responsaveis'},
+    {id:'humor',      label:'Humor Síndico',     type:'select',   req:false, fullrow:false, active:true, ordem:9, fonte:'humor'},
+    {id:'risco_cancel',label:'Risco Cancelamento',type:'select',  req:false, fullrow:false, active:true, ordem:10, opts:['Baixo','Médio','Alto','Cancelado']},
+    {id:'valor',      label:'Valor Mensal (R$)', type:'number',   req:false, fullrow:false, active:true, ordem:11},
+    {id:'obs',        label:'Observações',       type:'textarea', req:false, fullrow:true,  active:true, ordem:12},
+  ],
+  sat: [
+    {id:'cond',    label:'Condomínio',          type:'autocomplete', req:true,  fullrow:true,  active:true, ordem:1},
+    {id:'mes',     label:'Mês de Referência',   type:'text',         req:true,  fullrow:false, active:true, ordem:2},
+    {id:'nota',    label:'Nota de Satisfação',  type:'nota_visual',  req:false, fullrow:true,  active:true, ordem:3},
+    {id:'resp',    label:'Responsável CS',      type:'select',       req:false, fullrow:false, active:true, ordem:4, fonte:'responsaveis'},
+    {id:'houve_reclamacao',label:'Houve Reclamação?',type:'select',  req:false, fullrow:false, active:true, ordem:5, opts:['Não','Sim']},
+    {id:'obs',     label:'Observações',         type:'textarea',     req:false, fullrow:true,  active:true, ordem:6},
+  ],
+  dem: [
+    {id:'cond',    label:'Condomínio',     type:'autocomplete', req:true,  fullrow:true,  active:true, ordem:1},
+    {id:'tipo',    label:'Tipo',           type:'select',       req:true,  fullrow:false, active:true, ordem:2, fonte:'tipos_demanda'},
+    {id:'resp',    label:'Responsável',    type:'select',       req:false, fullrow:false, active:true, ordem:3, fonte:'responsaveis'},
+    {id:'prioridade',label:'Prioridade',   type:'select',       req:false, fullrow:false, active:true, ordem:4, opts:['Alta','Normal','Baixa']},
+    {id:'prazo',   label:'Prazo',          type:'date',         req:false, fullrow:false, active:true, ordem:5},
+    {id:'descricao',label:'Descrição',     type:'textarea',     req:false, fullrow:true,  active:true, ordem:6},
+  ],
+  inc: [
+    {id:'cond',    label:'Condomínio',     type:'autocomplete', req:true,  fullrow:true,  active:true, ordem:1},
+    {id:'tipo',    label:'Tipo',           type:'select',       req:true,  fullrow:false, active:true, ordem:2, opts:['Acesso indevido','Falha de equipamento','Vandalismo','Furto/Roubo','Outros']},
+    {id:'gravidade',label:'Gravidade',     type:'select',       req:false, fullrow:false, active:true, ordem:3, opts:['Alta','Média','Baixa']},
+    {id:'resp',    label:'Responsável',    type:'select',       req:false, fullrow:false, active:true, ordem:4, fonte:'responsaveis'},
+    {id:'data',    label:'Data',           type:'date',         req:false, fullrow:false, active:true, ordem:5},
+    {id:'descricao',label:'Descrição',     type:'textarea',     req:false, fullrow:true,  active:true, ordem:6},
+  ],
+  ret: [
+    {id:'cond',    label:'Condomínio',     type:'autocomplete', req:true,  fullrow:true,  active:true, ordem:1},
+    {id:'motivo',  label:'Motivo',         type:'select',       req:false, fullrow:false, active:true, ordem:2, opts:['Preço','Concorrência','Insatisfação','Mudança','Outros']},
+    {id:'resp',    label:'Responsável',    type:'select',       req:false, fullrow:false, active:true, ordem:3, fonte:'responsaveis'},
+    {id:'data',    label:'Data Contato',   type:'date',         req:false, fullrow:false, active:true, ordem:4},
+    {id:'obs',     label:'Observações',    type:'textarea',     req:false, fullrow:true,  active:true, ordem:5},
+  ],
+  sla: [
+    {id:'cond',    label:'Condomínio',     type:'autocomplete', req:true,  fullrow:true,  active:true, ordem:1},
+    {id:'tipo',    label:'Tipo',           type:'select',       req:true,  fullrow:false, active:true, ordem:2, fonte:'tipos_demanda'},
+    {id:'resp',    label:'Responsável',    type:'select',       req:false, fullrow:false, active:true, ordem:3, fonte:'responsaveis'},
+    {id:'prazo',   label:'Prazo (horas)',  type:'number',       req:false, fullrow:false, active:true, ordem:4},
+    {id:'descricao',label:'Descrição',     type:'textarea',     req:false, fullrow:true,  active:true, ordem:5},
+  ],
+};
+
+var _TIPO_NOMES = {
+  cond:'Condomínio', sat:'Pesquisa de Satisfação', dem:'Demanda',
+  inc:'Incidente', ret:'Renovação/Retenção', sla:'SLA & Operação',
+};
+
+var _FIELD_TIPOS = ['text','number','date','textarea','select','autocomplete'];
+var _FIELD_TIPO_LABELS = {text:'Texto',number:'Número',date:'Data',textarea:'Texto longo',select:'Lista (select)',autocomplete:'Autocomplete'};
+
+// Retorna campos do formulário (config salva ou padrão)
+function _getFormFields(tipo) {
+  garantirDB();
+  if (!DB.form_fields) DB.form_fields = {};
+  if (DB.form_fields[tipo] && DB.form_fields[tipo].length) {
+    return JSON.parse(JSON.stringify(DB.form_fields[tipo]));
+  }
+  return JSON.parse(JSON.stringify(_FORM_FIELDS_DEFAULT[tipo] || []));
+}
+
+// Salva campos de um formulário
+function _saveFormFields(tipo, fields) {
+  garantirDB();
+  if (!DB.form_fields) DB.form_fields = {};
+  DB.form_fields[tipo] = fields;
+  salvar();
+}
+
+// Gerar HTML do botão gerenciar dentro do formulário
+function _btnGerenciarForm(tipo) {
+  return '<div style="display:flex;justify-content:flex-end;margin-bottom:8px">' +
+    '<button type="button" onclick="abrirGerenciarFormulario(\'' + tipo + '\')" ' +
+      'style="background:none;border:1px solid #334155;border-radius:6px;color:#64748b;' +
+      'padding:4px 10px;font-size:10px;cursor:pointer;display:flex;align-items:center;gap:4px">' +
+      '⚙️ Personalizar campos' +
+    '</button>' +
+  '</div>';
+}
+
+// Modal de gerenciamento de campos
+function abrirGerenciarFormulario(tipo) {
+  var modal = document.getElementById('modal-gf');
+  if (!modal) { _criarModalGF(); modal = document.getElementById('modal-gf'); }
+  
+  window._gfTipo = tipo;
+  var fields = _getFormFields(tipo);
+  var nome = _TIPO_NOMES[tipo] || tipo;
+
+  document.getElementById('gf-titulo').textContent = '⚙️ Campos — ' + nome;
+  _renderGFCampos(fields);
+  modal.style.display = 'flex';
+}
+
+function _renderGFCampos(fields) {
+  var cont = document.getElementById('gf-campos');
+  if (!cont) return;
+  fields = (fields || []).slice().sort(function(a,b){ return (a.ordem||0)-(b.ordem||0); });
+
+  cont.innerHTML = fields.map(function(f, i) {
+    var isAtivo  = f.active !== false;
+    var isSelect = f.type === 'select';
+    var optsHtml = '';
+    if (isSelect) {
+      var tags = (f.opts || []).map(function(op, oi) {
+        return '<span style="display:inline-flex;align-items:center;gap:3px;background:#1e2736;border:1px solid #334155;' +
+               'border-radius:20px;padding:3px 10px;font-size:11px;color:#e2e8f0">' + op +
+               '<button data-rm-opt="'+i+'|'+oi+'" style="background:none;border:none;color:#64748b;cursor:pointer;font-size:11px;line-height:1;padding:0 0 0 2px">✕</button></span>';
+      }).join('');
+      optsHtml = '<div style="padding:10px 12px 12px;background:#060810;border-top:1px solid #1e2736">' +
+        '<div style="font-size:9px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Opções disponíveis no select</div>' +
+        '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">' + (tags || '<span style="font-size:11px;color:#475569">Nenhuma opção. Adicione abaixo.</span>') + '</div>' +
+        '<div style="display:flex;gap:6px;align-items:center">' +
+          '<input id="gf_nova_opt_'+i+'" placeholder="Nova opção..." style="flex:1;background:#1e2736;border:1px solid #334155;border-radius:6px;color:#e2e8f0;padding:5px 10px;font-size:11px" ' +
+            'onkeydown="if(event.key===\'Enter\'){event.preventDefault();_gfAdicionarOpcao('+i+');}">' +
+          '<button data-add-opt="'+i+'" style="padding:5px 12px;background:#3b82f6;border:none;border-radius:6px;color:#fff;font-size:11px;font-weight:700;cursor:pointer">+ Adicionar</button>' +
+        '</div>' +
+      '</div>';
+    }
+
+    return '<div style="border:1px solid '+(isAtivo?'#1e2736':'#0d1117')+';border-radius:10px;margin-bottom:8px;' +
+             'overflow:hidden;opacity:'+(isAtivo?'1':'0.45')+'">' +
+      // ── Linha principal ──
+      '<div style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:#0d1117">' +
+        // Ordem
+        '<div style="display:flex;flex-direction:column;gap:2px;flex-shrink:0">' +
+          '<button data-mv="'+i+'|-1" style="background:#1e2736;border:1px solid #334155;border-radius:4px;color:#64748b;width:22px;height:16px;cursor:pointer;font-size:9px;line-height:1;padding:0">▲</button>' +
+          '<button data-mv="'+i+'|1"  style="background:#1e2736;border:1px solid #334155;border-radius:4px;color:#64748b;width:22px;height:16px;cursor:pointer;font-size:9px;line-height:1;padding:0">▼</button>' +
+        '</div>' +
+        // Nome
+        '<input id="gflbl_'+i+'" data-lid="'+i+'" placeholder="Nome do campo" ' +
+          'style="flex:1;background:#1e2736;border:1px solid #334155;border-radius:7px;color:#f1f5f9;padding:6px 10px;font-size:12px;font-weight:600;min-width:0" ' +
+          'onchange="window._gfDirty=true">' +
+        // Tipo
+        '<select id="gftp_'+i+'" data-tp="'+i+'" ' +
+          'style="background:#1e2736;border:1px solid #334155;border-radius:7px;color:#94a3b8;padding:5px 8px;font-size:11px;height:32px;cursor:pointer">' +
+          _FIELD_TIPOS.map(function(t){
+            return '<option value="'+t+'"'+(f.type===t?' selected':'')+'>'+(_FIELD_TIPO_LABELS[t]||t)+'</option>';
+          }).join('') +
+        '</select>' +
+        // Checkboxes
+        '<label style="display:flex;align-items:center;gap:4px;font-size:10px;color:#64748b;cursor:pointer;white-space:nowrap;flex-shrink:0">' +
+          '<input type="checkbox" id="gfreq_'+i+'"'+(f.req?' checked':'')+' onchange="window._gfDirty=true" style="cursor:pointer;accent-color:#3b82f6"> Obrigatório' +
+        '</label>' +
+        '<label style="display:flex;align-items:center;gap:4px;font-size:10px;color:#64748b;cursor:pointer;white-space:nowrap;flex-shrink:0">' +
+          '<input type="checkbox" id="gffull_'+i+'"'+(f.fullrow?' checked':'')+' onchange="window._gfDirty=true" style="cursor:pointer;accent-color:#3b82f6"> Largura total' +
+        '</label>' +
+        // Botão ocultar
+        '<button data-tog="'+i+'" style="padding:4px 10px;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;border:1px solid;white-space:nowrap;flex-shrink:0;' +
+          (isAtivo ? 'background:transparent;border-color:#334155;color:#64748b' : 'background:rgba(16,185,129,.15);border-color:#10b981;color:#10b981') + '">' +
+          (isAtivo ? '🙈 Ocultar' : '👁 Mostrar') +
+        '</button>' +
+        // Botão excluir
+        (!f._padrao ? '<button data-del="'+i+'" style="background:rgba(239,68,68,.12);border:1px solid #ef444450;border-radius:6px;color:#ef4444;padding:4px 8px;cursor:pointer;font-size:13px;flex-shrink:0" title="Excluir campo">🗑</button>' : '') +
+      '</div>' +
+      // ── Seção opções (só se select) ──
+      optsHtml +
+    '</div>';
+  }).join('') +
+  // Botão adicionar campo
+  '<button data-add-field style="width:100%;padding:10px;background:transparent;border:2px dashed #1e2736;border-radius:10px;color:#3b82f6;cursor:pointer;font-size:12px;font-weight:700;margin-top:4px;transition:border-color .2s" ' +
+    'onmouseover="this.style.borderColor=\'#3b82f6\'" onmouseout="this.style.borderColor=\'#1e2736\'">' +
+    '➕ Adicionar novo campo' +
+  '</button>';
+
+  // Preencher valores dos inputs via JS (evita encoding)
+  fields.forEach(function(f, i) {
+    var lbl = document.getElementById('gflbl_' + i);
+    if (lbl) lbl.value = f.label || '';
+  });
+
+  window._gfFields = JSON.parse(JSON.stringify(fields));
+  window._gfDirty  = false;
+
+  // Event delegation único para todo o container
+  if (!cont._gfInit) {
+    cont._gfInit = true;
+    cont.addEventListener('click', function(e) {
+      var mv  = e.target.closest('[data-mv]');
+      var tog = e.target.closest('[data-tog]');
+      var del = e.target.closest('[data-del]');
+      var aof = e.target.closest('[data-add-opt]');
+      var rmo = e.target.closest('[data-rm-opt]');
+      var adf = e.target.closest('[data-add-field]');
+      if (mv)  { var p=mv.getAttribute('data-mv').split('|');   _gfMover(p[0]-0, p[1]-0); }
+      if (tog) { _gfToggleAtivo(tog.getAttribute('data-tog')-0); }
+      if (del) { _gfExcluir(del.getAttribute('data-del')-0); }
+      if (aof) { _gfAdicionarOpcao(aof.getAttribute('data-add-opt')-0); }
+      if (rmo) { var p=rmo.getAttribute('data-rm-opt').split('|'); _gfRemoverOpcao(p[0]-0,p[1]-0); }
+      if (adf) { _gfAdicionarCampo(); }
+    });
+    cont.addEventListener('change', function(e) {
+      var tp = e.target.closest('[data-tp]');
+      if (tp) _gfOnTipoChange(tp.getAttribute('data-tp')-0);
+    });
+  }
+}
+
+function _gfLerCampos() {
+  var fields = window._gfFields || [];
+  fields.forEach(function(f, i) {
+    var lbl = document.getElementById('gflbl_' + i);
+    var tp  = document.getElementById('gftp_' + i);
+    var req = document.getElementById('gfreq_' + i);
+    var ful = document.getElementById('gffull_' + i);
+    if (lbl) f.label   = lbl.value.trim();
+    if (tp)  f.type    = tp.value;
+    if (req) f.req     = req.checked;
+    if (ful) f.fullrow = ful.checked;
+  });
+  return fields;
+}
+
+function _gfMover(i, dir) {
+  var fields = _gfLerCampos();
+  var j = i + dir;
+  if (j < 0 || j >= fields.length - 1) return; // -1 pois o último é o botão +
+  var tmp = fields[i]; fields[i] = fields[j]; fields[j] = tmp;
+  fields.forEach(function(f, idx) { f.ordem = idx + 1; });
+  window._gfFields = fields;
+  _renderGFCampos(fields);
+}
+
+function _gfToggleAtivo(i) {
+  var fields = _gfLerCampos();
+  fields[i].active = !(fields[i].active !== false);
+  window._gfFields = fields;
+  _renderGFCampos(fields);
+}
+
+function _gfExcluir(i) {
+  if (!confirm('Excluir este campo?')) return;
+  var fields = _gfLerCampos();
+  fields.splice(i, 1);
+  fields.forEach(function(f, idx) { f.ordem = idx + 1; });
+  window._gfFields = fields;
+  _renderGFCampos(fields);
+}
+
+function _gfAdicionarCampo() {
+  var fields = _gfLerCampos();
+  fields.push({
+    id: 'campo_' + Date.now(),
+    label: 'Novo Campo',
+    type: 'text',
+    req: false,
+    fullrow: false,
+    active: true,
+    ordem: fields.length + 1,
+    _padrao: false
+  });
+  window._gfFields = fields;
+  _renderGFCampos(fields);
+}
+
+function _gfOnTipoChange(i) {
+  window._gfDirty = true;
+  var fields = _gfLerCampos();
+  var tp = document.getElementById('gftp_' + i);
+  if (tp) fields[i].type = tp.value;
+  window._gfFields = fields;
+  // Re-renderizar apenas esse row para mostrar/ocultar opções
+  _renderGFCampos(fields);
+}
+
+function _gfAdicionarOpcao(i) {
+  var inp = document.getElementById('gf_nova_opt_' + i);
+  var nova = inp ? inp.value.trim() : '';
+  if (!nova) { if(inp) inp.focus(); return; }
+  var fields = _gfLerCampos();
+  if (!fields[i].opts) fields[i].opts = [];
+  fields[i].opts.push(nova);
+  window._gfFields = fields;
+  _renderGFCampos(fields);
+}
+
+function _gfRemoverOpcao(i, oi) {
+  var fields = _gfLerCampos();
+  if (fields[i].opts) fields[i].opts.splice(oi, 1);
+  window._gfFields = fields;
+  _renderGFCampos(fields);
+}
+
+function _gfSalvar() {
+  var fields = _gfLerCampos();
+  var tipo = window._gfTipo;
+  _saveFormFields(tipo, fields);
+  // Fechar e re-abrir o formulário para refletir mudanças
+  document.getElementById('modal-gf').style.display = 'none';
+  showToast('✅ Campos do formulário atualizados!');
+  // Re-abrir o formulário atual se estiver aberto
+  try {
+    var drawer = document.getElementById('drawer');
+    if (drawer && drawer.style.display !== 'none') {
+      setTimeout(function() { abrirForm(tipo, window.fIdx || -1); }, 200);
+    }
+  } catch(e) {}
+}
+
+function _gfResetar() {
+  if (!confirm('Restaurar campos padrão deste formulário?')) return;
+  var tipo = window._gfTipo;
+  garantirDB();
+  if (DB.form_fields) delete DB.form_fields[tipo];
+  salvar();
+  var fields = _getFormFields(tipo);
+  _renderGFCampos(fields);
+  showToast('✅ Campos restaurados para o padrão!');
+}
+
+function _criarModalGF() {
+  var d = document.createElement('div');
+  d.id = 'modal-gf';
+  d.style.cssText = 'display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.8);z-index:10002;align-items:center;justify-content:center;';
+  d.innerHTML =
+    '<div style="background:#1e1e2e;border-radius:14px;width:92%;max-width:700px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 24px 80px rgba(0,0,0,.6)">' +
+      // Header
+      '<div style="padding:16px 20px;border-bottom:1px solid #1e2736;display:flex;align-items:center;justify-content:space-between;background:#0d1117;border-radius:14px 14px 0 0">' +
+        '<div>' +
+          '<div id="gf-titulo" style="font-size:14px;font-weight:700;color:#f1f5f9"></div>' +
+          '<div style="font-size:10px;color:#64748b;margin-top:2px">Adicione, remova, reordene e renomeie campos do formulário</div>' +
+        '</div>' +
+        '<button onclick="document.getElementById(\'modal-gf\').style.display=\'none\'" ' +
+          'style="background:none;border:none;color:#64748b;font-size:20px;cursor:pointer;line-height:1">✕</button>' +
+      '</div>' +
+      // Legenda
+      '<div style="padding:10px 20px;background:#080b12;border-bottom:1px solid #1e2736;display:flex;gap:16px;flex-wrap:wrap">' +
+        '<span style="font-size:9px;color:#64748b">▲▼ Reordenar</span>' +
+        '<span style="font-size:9px;color:#64748b">✏️ Editar nome/tipo</span>' +
+        '<span style="font-size:9px;color:#64748b">🙈 Ocultar campo</span>' +
+        '<span style="font-size:9px;color:#64748b">🗑 Excluir campos extras</span>' +
+        '<span style="font-size:9px;color:#64748b">➕ Adicionar novo campo</span>' +
+      '</div>' +
+      // Body
+      '<div id="gf-campos" style="flex:1;overflow-y:auto;padding:16px 20px"></div>' +
+      // Footer
+      '<div style="padding:14px 20px;border-top:1px solid #1e2736;display:flex;gap:8px;justify-content:flex-end;background:#0d1117;border-radius:0 0 14px 14px">' +
+        '<button onclick="_gfResetar()" style="padding:8px 14px;background:#1e2736;border:1px solid #334155;border-radius:8px;color:#64748b;cursor:pointer;font-size:11px">↺ Restaurar padrão</button>' +
+        '<button onclick="document.getElementById(\'modal-gf\').style.display=\'none\'" style="padding:8px 14px;background:#1e2736;border:1px solid #334155;border-radius:8px;color:#94a3b8;cursor:pointer;font-size:11px">Cancelar</button>' +
+        '<button onclick="_gfSalvar()" style="padding:8px 20px;background:#3b82f6;border:none;border-radius:8px;color:#fff;cursor:pointer;font-size:12px;font-weight:700">💾 Salvar campos</button>' +
+      '</div>' +
+    '</div>';
+  document.body.appendChild(d);
+  d.addEventListener('click', function(e){ if(e.target===d) d.style.display='none'; });
+}
+
+// ================================================================
+// FIM GERENCIADOR DE FORMULÁRIOS
+// ================================================================
+
+// ================================================================
 // SINCRONIZAÇÃO TOTAL DO SISTEMA
 // Chamada sempre que qualquer personalização é salva
 // ================================================================
@@ -10215,11 +10603,20 @@ function renderConstrutor() {
     '<div id="construtor-panel"></div>';
 
   _switchConstrutor(_construtorTab);
+  // Event delegation para sub-abas (evita problema de onclick inline)
+  var el2 = document.getElementById('config-personalizacao');
+  if (el2 && !el2._ctabInit) {
+    el2._ctabInit = true;
+    el2.addEventListener('click', function(e) {
+      var btn = e.target.closest('[data-ctab]');
+      if (btn) { _switchConstrutor(btn.getAttribute('data-ctab')); }
+    });
+  }
 }
 
 function _cTab(id, emoji, nome) {
   var active = _construtorTab === id;
-  return '<button onclick="_switchConstrutor(\''+id+'\')" '+
+  return '<button data-ctab="'+id+'" '+
     'style="padding:7px 14px;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700;transition:all .2s;' +
     (active ? 'background:#3b82f6;color:#fff;' : 'background:#1e2736;color:#64748b;') + '">' +
     emoji + ' ' + nome + '</button>';
