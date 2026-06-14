@@ -700,7 +700,7 @@ showToast('📄 Relatório gerado!');try{renderVisitas();}catch(e){}}</script>
 <div class="ph">
 <div>
 <h1>🔴 Central de Críticos</h1>
-<p>Classificação automática inteligente</p>
+<p>Classificação automática inteligente <span onclick="abrirLegendaScore()" title="Entender os scores" style="cursor:pointer;font-size:11px;background:#1e2736;border:1px solid #334155;border-radius:50%;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;color:#64748b;font-weight:700;vertical-align:middle;margin-left:4px">?</span></p>
 </div>
 <div style="display:flex;gap:7px;flex-wrap:wrap">
 <button class="btn btn-gh btn-sm" id="crit-vtoggle" onclick="critToggle()">☰ Lista</button>
@@ -11903,5 +11903,194 @@ function _criarModalFiltros() {
 }
 // ================================================================
 // FIM MÓDULO FILTROS ABA
+
+
+
+// === LEGENDA NPS ===
+function abrirLegendaNPS() {
+  var modal = document.getElementById('modal-legenda-nps');
+  if (!modal) {
+    var d = document.createElement('div');
+    d.id = 'modal-legenda-nps';
+    d.style.cssText = 'display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.75);z-index:10001;align-items:center;justify-content:center;';
+    d.innerHTML =
+      '<div style="background:#1e1e2e;border-radius:14px;padding:24px;max-width:460px;width:92%;color:#cdd6f4;box-shadow:0 20px 60px rgba(0,0,0,.5)">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">' +
+          '<h3 style="margin:0;font-size:14px;font-weight:700;color:#f1f5f9">🎯 Como interpretar o NPS</h3>' +
+          '<button onclick="fecharLegendaNPS()" style="background:none;border:none;color:#94a3b8;font-size:18px;cursor:pointer;line-height:1">✕</button>' +
+        '</div>' +
+        '<p style="font-size:11px;color:#94a3b8;margin-bottom:14px;line-height:1.6">' +
+          'O <strong style="color:#f1f5f9">NPS (Net Promoter Score)</strong> mede a satisfação da sua carteira. Varia de <strong>−100</strong> a <strong>+100</strong>:<br>' +
+          '<span style="display:block;margin-top:6px;background:#0d1117;padding:8px 12px;border-radius:8px;font-family:monospace;font-size:11px;color:#3b82f6">NPS = % Promotores − % Detratores</span>' +
+        '</p>' +
+        '<div style="margin-bottom:18px">' +
+          '<div style="font-size:10px;color:#64748b;font-weight:700;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Faixas de Classificação</div>' +
+          '<table style="width:100%;border-collapse:collapse;font-size:11px">' +
+            '<thead><tr style="background:#0d1117">' +
+              '<th style="padding:7px 10px;text-align:left;color:#64748b;font-size:9px">FAIXA</th>' +
+              '<th style="padding:7px 10px;text-align:left;color:#64748b;font-size:9px">CLASSIFICAÇÃO</th>' +
+              '<th style="padding:7px 10px;text-align:left;color:#64748b;font-size:9px">SITUAÇÃO</th>' +
+            '</tr></thead>' +
+            '<tbody>' +
+              '<tr style="background:#1a0a0a"><td style="padding:7px 10px;color:#ef4444;font-weight:700">Abaixo de 0</td><td style="padding:7px 10px">❌ Crítico</td><td style="padding:7px 10px;color:#94a3b8">Mais detratores que promotores</td></tr>' +
+              '<tr style="background:#1e1a0a"><td style="padding:7px 10px;color:#f59e0b;font-weight:700">0 a 29</td><td style="padding:7px 10px">🟡 Razoável</td><td style="padding:7px 10px;color:#94a3b8">Ainda preocupante</td></tr>' +
+              '<tr style="background:#0a1a10"><td style="padding:7px 10px;color:#10b981;font-weight:700">30 a 49</td><td style="padding:7px 10px">🟢 Bom</td><td style="padding:7px 10px;color:#94a3b8">Resultado positivo</td></tr>' +
+              '<tr style="background:#0a1020"><td style="padding:7px 10px;color:#3b82f6;font-weight:700">50 a 74</td><td style="padding:7px 10px">🔵 Ótimo</td><td style="padding:7px 10px;color:#94a3b8">Referência de mercado</td></tr>' +
+              '<tr style="background:#1a1020"><td style="padding:7px 10px;color:#8b5cf6;font-weight:700">75 a 100</td><td style="padding:7px 10px">🏆 Excelente</td><td style="padding:7px 10px;color:#94a3b8">Classe mundial</td></tr>' +
+            '</tbody>' +
+          '</table>' +
+        '</div>' +
+        '<div>' +
+          '<div style="font-size:10px;color:#64748b;font-weight:700;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">O que são os badges ✅ 😐 👎</div>' +
+          '<div style="display:flex;flex-direction:column;gap:8px">' +
+            '<div style="display:flex;align-items:flex-start;gap:10px;background:#0a1a10;border-radius:8px;padding:10px 12px">' +
+              '<span style="font-size:18px;line-height:1">✅</span>' +
+              '<div><div style="font-size:11px;font-weight:700;color:#10b981">Promotores — nota 9 ou 10</div>' +
+              '<div style="font-size:10px;color:#94a3b8;margin-top:2px">Clientes satisfeitos que recomendam o serviço.</div></div>' +
+            '</div>' +
+            '<div style="display:flex;align-items:flex-start;gap:10px;background:#1e1a0a;border-radius:8px;padding:10px 12px">' +
+              '<span style="font-size:18px;line-height:1">😐</span>' +
+              '<div><div style="font-size:11px;font-weight:700;color:#f59e0b">Neutros — nota 7 ou 8</div>' +
+              '<div style="font-size:10px;color:#94a3b8;margin-top:2px">Satisfeitos, mas não contam no cálculo do NPS.</div></div>' +
+            '</div>' +
+            '<div style="display:flex;align-items:flex-start;gap:10px;background:#1a0a0a;border-radius:8px;padding:10px 12px">' +
+              '<span style="font-size:18px;line-height:1">👎</span>' +
+              '<div><div style="font-size:11px;font-weight:700;color:#ef4444">Detratores — nota 1 a 6</div>' +
+              '<div style="font-size:10px;color:#94a3b8;margin-top:2px">Insatisfeitos. Cada detrator puxa o NPS para baixo.</div></div>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div style="display:flex;justify-content:flex-end;margin-top:18px">' +
+          '<button onclick="fecharLegendaNPS()" ' +
+            'style="padding:8px 20px;background:#3b82f6;border:none;border-radius:8px;color:#fff;font-weight:700;font-size:12px;cursor:pointer">Entendido ✓</button>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(d);
+    d.addEventListener('click', function(e){ if(e.target===d) d.style.display='none'; });
+    modal = d;
+  }
+  modal.style.display = 'flex';
+}
+function fecharLegendaNPS() {
+  var m = document.getElementById('modal-legenda-nps');
+  if (m) m.style.display = 'none';
+}
+// === FIM LEGENDA NPS ===
+
+
+
+// === LEGENDA SCORE CRÍTICOS ===
+function abrirLegendaScore() {
+  var modal = document.getElementById('modal-legenda-score');
+  if (!modal) {
+    var d = document.createElement('div');
+    d.id = 'modal-legenda-score';
+    d.style.cssText = 'display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.75);z-index:10001;align-items:center;justify-content:center;';
+    d.innerHTML =
+      '<div style="background:#1e1e2e;border-radius:14px;padding:24px;max-width:520px;width:92%;max-height:88vh;overflow-y:auto;color:#cdd6f4;box-shadow:0 20px 60px rgba(0,0,0,.5)">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">' +
+          '<h3 style="margin:0;font-size:14px;font-weight:700;color:#f1f5f9">🔴 Como funciona o Score de Risco</h3>' +
+          '<button onclick="fecharLegendaScore()" style="background:none;border:none;color:#94a3b8;font-size:18px;cursor:pointer;line-height:1">✕</button>' +
+        '</div>' +
+
+        // Explicação geral
+        '<p style="font-size:11px;color:#94a3b8;margin-bottom:16px;line-height:1.7">' +
+          'O score <strong style="color:#f1f5f9">não é uma nota</strong> — é um <strong style="color:#f1f5f9">acumulador de problemas</strong>. ' +
+          'O sistema soma pontos automaticamente quando detecta algo negativo em qualquer módulo. ' +
+          'Quanto mais alto, maior o risco do condomínio.' +
+        '</p>' +
+
+        // Tabela de classificação
+        '<div style="margin-bottom:20px">' +
+          '<div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Classificação por Score</div>' +
+          '<table style="width:100%;border-collapse:collapse;font-size:11px">' +
+            '<thead><tr style="background:#0d1117">' +
+              '<th style="padding:8px 12px;text-align:left;color:#64748b;font-size:9px">SCORE</th>' +
+              '<th style="padding:8px 12px;text-align:left;color:#64748b;font-size:9px">NÍVEL</th>' +
+              '<th style="padding:8px 12px;text-align:left;color:#64748b;font-size:9px">O QUE SIGNIFICA</th>' +
+            '</tr></thead>' +
+            '<tbody>' +
+              '<tr style="background:#0a1a10"><td style="padding:8px 12px;color:#10b981;font-weight:700">0 – 2</td><td style="padding:8px 12px">🟢 Saudável</td><td style="padding:8px 12px;color:#94a3b8">Nenhum problema relevante detectado</td></tr>' +
+              '<tr style="background:#1e1a0a"><td style="padding:8px 12px;color:#f59e0b;font-weight:700">3 – 5</td><td style="padding:8px 12px">🟡 Atenção</td><td style="padding:8px 12px;color:#94a3b8">Sinais de alerta — requer acompanhamento</td></tr>' +
+              '<tr style="background:#1a0a0a"><td style="padding:8px 12px;color:#ef4444;font-weight:700">6 ou mais</td><td style="padding:8px 12px">🔴 Crítico</td><td style="padding:8px 12px;color:#94a3b8">Múltiplos problemas — ação imediata</td></tr>' +
+            '</tbody>' +
+          '</table>' +
+        '</div>' +
+
+        // O que gera pontos
+        '<div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">O que gera pontos</div>' +
+
+        // Cards de categorias
+        [
+          {emoji:'⭐', titulo:'Pesquisa de Satisfação', cor:'#f59e0b', itens:[
+            {pts:'+3', desc:'Nota ≤ 5'},
+            {pts:'+2', desc:'Nota 6–7 ou reclamação registrada'},
+            {pts:'+1', desc:'Nota 8 ou sem pesquisa registrada'},
+            {pts:'+2', desc:'Sem pesquisa há mais de 120 dias'},
+          ]},
+          {emoji:'📞', titulo:'Fluxo de Atendimento (TMA)', cor:'#3b82f6', itens:[
+            {pts:'+3', desc:'TMA > 600s ou porta aberta > 50 eventos'},
+            {pts:'+2', desc:'TMA > 300s ou porta violada > 5 eventos'},
+            {pts:'+1', desc:'TMA > 8s ou atendimentos > 500/mês'},
+          ]},
+          {emoji:'📱', titulo:'Adoção Digital', cor:'#8b5cf6', itens:[
+            {pts:'+3', desc:'App < 30% ou Facial < 30%'},
+            {pts:'+2', desc:'App 30–49% ou Facial 30–49%'},
+            {pts:'+1', desc:'App 50–69% ou Facial 50–69%'},
+          ]},
+          {emoji:'📋', titulo:'Demandas / SAC', cor:'#f97316', itens:[
+            {pts:'+3', desc:'3 ou mais reclamações abertas'},
+            {pts:'+2', desc:'2 reclamações ou demanda sem resposta > 48h'},
+            {pts:'+1', desc:'1 reclamação aberta'},
+          ]},
+          {emoji:'⚠️', titulo:'Incidentes', cor:'#ef4444', itens:[
+            {pts:'+3', desc:'Violação, furto, roubo, invasão'},
+            {pts:'+2', desc:'Liberação indevida, falha grave'},
+            {pts:'+1', desc:'Interfone, facial ou app com problema'},
+          ]},
+          {emoji:'🏠', titulo:'Visitas', cor:'#10b981', itens:[
+            {pts:'+2', desc:'Sem visita há mais de 90 dias'},
+            {pts:'+1', desc:'Sem visita há 61–90 dias ou nenhuma registrada'},
+          ]},
+          {emoji:'🔄', titulo:'Renovação / Retenção', cor:'#f59e0b', itens:[
+            {pts:'+3', desc:'Solicitou cancelamento ou contrato vence ≤ 30 dias'},
+            {pts:'+2', desc:'Avaliando concorrência ou contrato vence 31–60 dias'},
+            {pts:'+1', desc:'Renovação em negociação ou contrato vence 61–120 dias'},
+          ]},
+          {emoji:'📞', titulo:'Contato com Síndico', cor:'#64748b', itens:[
+            {pts:'+2', desc:'Sem contato há mais de 90 dias'},
+            {pts:'+1', desc:'Sem contato há 61–90 dias'},
+          ]},
+        ].map(function(cat) {
+          return '<div style="background:#0d1117;border:1px solid #1e2736;border-radius:10px;padding:12px 14px;margin-bottom:8px">' +
+            '<div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">' +
+              '<span style="font-size:16px">' + cat.emoji + '</span>' +
+              '<span style="font-size:11px;font-weight:700;color:' + cat.cor + '">' + cat.titulo + '</span>' +
+            '</div>' +
+            cat.itens.map(function(it) {
+              return '<div style="display:flex;align-items:center;gap:8px;padding:3px 0;border-bottom:1px solid #1e273640">' +
+                '<span style="background:#ef444422;color:#ef4444;border-radius:4px;padding:1px 7px;font-size:10px;font-weight:700;min-width:28px;text-align:center;flex-shrink:0">' + it.pts + '</span>' +
+                '<span style="font-size:11px;color:#94a3b8">' + it.desc + '</span>' +
+              '</div>';
+            }).join('') +
+          '</div>';
+        }).join('') +
+
+        '<div style="display:flex;justify-content:flex-end;margin-top:16px">' +
+          '<button onclick="fecharLegendaScore()" style="padding:8px 20px;background:#3b82f6;border:none;border-radius:8px;color:#fff;font-weight:700;font-size:12px;cursor:pointer">Entendido ✓</button>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(d);
+    d.addEventListener('click', function(e){ if(e.target===d) d.style.display='none'; });
+    modal = d;
+  }
+  modal.style.display = 'flex';
+}
+
+function fecharLegendaScore() {
+  var m = document.getElementById('modal-legenda-score');
+  if (m) m.style.display = 'none';
+}
+// === FIM LEGENDA SCORE ===
 
 </script>
