@@ -8812,6 +8812,18 @@ el.innerHTML='<div class="tbl"><table><thead><tr>'
 +'</td>'
 +'</tr>';}).join('')
 +'</tbody></table></div>';applyPermissions();};var _origRenderRetencao=window.renderRetencao;window.renderRetencao=function(){if(_origRenderRetencao)_origRenderRetencao();setTimeout(function(){var tbody=document.getElementById('tb-retencao');if(!tbody)return;tbody.querySelectorAll('tr').forEach(function(tr){if(tr.style.cursor==='pointer')return;var td=tr.querySelector('td:first-child');if(!td)return;var nome=td.querySelector('[style*="font-weight:700"]');if(!nome)return;var condNome=nome.textContent.trim();var ci=DB.conds.findIndex(function(c){return c.nome===condNome;});if(ci>=0){nome.style.cursor='pointer';nome.style.textDecoration='underline';nome.title='Clique para ver histórico';nome.onclick=function(e){e.stopPropagation();abrirPront(ci);};}});},100);};var _origRenderConds2=window.renderConds;window.renderConds=function(){if(_origRenderConds2)_origRenderConds2();setTimeout(function(){var tb=document.getElementById('tb-cond');if(!tb)return;tb.querySelectorAll('tr').forEach(function(tr){if(tr.style.cursor==='pointer')return;var td=tr.querySelector('td');if(!td)return;var nomeEl=tr.querySelector('b')||tr.querySelector('[style*="font-weight"]')||td;if(!nomeEl)return;var nome=nomeEl.textContent.trim();var ci=DB.conds.findIndex(function(c){return c.nome===nome;});if(ci>=0&&!tr.onclick){tr.style.cursor='pointer';tr.onclick=function(e){if(e.target.closest('button'))return;abrirPront(ci);};}});},100);};document.addEventListener('click',function(e){var el=e.target.closest('[data-cond]');if(!el)return;var condNome=el.getAttribute('data-cond');if(!condNome)return;garantirDB();var ci=DB.conds.findIndex(function(c){return c.nome===condNome;});if(ci>=0)abrirPront(ci);});console.log('[SC Clicks] Correção de cliques aplicada ✅');console.log('[SC Clicks] Críticos, Visitas, Incidentes, Fluxo, Adoção, SLA, Renovação, Condomínios');;document.addEventListener('click',function(e){var el=e.target.closest('[data-cond]');if(!el)return;var condNome=el.getAttribute('data-cond');if(!condNome)return;garantirDB();var ci=DB.conds.findIndex(function(c){return c.nome===condNome;});if(ci>=0)abrirPront(ci);});console.log('[SC Clicks] Correção de cliques aplicada ✅');console.log('[SC Clicks] Críticos, Visitas, Incidentes, Fluxo, Adoção, SLA, Renovação, Condomínios');;var _viewModes={};function _limparDadosObsoletos(){
+  // Remover condomínios duplicados (mesmo nome)
+  if(Array.isArray(DB.conds)){
+    var seen={};
+    DB.conds=DB.conds.filter(function(c){
+      var key=(c.nome||'').trim().toLowerCase();
+      if(!key)return true;
+      if(seen[key])return false;
+      seen[key]=true;
+      return true;
+    });
+  }
+
   // Limpar visitas pendentes auto-geradas
   if(Array.isArray(DB.visitas)){
     DB.visitas=DB.visitas.filter(function(v){
