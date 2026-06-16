@@ -1059,6 +1059,7 @@ showToast('📄 Relatório gerado!');try{renderVisitas();}catch(e){}}</script>
 <option value="12">Dezembro</option>
 </select>
 <button class="btn btn-bl" onclick="satAbrirFormPesquisa(-1)" data-perm="edit">➕ Nova Pesquisa</button>
+<button class="btn btn-gh btn-sm" onclick="abrirScriptPesquisa()" title="Script de pesquisa">📋 Script</button>
 <button class="btn btn-gh btn-sm" onclick="renderSat()">↻</button>
 <button class="btn btn-bl btn-sm" onclick="gerarRelAba('satisfacao')" style="white-space:nowrap;margin-left:4px" title="Gerar relatório">📄 Relatório</button>
 
@@ -11762,5 +11763,235 @@ function renovExcluirCond(ci){if(!confirm('Remover este condomínio da aba Renov
 function abrirAdicionarVisManual(){garantirDB();if(!DB.vis_manuais)DB.vis_manuais=[];var modal=document.getElementById('modal-vis-manual');if(!modal){var d=document.createElement('div');d.id='modal-vis-manual';d.style.cssText='display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.75);z-index:10001;align-items:center;justify-content:center;';d.innerHTML='<div style="background:#1e1e2e;border-radius:14px;padding:24px;max-width:440px;width:92%;color:#cdd6f4;box-shadow:0 20px 60px rgba(0,0,0,.5)"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px"><h3 style="margin:0;font-size:14px;font-weight:700;color:#f1f5f9">＋ Adicionar às Visitas</h3><button onclick="fecharVisManual()" style="background:none;border:none;color:#94a3b8;font-size:18px;cursor:pointer">✕</button></div><p style="font-size:11px;color:#64748b;margin-bottom:16px">Selecione um condomínio para incluir manualmente.</p><div style="margin-bottom:12px"><label style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;display:block;margin-bottom:6px">Condomínio</label><select id="vis-manual-sel" class="fi" style="width:100%;height:36px"></select></div><div style="display:flex;gap:8px;justify-content:flex-end;margin-top:18px"><button onclick="fecharVisManual()" style="padding:8px 14px;background:#1e2736;border:1px solid #334155;border-radius:8px;color:#94a3b8;cursor:pointer;font-size:11px">Cancelar</button><button onclick="_confirmarVisManual()" style="padding:8px 20px;background:#3b82f6;border:none;border-radius:8px;color:#fff;font-weight:700;font-size:12px;cursor:pointer">＋ Adicionar</button></div></div>';document.body.appendChild(d);d.addEventListener('click',function(e){if(e.target===d)fecharVisManual();});modal=d;}var sel=document.getElementById('vis-manual-sel');sel.innerHTML='<option value="">Selecione...</option>'+(DB.conds||[]).slice().sort(function(a,b){return(a.nome||'').localeCompare(b.nome||'');}).map(function(c){var ja=(DB.vis_manuais||[]).indexOf(c.nome)>=0;return'<option value="'+c.nome+'"'+(ja?' style="color:#f59e0b"':'')+'>'+c.nome+(ja?' ✓':'')+'</option>';}).join('');modal.style.display='flex';}
 function fecharVisManual(){var m=document.getElementById('modal-vis-manual');if(m)m.style.display='none';}
 function _confirmarVisManual(){garantirDB();var sel=document.getElementById('vis-manual-sel');var nome=sel?sel.value:'';if(!nome){showToast('⚠️ Selecione um condomínio.');return;}if(!DB.vis_manuais)DB.vis_manuais=[];if(DB.vis_manuais.indexOf(nome)<0){DB.vis_manuais.push(nome);if(!Array.isArray(DB.visitas))DB.visitas=[];var cond=(DB.conds||[]).find(function(c){return c.nome===nome;});DB.visitas.unshift({id:nid('vis'),cond:nome,filial:cond?(cond.filial||''):'',status:'Pendente',data:'',motivo:'Adicionado manualmente',obs:'',resp:'',proximo:''});salvar();showToast('✅ '+nome+' adicionado às visitas!');}else{showToast('ℹ️ Já está na lista.');}fecharVisManual();try{renderVisitas();}catch(e){}}
+
+
+
+// === SCRIPT DE PESQUISA DE SATISFAÇÃO ===
+function abrirScriptPesquisa() {
+  var modal = document.getElementById('modal-script-pesquisa');
+  if (!modal) {
+    var d = document.createElement('div');
+    d.id = 'modal-script-pesquisa';
+    d.style.cssText = 'display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.8);z-index:10002;align-items:flex-start;justify-content:center;overflow-y:auto;padding:20px 0';
+    d.innerHTML = '<div style="background:#1e1e2e;border-radius:14px;width:92%;max-width:820px;margin:auto;color:#cdd6f4;box-shadow:0 24px 80px rgba(0,0,0,.6)">' +
+
+      // Header
+      '<div style="background:#0d1117;border-radius:14px 14px 0 0;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #1e2736;position:sticky;top:0;z-index:1">' +
+        '<div>' +
+          '<div style="font-size:15px;font-weight:800;color:#f1f5f9">📋 Script de Pesquisa de Satisfação</div>' +
+          '<div style="font-size:10px;color:#64748b;margin-top:2px">Guia para a Jovem Aprendiz — Portaria Remota</div>' +
+        '</div>' +
+        '<button onclick="fecharScriptPesquisa()" style="background:none;border:none;color:#64748b;font-size:22px;cursor:pointer;line-height:1">✕</button>' +
+      '</div>' +
+
+      // Como usar
+      '<div style="padding:20px 24px;background:#080b12;border-bottom:1px solid #1e2736">' +
+        '<div style="font-size:10px;font-weight:700;color:#3b82f6;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">⚡ Como usar este guia</div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">' +
+          _scriptItem('1', 'Deixe o síndico falar tudo — não interrompa') +
+          _scriptItem('2', 'Identifique o tipo de reclamação nas seções abaixo') +
+          _scriptItem('3', 'Use as perguntas para aprofundar') +
+          _scriptItem('4', 'Encerre com a frase indicada e registre no sistema') +
+        '</div>' +
+      '</div>' +
+
+      // Tabs de motivos
+      '<div style="padding:16px 24px 0">' +
+        '<div style="font-size:11px;font-weight:700;color:#f1f5f9;margin-bottom:12px">PARTE 1 — PERGUNTAS POR MOTIVO</div>' +
+        '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px" id="script-motivo-tabs">' +
+          _scriptMotivosTabsHTML() +
+        '</div>' +
+        '<div id="script-motivo-content" style="min-height:200px">' +
+          _scriptMotivoHTML(0) +
+        '</div>' +
+      '</div>' +
+
+      // Parte 2
+      '<div style="padding:16px 24px;background:#080b12;border-top:1px solid #1e2736;margin-top:16px">' +
+        '<div style="font-size:10px;font-weight:700;color:#f59e0b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">⚠️ Quando o síndico tem mais de uma reclamação</div>' +
+        '<div style="display:flex;flex-direction:column;gap:8px">' +
+          _scriptItem2('1','Deixe falar tudo','\"Pode ficar à vontade para me contar tudo. Vou anotando aqui para não perder nada.\"') +
+          _scriptItem2('2','Repita o que ouviu','\"Deixa eu confirmar: [liste os problemas]. É isso mesmo?\"') +
+          _scriptItem2('3','Pergunte qual incomoda mais','\"Desses problemas, qual está causando mais transtorno no momento?\"') +
+          _scriptItem2('4','Aprofunde só o principal','Use as perguntas do motivo na Parte 1. Demais: anote no campo observação.') +
+          _scriptItem2('5','Encerre confirmando','\"Registrei [motivo] como prioridade e anotei os outros. A equipe vai retornar sobre cada um.\"') +
+        '</div>' +
+        '<div style="margin-top:12px;padding:10px 14px;background:#1e1a0a;border-radius:8px;border-left:3px solid #f59e0b">' +
+          '<div style="font-size:10px;font-weight:700;color:#f59e0b;margin-bottom:4px">⚠️ Síndico irritado?</div>' +
+          '<div style="font-size:11px;color:#94a3b8">Use: <em style="color:#f1f5f9">\"Senhor [nome], quero garantir que vou registrar tudo certinho. Pode me repetir o primeiro problema para eu começar?\"</em></div>' +
+        '</div>' +
+      '</div>' +
+
+      // Ficha de anotação
+      '<div style="padding:16px 24px;border-top:1px solid #1e2736">' +
+        '<div style="font-size:10px;font-weight:700;color:#10b981;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">📝 Ficha de Anotação</div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">' +
+          '<div style="background:#0d1117;border-radius:8px;padding:10px"><div style="font-size:9px;color:#64748b;margin-bottom:4px">NOME DO SÍNDICO</div><input class="fi" style="width:100%;font-size:11px" placeholder="Digite..."></div>' +
+          '<div style="background:#0d1117;border-radius:8px;padding:10px"><div style="font-size:9px;color:#64748b;margin-bottom:4px">CONDOMÍNIO</div><input class="fi" style="width:100%;font-size:11px" placeholder="Digite..."></div>' +
+          '<div style="background:#0d1117;border-radius:8px;padding:10px"><div style="font-size:9px;color:#64748b;margin-bottom:4px">MOTIVO PRINCIPAL</div><input class="fi" style="width:100%;font-size:11px" placeholder="Digite..."></div>' +
+          '<div style="background:#0d1117;border-radius:8px;padding:10px"><div style="font-size:9px;color:#64748b;margin-bottom:4px">TOM DO SÍNDICO</div><select class="fi" style="width:100%;font-size:11px"><option>Tranquilo</option><option>Preocupado</option><option>Irritado</option></select></div>' +
+          '<div style="background:#0d1117;border-radius:8px;padding:10px;grid-column:1/-1"><div style="font-size:9px;color:#64748b;margin-bottom:4px">OUTROS PROBLEMAS CITADOS</div><textarea class="fi" style="width:100%;font-size:11px;resize:vertical;min-height:50px" placeholder="Anote aqui..."></textarea></div>' +
+        '</div>' +
+        '<div style="display:flex;align-items:center;gap:8px;margin-top:8px">' +
+          '<span style="font-size:10px;color:#64748b">Tem chamado aberto?</span>' +
+          '<select class="fi" style="font-size:11px;height:28px"><option>Não</option><option>Sim</option></select>' +
+          '<input class="fi" style="font-size:11px;height:28px;flex:1" placeholder="Número do chamado...">' +
+        '</div>' +
+      '</div>' +
+
+      // Rodapé
+      '<div style="padding:14px 24px;border-top:1px solid #1e2736;background:#0d1117;border-radius:0 0 14px 14px;display:flex;justify-content:space-between;align-items:center">' +
+        '<div style="font-size:10px;color:#64748b">💡 Se tiver dúvida sobre qual motivo usar, consulte a <strong style="color:#3b82f6">Rosely</strong> antes de fechar a pesquisa.</div>' +
+        '<button onclick="fecharScriptPesquisa()" style="padding:8px 20px;background:#3b82f6;border:none;border-radius:8px;color:#fff;font-weight:700;font-size:12px;cursor:pointer">Fechar</button>' +
+      '</div>' +
+    '</div>';
+    document.body.appendChild(d);
+    d.addEventListener('click', function(e){ if(e.target===d) fecharScriptPesquisa(); });
+    // Event delegation para tabs
+    d.addEventListener('click', function(e) {
+      var btn = e.target.closest('[data-motivo-idx]');
+      if (btn) {
+        var idx = parseInt(btn.getAttribute('data-motivo-idx'));
+        document.querySelectorAll('[data-motivo-idx]').forEach(function(b){
+          b.style.background = '#1e2736'; b.style.color = '#64748b'; b.style.borderColor = '#334155';
+        });
+        btn.style.background = '#3b82f620'; btn.style.color = '#3b82f6'; btn.style.borderColor = '#3b82f6';
+        var cont = document.getElementById('script-motivo-content');
+        if (cont) cont.innerHTML = _scriptMotivoHTML(idx);
+      }
+    });
+    modal = d;
+  }
+  modal.style.display = 'flex';
+}
+
+function fecharScriptPesquisa() {
+  var m = document.getElementById('modal-script-pesquisa');
+  if (m) m.style.display = 'none';
+}
+
+function _scriptItem(n, txt) {
+  return '<div style="display:flex;align-items:flex-start;gap:8px;background:#0d1117;border-radius:8px;padding:8px 10px">' +
+    '<span style="background:#3b82f6;color:#fff;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0">' + n + '</span>' +
+    '<span style="font-size:11px;color:#94a3b8">' + txt + '</span>' +
+  '</div>';
+}
+
+function _scriptItem2(n, titulo, txt) {
+  return '<div style="background:#0d1117;border-radius:8px;padding:10px 12px">' +
+    '<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">' +
+      '<span style="background:#f59e0b;color:#000;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0">' + n + '</span>' +
+      '<span style="font-size:11px;font-weight:700;color:#f1f5f9">' + titulo + '</span>' +
+    '</div>' +
+    '<div style="font-size:10px;color:#94a3b8;margin-left:24px">' + txt + '</div>' +
+  '</div>';
+}
+
+var _SCRIPT_MOTIVOS = [
+  {nome:'Atendimento', perguntas:[
+    'O que aconteceu exatamente? O atendente foi grosseiro, não soube resolver, demorou?',
+    'Isso foi situação específica ou tem acontecido com frequência?',
+    'A reclamação veio de um morador específico ou o senhor mesmo vivenciou?',
+    'Tem algum horário em que o atendimento costuma ser pior?'
+  ], encerrar:'Vou registrar essa ocorrência agora. Posso colocar o seu nome como responsável pelo relato?'},
+  {nome:'Equipe Técnica', perguntas:[
+    'A reclamação é sobre o técnico em si (postura) ou sobre o serviço que não resolveu?',
+    'Quando o técnico veio, o problema foi resolvido ou voltou depois?',
+    'Teve dificuldade para conseguir agendar a visita? Demorou muito?',
+    'Ainda tem chamado técnico aberto sem solução? Sabe o número ou a data?'
+  ], encerrar:'Vou verificar o chamado aberto e passar para o responsável dar retorno ainda hoje.'},
+  {nome:'Aplicativo', perguntas:[
+    'O problema é que o app não abre, não notifica, ou o morador não conseguiu baixar?',
+    'Quantos moradores estão com esse problema? É a maioria ou casos isolados?',
+    'Os moradores receberam o token de acesso? Ou não chegou instrução para eles?',
+    'É em Android, iPhone ou em qualquer um?'
+  ], encerrar:'Vou verificar o envio dos tokens para o condomínio e retorno com uma solução.'},
+  {nome:'Interfone', perguntas:[
+    'Está completamente sem funcionar ou tem problema em parte (sem áudio, sem imagem)?',
+    'É em qual ponto — entrada de pedestre, garagem, apartamento específico?',
+    'Quando o interfone falha, o morador consegue ser avisado pelo app?',
+    'Isso começou quando? Foi após chuva, obra ou sem explicação clara?'
+  ], encerrar:'Vou abrir uma ordem de serviço técnica para verificar esse ponto.'},
+  {nome:'Portões', perguntas:[
+    'É o portão de pedestres, entrada de veículos ou saída de veículos?',
+    'O portão não abre de jeito nenhum ou abre às vezes (intermitente)?',
+    'Entregadores e prestadores estão sendo impactados? Já houve quem foi embora?',
+    'O morador consegue abrir de outra forma (app, controle) ou fica totalmente bloqueado?'
+  ], encerrar:'Vou abrir ordem de serviço urgente para o técnico verificar ainda essa semana.'},
+  {nome:'Controle de Acesso', perguntas:[
+    'A falha é no facial, no tag/cartão ou na liberação de visitas pela central?',
+    'Acontece com todos os moradores ou só com alguns? Em qual portão?',
+    'Falha mais com sol forte, à noite ou sem situação específica?',
+    'Já houve pessoa que não devia entrar com acesso liberado ou morador barrado indevidamente?'
+  ], encerrar:'Vou registrar e acionar o time técnico. Posso confirmar o melhor horário para uma visita?'},
+  {nome:'Câmeras', perguntas:[
+    'É uma câmera específica ou várias? Em qual local?',
+    'Está completamente sem imagem ou imagem ruim (escura, distorcida, travada)?',
+    'Os moradores conseguem ver as câmeras pelo app? O problema é só na central?',
+    'Esse ponto é crítico para a segurança — é a câmera da entrada principal?'
+  ], encerrar:'Vou abrir chamado técnico agora. Pode confirmar o nome do local da câmera?'},
+  {nome:'Financeiro', perguntas:[
+    'A dúvida é sobre o valor cobrado, um boleto específico ou o contrato em geral?',
+    'Tem algum mês ou fatura específica que gerou a dúvida? Tem o número ou data?',
+    'O senhor já tentou falar com alguém sobre isso antes? Com quem?',
+    'Tem algum prazo para resolver — assembleia, vencimento próximo?'
+  ], encerrar:'Vou passar para o setor responsável. Qual o melhor horário para eles entrarem em contato?'},
+  {nome:'Comunicação', perguntas:[
+    'O que o senhor esperava receber e não recebeu — aviso, relatório, comunicado?',
+    'Por qual canal prefere receber esses avisos — WhatsApp, e-mail, app?',
+    'Alguma situação aconteceu no condomínio que o senhor só ficou sabendo depois?',
+    'Se eu pudesse melhorar uma coisa na nossa comunicação, o que seria mais importante?'
+  ], encerrar:'Entendido. Vou registrar e levar essa sugestão para a equipe.'},
+  {nome:'Morosidade', perguntas:[
+    'O chamado foi aberto há quanto tempo? Lembra o assunto ou número?',
+    'Desde que abriu, alguém entrou em contato ou ficou sem resposta nenhuma?',
+    'O problema continua acontecendo enquanto o chamado está aberto?',
+    'Além desse chamado, tem outros abertos sem resposta?'
+  ], encerrar:'Vou escalar internamente agora e pedir retorno ainda hoje. Confirma o número do chamado?'},
+  {nome:'Falta de Retorno', perguntas:[
+    'O senhor tentou falar com quem — central, técnico, CS? Por qual canal?',
+    'Quantas vezes tentou e não teve retorno? Quando foi a última tentativa?',
+    'O assunto ainda está pendente ou o senhor acabou resolvendo de outra forma?',
+    'Qual o melhor horário para nossa equipe entrar em contato agora?'
+  ], encerrar:'Me comprometo a passar essa informação agora e garantir contato no horário confirmado.'},
+  {nome:'Outro', perguntas:[
+    'Pode me contar com mais detalhes o que aconteceu? Quero entender bem para registrar.',
+    'Isso afetou só o senhor ou moradores também foram impactados?',
+    'Já foi comunicado para alguém da nossa equipe? Teve algum encaminhamento?',
+    'O que o senhor esperaria que fosse feito para resolver?'
+  ], encerrar:'Vou registrar como Outro e passar para o responsável avaliar o encaminhamento.'}
+];
+
+function _scriptMotivosTabsHTML() {
+  return _SCRIPT_MOTIVOS.map(function(m, i) {
+    var ativo = i === 0;
+    return '<button data-motivo-idx="' + i + '" style="padding:5px 12px;border:1px solid ' +
+      (ativo ? '#3b82f6' : '#334155') + ';border-radius:20px;background:' +
+      (ativo ? '#3b82f620' : '#1e2736') + ';color:' +
+      (ativo ? '#3b82f6' : '#64748b') + ';font-size:10px;font-weight:600;cursor:pointer">' +
+      m.nome + '</button>';
+  }).join('');
+}
+
+function _scriptMotivoHTML(idx) {
+  var m = _SCRIPT_MOTIVOS[idx];
+  if (!m) return '';
+  return '<div style="background:#0d1117;border-radius:10px;padding:16px">' +
+    '<div style="font-size:13px;font-weight:700;color:#3b82f6;margin-bottom:12px">🎯 ' + m.nome + '</div>' +
+    '<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px">' +
+      m.perguntas.map(function(p, i) {
+        return '<div style="display:flex;align-items:flex-start;gap:10px;background:#080b12;border-radius:8px;padding:10px 12px">' +
+          '<span style="background:#1e2736;color:#3b82f6;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0">' + (i+1) + '</span>' +
+          '<span style="font-size:11px;color:#e2e8f0;line-height:1.5">' + p + '</span>' +
+        '</div>';
+      }).join('') +
+    '</div>' +
+    '<div style="background:#0a1a10;border-radius:8px;padding:10px 14px;border-left:3px solid #10b981">' +
+      '<div style="font-size:9px;font-weight:700;color:#10b981;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">✅ Frase de encerramento</div>' +
+      '<div style="font-size:11px;color:#e2e8f0;font-style:italic">"' + m.encerrar + '"</div>' +
+    '</div>' +
+  '</div>';
+}
+// === FIM SCRIPT PESQUISA ===
 
 </script>
