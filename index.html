@@ -7555,9 +7555,16 @@ var showSim=pesqReal==='Sim';var showNao=pesqReal==='Não';body.innerHTML='<div 
 +'<div id="sat-form-motivo-wrap" style="'+(s.houve_reclamacao==='sim'?'':'display:none')+'">'
 +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">'
 +'<div><label style="font-size:9px;font-weight:700;color:#64748b;display:block;margin-bottom:4px;text-transform:uppercase">MOTIVO DA RECLAMAÇÃO</label>'
-+'<select class="fi" id="sat-f-motivo" style="width:100%"><option value="">Selecione...</option>'+motivosReclOpts+'</select></div>'
++'<select class="fi" id="sat-f-motivo" style="width:100%" onchange="_satMostrarScriptMotivo(this.value)"><option value="">Selecione...</option>'+motivosReclOpts+'</select></div>'
 +'<div><label style="font-size:9px;font-weight:700;color:#64748b;display:block;margin-bottom:4px;text-transform:uppercase">SETOR RESPONSÁVEL</label>'
 +'<select class="fi" id="sat-f-setor-recl" style="width:100%"><option value="">Selecione...</option>'+setorReclOpts+'</select></div>'
++'</div>'
++'<div id="sat-script-guia" style="display:none;margin-bottom:12px;border:1px solid #3b82f630;border-radius:10px;overflow:hidden">'
++'<div style="background:#3b82f610;padding:8px 12px;display:flex;align-items:center;justify-content:space-between">'
++'<span style="font-size:10px;font-weight:700;color:#3b82f6">📋 Script de Apoio — Perguntas sugeridas</span>'
++'<span style="font-size:9px;color:#64748b">Use durante a conversa com o síndico</span>'
++'</div>'
++'<div id="sat-script-perguntas" style="padding:10px 12px"></div>'
 +'</div>'
 +'<label style="font-size:9px;font-weight:700;color:#64748b;display:block;margin-bottom:4px;text-transform:uppercase">RETORNO DO SETOR RESPONSÁVEL</label>'
 +'<textarea class="fi" id="sat-f-retorno-setor" rows="2" placeholder="Ex: Técnico realizou visita em 15/06/2026...">'+esc(s.retorno_setor||'')+'</textarea>'
@@ -11840,9 +11847,12 @@ function abrirScriptPesquisa() {
       '</div>' +
 
       // Rodapé
-      '<div style="padding:14px 24px;border-top:1px solid #1e2736;background:#0d1117;border-radius:0 0 14px 14px;display:flex;justify-content:space-between;align-items:center">' +
-        '<div style="font-size:10px;color:#64748b">💡 Se tiver dúvida sobre qual motivo usar, consulte a <strong style="color:#3b82f6">Rosely</strong> antes de fechar a pesquisa.</div>' +
-        '<button onclick="fecharScriptPesquisa()" style="padding:8px 20px;background:#3b82f6;border:none;border-radius:8px;color:#fff;font-weight:700;font-size:12px;cursor:pointer">Fechar</button>' +
+      '<div style="padding:14px 24px;border-top:1px solid #1e2736;background:#0d1117;border-radius:0 0 14px 14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">' +
+        '<div style="font-size:10px;color:#64748b">💡 Se tiver dúvida, consulte a <strong style="color:#3b82f6">Rosely</strong>.</div>' +
+        '<div style="display:flex;gap:8px">' +
+          '<button onclick="fecharScriptPesquisa()" style="padding:8px 16px;background:#1e2736;border:1px solid #334155;border-radius:8px;color:#94a3b8;font-size:11px;cursor:pointer">Fechar</button>' +
+          '<button onclick="_scriptSalvarEAbrirPesquisa()" style="padding:8px 20px;background:#10b981;border:none;border-radius:8px;color:#fff;font-weight:700;font-size:12px;cursor:pointer">💾 Salvar e Abrir Pesquisa</button>' +
+        '</div>' +
       '</div>' +
     '</div>';
     document.body.appendChild(d);
@@ -11992,6 +12002,230 @@ function _scriptMotivoHTML(idx) {
     '</div>' +
   '</div>';
 }
+
+function _scriptSalvarEAbrirPesquisa() {
+  garantirDB();
+
+  // Ler dados da ficha
+  var inputs = document.querySelectorAll('#modal-script-pesquisa input, #modal-script-pesquisa select, #modal-script-pesquisa textarea');
+  var ficha = {};
+  inputs.forEach(function(el) {
+    var label = el.previousElementSibling ? el.previousElementSibling.textContent.trim() : '';
+    if (!label && el.parentElement) label = el.parentElement.querySelector('div') ? el.parentElement.querySelector('div').textContent.trim() : '';
+    ficha[label] = el.value;
+  });
+
+  // Pegar valores pelos placeholders/posição (mais confiável)
+  var allInputs = document.querySelectorAll('#modal-script-pesquisa input[placeholder], #modal-script-pesquisa select, #modal-script-pesquisa textarea');
+  var nomeSind = '', nomeCond = '', motivoPrincipal = '', outrosProblemas = '', tomSind = 'Tranquilo', numChamado = '';
+  allInputs.forEach(function(el) {
+    var ph = el.placeholder || '';
+    var parentLabel = el.closest('[style]') ? (el.closest('[style]').querySelector('div') ? el.closest('[style]').querySelector('div').textContent.trim() : '') : '';
+    if (ph === 'Digite...' && !nomeSind) nomeSind = el.value.trim();
+    else if (ph === 'Digite...' && !nomeCond) nomeCond = el.value.trim();
+    else if (ph === 'Digite...') motivoPrincipal = el.value.trim();
+    else if (ph === 'Anote aqui...') outrosProblemas = el.value.trim();
+    else if (ph === 'Número do chamado...') numChamado = el.value.trim();
+    if (el.tagName === 'SELECT' && el.options[0] && ['Tranquilo','Preocupado','Irritado'].indexOf(el.options[0].text) >= 0) {
+      tomSind = el.value;
+    }
+  });
+
+  // Pegar pelo índice de posição (mais robusto)
+  var textInputs = Array.from(document.querySelectorAll('#modal-script-pesquisa .fi[placeholder="Digite..."]'));
+  if (textInputs[0]) nomeSind = textInputs[0].value.trim();
+  if (textInputs[1]) nomeCond = textInputs[1].value.trim();
+  if (textInputs[2]) motivoPrincipal = textInputs[2].value.trim();
+
+  var tomSelect = document.querySelector('#modal-script-pesquisa select');
+  if (tomSelect) tomSind = tomSelect.value;
+
+  var obsArea = document.querySelector('#modal-script-pesquisa textarea');
+  if (obsArea) outrosProblemas = obsArea.value.trim();
+
+  var numInput = document.querySelector('#modal-script-pesquisa input[placeholder="Número do chamado..."]');
+  if (numInput) numChamado = numInput.value.trim();
+
+  // Validar campo obrigatório
+  if (!nomeCond) {
+    showToast('⚠️ Preencha o nome do condomínio na ficha.');
+    return;
+  }
+
+  // 1. Salvar no histórico do síndico (via addLog no cond)
+  var ci = (DB.conds||[]).findIndex(function(c){
+    return (c.nome||'').toLowerCase().indexOf(nomeCond.toLowerCase()) >= 0;
+  });
+
+  var obsTexto = 'Pesquisa realizada por ' + ((curUser||{}).name||'?') +
+    '. Tom: ' + tomSind +
+    (motivoPrincipal ? '. Motivo: ' + motivoPrincipal : '') +
+    (outrosProblemas ? '. Outros: ' + outrosProblemas : '') +
+    (numChamado ? '. Chamado: ' + numChamado : '');
+
+  if (ci >= 0) {
+    var cond = DB.conds[ci];
+    if (!Array.isArray(cond.historico)) cond.historico = [];
+    cond.historico.unshift({
+      data: hoje(),
+      tipo: 'Pesquisa de Satisfação',
+      desc: 'Script de pesquisa — ' + (motivoPrincipal || 'Contato realizado') + ' | Tom: ' + tomSind,
+      resp: (curUser||{}).name || '?'
+    });
+    addLog('Satisfação', 'Script de pesquisa', nomeCond);
+    salvar();
+    showToast('✅ Histórico do síndico atualizado!');
+  } else {
+    showToast('⚠️ Condomínio "' + nomeCond + '" não encontrado. Verifique o nome.');
+  }
+
+  // 2. Fechar o modal do script
+  fecharScriptPesquisa();
+
+  // 3. Abrir formulário de Nova Pesquisa com dados pré-preenchidos
+  // Mapear motivo do script para SAT_MOTIVOS
+  var motivoMapeado = '';
+  var _MAPA_MOTIVOS = {
+    'atendimento': 'Atendimento da Central',
+    'equipe': 'Equipe Técnica',
+    'técnica': 'Equipe Técnica',
+    'aplicativo': 'Aplicativo',
+    'app': 'Aplicativo',
+    'interfone': 'Interfone',
+    'portão': 'Portões',
+    'portoes': 'Portões',
+    'controle': 'Controle de Acesso',
+    'facial': 'Controle de Acesso',
+    'câmera': 'Câmeras',
+    'camera': 'Câmeras',
+    'financeiro': 'Financeiro',
+    'comunicação': 'Comunicação',
+    'morosidade': 'Morosidade em Chamados',
+    'chamado': 'Morosidade em Chamados',
+    'retorno': 'Falta de Retorno',
+    'outro': 'Outro'
+  };
+  if (motivoPrincipal) {
+    var mp = motivoPrincipal.toLowerCase();
+    Object.keys(_MAPA_MOTIVOS).forEach(function(k) {
+      if (mp.indexOf(k) >= 0 && !motivoMapeado) motivoMapeado = _MAPA_MOTIVOS[k];
+    });
+    if (!motivoMapeado) motivoMapeado = motivoPrincipal;
+  }
+
+  // Abrir formulário pré-preenchido
+  setTimeout(function() {
+    // Navegar para a aba de satisfação
+    var nbSat = document.querySelector('.nb[data-p="satisfacao"]');
+    if (nbSat) nbSat.click();
+
+    setTimeout(function() {
+      // Abrir formulário de nova pesquisa
+      satAbrirFormPesquisa(-1, ci >= 0 ? ci : -1);
+
+      // Pré-preencher campos após o form abrir
+      setTimeout(function() {
+        // Condomínio
+        var fcEl = document.getElementById('fc');
+        if (fcEl && nomeCond) {
+          fcEl.value = nomeCond;
+          fcEl.dispatchEvent(new Event('input'));
+        }
+        // Responsável
+        var respEl = document.getElementById('sat-f-resp') || document.getElementById('fresp');
+        if (respEl && (curUser||{}).name) {
+          for (var i=0; i<respEl.options.length; i++) {
+            if (respEl.options[i].text.indexOf((curUser||{}).name.split(' ')[0]) >= 0) {
+              respEl.selectedIndex = i; break;
+            }
+          }
+        }
+        // Houve reclamação → marcar Sim se tinha motivo
+        if (motivoMapeado) {
+          var btnSim = document.querySelector('[onclick*="sat-f-houve-recl"][onclick*="sim"]') ||
+                       document.querySelector('[data-recl="sim"]');
+          if (btnSim) btnSim.click();
+
+          // Motivo da reclamação
+          setTimeout(function() {
+            var motivoSel = document.getElementById('sat-f-motivo-recl') ||
+                           document.querySelector('select[id*="motivo"]');
+            if (motivoSel) {
+              for (var i=0; i<motivoSel.options.length; i++) {
+                if (motivoSel.options[i].value === motivoMapeado || motivoSel.options[i].text === motivoMapeado) {
+                  motivoSel.selectedIndex = i; break;
+                }
+              }
+            }
+            // Observações
+            var obsEl = document.getElementById('sat-f-obs') || document.querySelector('textarea[id*="obs"]');
+            if (obsEl && outrosProblemas) obsEl.value = outrosProblemas;
+          }, 300);
+        }
+      }, 400);
+    }, 300);
+  }, 200);
+}
+
+
+// === SCRIPT INTEGRADO NO FORMULÁRIO DE PESQUISA ===
+function _satMostrarScriptMotivo(motivoNome) {
+  var guia = document.getElementById('sat-script-guia');
+  var pergs = document.getElementById('sat-script-perguntas');
+  if (!guia || !pergs) return;
+
+  if (!motivoNome) {
+    guia.style.display = 'none';
+    return;
+  }
+
+  // Mapear nome do motivo para o índice do _SCRIPT_MOTIVOS
+  var mapa = {
+    'Atendimento da Central': 0,
+    'Equipe Técnica': 1,
+    'Aplicativo': 2,
+    'Interfone': 3,
+    'Portões': 4,
+    'Controle de Acesso': 5,
+    'Câmeras': 6,
+    'Financeiro': 7,
+    'Comunicação': 8,
+    'Morosidade em Chamados': 9,
+    'Falta de Retorno': 10,
+    'Outro': 11
+  };
+
+  var idx = mapa[motivoNome];
+  if (idx === undefined || !window._SCRIPT_MOTIVOS) {
+    guia.style.display = 'none';
+    return;
+  }
+
+  var m = _SCRIPT_MOTIVOS[idx];
+  if (!m) { guia.style.display = 'none'; return; }
+
+  // Renderizar perguntas
+  pergs.innerHTML =
+    '<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px">' +
+    m.perguntas.map(function(p, i) {
+      return '<div style="display:flex;align-items:flex-start;gap:8px;background:#080b12;border-radius:7px;padding:8px 10px">' +
+        '<span style="background:#3b82f620;color:#3b82f6;border-radius:50%;width:18px;height:18px;min-width:18px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700">' + (i+1) + '</span>' +
+        '<span style="font-size:11px;color:#e2e8f0;line-height:1.5">' + p + '</span>' +
+      '</div>';
+    }).join('') +
+    '</div>' +
+    '<div style="background:#0a1a10;border-radius:7px;padding:8px 12px;border-left:3px solid #10b981;display:flex;align-items:flex-start;gap:8px">' +
+      '<span style="font-size:12px;flex-shrink:0">✅</span>' +
+      '<div>' +
+        '<div style="font-size:9px;font-weight:700;color:#10b981;margin-bottom:3px;text-transform:uppercase;letter-spacing:.4px">Frase de encerramento</div>' +
+        '<div style="font-size:11px;color:#e2e8f0;font-style:italic">"' + m.encerrar + '"</div>' +
+      '</div>' +
+    '</div>';
+
+  guia.style.display = '';
+}
+// === FIM SCRIPT INTEGRADO ===
+
 // === FIM SCRIPT PESQUISA ===
 
 </script>
