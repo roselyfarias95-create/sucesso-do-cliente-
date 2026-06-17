@@ -5160,10 +5160,93 @@ showToast('✅ Arquivo salvo!');addLog('Sistema','Arquivo salvo','');}catch(e){s
 function limparCache(){if(!confirm('Limpar cache?'))return;try{localStorage.removeItem('sc_db');}catch(e){}initDB();renderAll();showToast('✅ Pronto!');}
 function exportCSV(){garantirDB();var rows=[['Módulo','Condomínio','Filial','Detalhe','Status','Data']];(DB.demandas||[]).forEach(function(d){rows.push(['Demanda',d.cond||'',d.filial||'',(d.tipo||'')+' - '+(d.desc||''),d.status||'',d.prazo||'']);});(DB.satisfacao||[]).forEach(function(s){rows.push(['Satisfação',s.cond||'',s.filial||'','Nota:'+(s.nota||''),s.status||'',s.data||'']);});var csv=rows.map(function(r){return r.map(function(v){return'"'+String(v||'').replace(/"/g,'""')+'"';}).join(',');}).join('\n');var a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);a.download='sc.csv';a.click();showToast('✅ CSV!');}
 function _syncAll(){try{_syncNotas();}catch(e){}try{_syncHumor();}catch(e){}try{_syncStatus();}catch(e){}}
-function _calcHumorSindico(condNome){garantirDB();var pesqs=(DB.satisfacao||[]).filter(function(s){return s.cond===condNome&&s.nota!==null&&s.nota!==undefined&&s.nota!=='';}).sort(function(a,b){return(b.data||'').localeCompare(a.data||'');}).slice(0,2);if(!pesqs.length){return{emoji:'—',label:'Sem pesquisa',cor:'#334155',key:'sem_pesquisa'};}
-function clas(n){return parseFloat(n)>=9?'boa':'ruim';}
-var c1=clas(pesqs[0].nota);if(pesqs.length===1){return c1==='boa'?{emoji:'😀',label:'Feliz',cor:'#10b981',key:'feliz'}:{emoji:'⚠️',label:'Atenção',cor:'#f59e0b',key:'atencao'};}
-var c2=clas(pesqs[1].nota);if(c1==='boa'&&c2==='boa')return{emoji:'😀',label:'Feliz',cor:'#10b981',key:'feliz'};if(c1==='ruim'&&c2==='ruim')return{emoji:'😡',label:'Bravo',cor:'#ef4444',key:'bravo'};return{emoji:'⚠️',label:'Atenção',cor:'#f59e0b',key:'atencao'};}
+function _calcHumorSindico(condNome){
+  garantirDB();
+  var motivos=[], pontos=0;
+
+  // 1. Pesquisas de satisfação (até 3 últimas)
+  var pesqs=(DB.satisfacao||[]).filter(function(s){
+    return s.cond===condNome&&s.nota!==null&&s.nota!==undefined&&s.nota!=='';
+  }).sort(function(a,b){return(b.data||'').localeCompare(a.data||'');}).slice(0,3);
+
+  if(!pesqs.length){
+    motivos.push({txt:'Sem pesquisa de satisfação registrada',tipo:'neutro'});
+  } else {
+    var ultimaNota=parseFloat(pesqs[0].nota)||0;
+    if(ultimaNota>=9){
+      pontos-=2;
+      motivos.push({txt:'Última nota '+ultimaNota+' — muito satisfeito',tipo:'positivo'});
+    } else if(ultimaNota>=7){
+      motivos.push({txt:'Última nota '+ultimaNota+' — satisfação razoável',tipo:'neutro'});
+    } else if(ultimaNota>=5){
+      pontos+=2;
+      motivos.push({txt:'Última nota '+ultimaNota+' — insatisfação moderada',tipo:'negativo'});
+    } else {
+      pontos+=4;
+      motivos.push({txt:'Última nota '+ultimaNota+' — muito insatisfeito',tipo:'grave'});
+    }
+    // Tendência (comparar últimas 2)
+    if(pesqs.length>=2){
+      var n1=parseFloat(pesqs[0].nota)||0, n2=parseFloat(pesqs[1].nota)||0;
+      if(n1>n2+1){
+        pontos-=1;
+        motivos.push({txt:'Nota melhorou ('+n2+' → '+n1+')',tipo:'positivo'});
+      } else if(n1<n2-1){
+        pontos+=1;
+        motivos.push({txt:'Nota piorou ('+n2+' → '+n1+')',tipo:'negativo'});
+      }
+    }
+    // Reclamação na última pesquisa
+    if(pesqs[0].houve_reclamacao==='sim'){
+      pontos+=2;
+      var motRec=pesqs[0].motivo_reclamacao||pesqs[0].motivo_recl||'';
+      motivos.push({txt:'Reclamação registrada'+(motRec?' — '+motRec:''),tipo:'negativo'});
+    }
+  }
+
+  // 2. Demandas abertas (SAC/reclamações)
+  var reclAbertas=(DB.demandas||[]).filter(function(d){
+    return d.cond===condNome&&(d.status==='Aberta'||d.status==='Em andamento')
+      &&(d.tipo==='SAC'||d.tipo==='Reclamação');
+  }).length;
+  if(reclAbertas>=3){pontos+=3;motivos.push({txt:reclAbertas+' reclamações abertas',tipo:'grave'});}
+  else if(reclAbertas===2){pontos+=2;motivos.push({txt:'2 reclamações abertas',tipo:'negativo'});}
+  else if(reclAbertas===1){pontos+=1;motivos.push({txt:'1 reclamação aberta',tipo:'negativo'});}
+  else{motivos.push({txt:'Sem reclamações abertas',tipo:'positivo'});}
+
+  // 3. Demandas vencidas (prazo estourado)
+  var demVenc=(DB.demandas||[]).filter(function(d){
+    return d.cond===condNome&&isVenc&&isVenc(d);
+  }).length;
+  if(demVenc>0){
+    pontos+=demVenc>=2?2:1;
+    motivos.push({txt:demVenc+' demanda(s) com prazo vencido',tipo:'negativo'});
+  }
+
+  // 4. Elogios na pesquisa
+  var elogios=(DB.satisfacao||[]).filter(function(s){
+    return s.cond===condNome&&(s.houve_elogio==='sim'||s.tipo==='Elogio');
+  }).length;
+  if(elogios>0){
+    pontos-=1;
+    motivos.push({txt:elogios+' elogio(s) registrado(s)',tipo:'positivo'});
+  }
+
+  // Calcular humor final
+  var resultado;
+  if(pontos<=-2){
+    resultado={emoji:'😊',label:'Feliz',cor:'#10b981',key:'feliz'};
+  } else if(pontos<=1){
+    resultado={emoji:'😐',label:'Neutro',cor:'#f59e0b',key:'neutro'};
+  } else if(pontos<=3){
+    resultado={emoji:'⚠️',label:'Atenção',cor:'#f97316',key:'atencao'};
+  } else {
+    resultado={emoji:'😡',label:'Insatisfeito',cor:'#ef4444',key:'bravo'};
+  }
+  resultado.motivos=motivos;
+  resultado.pontos=pontos;
+  return resultado;
+}
 function _syncHumor(){if(!Array.isArray(DB.conds))return;DB.conds.forEach(function(c){var h=_calcHumorSindico(c.nome);c.humor=h.emoji;c.humor_label=h.label;c.humor_cor=h.cor;c.humor_key=h.key;});}
 function _syncNotas(){if(!Array.isArray(DB.conds))return;DB.conds.forEach(function(c){var ss=(DB.satisfacao||[]).filter(function(s){return s.cond===c.nome&&s.nota!==null&&s.nota!==undefined;});if(ss.length)c.nota=parseFloat((ss.reduce(function(a,s){return a+(parseFloat(s.nota)||0);},0)/ss.length).toFixed(1));ss.forEach(function(s){if(!s.nps&&s.nota!==null)s.nps=npsC(s.nota);if(!s.filial)s.filial=c.filial||'';});});}
 function _syncStatus(){if(!Array.isArray(DB.conds))return;DB.conds.forEach(function(c){var n=parseFloat(c.nota)||0;c.classificacao=n>=8?'Saudável':n>=6?'Atenção':'Crítico';if(!c.risco_cancel)c.risco_cancel=n<4?'Alto':n<6?'Médio':'Baixo';if(!Array.isArray(c.timeline))c.timeline=[];});}
@@ -7395,10 +7478,10 @@ body.innerHTML=prevs.map(function(p){var stC=p.status==='Finalizada'?'#10b981':p
 function renderRelacionamento(){garantirDB();try{_syncHumor();}catch(e){}
 var q=(document.getElementById('rel-q')||{value:''}).value.toLowerCase();var fil=(document.getElementById('rel-fil')||{value:''}).value;var fhum=(document.getElementById('rel-fhumor')||{value:''}).value;var fresp=(document.getElementById('rel-fresp')||{value:''}).value;var conds=DB.conds.filter(function(c){if(q&&!(c.nome||'').toLowerCase().includes(q))return false;if(fil&&c.filial!==fil)return false;if(fhum&&c.humor_key!==fhum&&c.humor!==fhum&&!(fhum==='feliz'&&(c.humor==='😀'||c.humor==='😊'))&&!(fhum==='atencao'&&(c.humor==='⚠️'||c.humor==='😐'))&&!(fhum==='bravo'&&c.humor==='😡'))return false;if(fresp&&c.resp!==fresp)return false;return true;});var sat=conds.filter(function(c){return c.humor_key==='feliz'||(c.humor==='😀'||c.humor==='😊');}).length;var neut=conds.filter(function(c){return c.humor_key==='atencao'||(c.humor==='⚠️'||c.humor==='😐');}).length;var insat=conds.filter(function(c){return c.humor_key==='bravo'||(c.humor==='😡');}).length;var kpiEl=document.getElementById('kpi-rel');if(kpiEl)kpiEl.innerHTML=_kpiCard('Satisfeitos',sat,'','#10b981','😊')
 +_kpiCard('Neutros',neut,'','#f59e0b','😐')
-+_kpiCard('Insatisfeitos',insat,'ação necessária',insat>0?'#ef4444':'#10b981','😡');var tbEl=document.getElementById('tb-rel');if(tbEl){tbEl.innerHTML=conds.map(function(c){var ci=DB.conds.indexOf(c),cls=clsN(c.nota||0);var sacs=DB.satisfacao.filter(function(s){return s.cond===c.nome&&s.houve_reclamacao==='Sim';}).length;var h=_calcHumorSindico(c.nome);var humorVal=h.emoji;var humorC=h.cor;return'<tr onclick="abrirPront('+ci+')" style="cursor:pointer">'
++_kpiCard('Insatisfeitos',insat,'ação necessária',insat>0?'#ef4444':'#10b981','😡');var tbEl=document.getElementById('tb-rel');if(tbEl){tbEl.innerHTML=conds.map(function(c){var ci=DB.conds.indexOf(c),cls=clsN(c.nota||0);var sacs=DB.satisfacao.filter(function(s){return s.cond===c.nome&&s.houve_reclamacao==='Sim';}).length;var h=_calcHumorSindico(c.nome);var humorVal=h.emoji;var humorC=h.cor;window._humorMap=window._humorMap||{};window._humorMap[ci]=h;return'<tr onclick="abrirPront('+ci+')" style="cursor:pointer">'
 +'<td style="font-weight:700;color:#f1f5f9">'+esc(c.nome)+'</td>'
 +'<td style="font-size:9px;color:#64748b">'+esc(c.filial||'')+'</td>'
-+'<td style="text-align:center;white-space:nowrap">'+'<span style="font-size:13px;color:'+humorC+'">'+humorVal+'</span>'+(h.key!=='sem_pesquisa'?'<span style="font-size:8px;color:'+humorC+';margin-left:3px;font-weight:600">'+esc(h.label)+'</span>':'')+'</td>'
++'<td onclick="event.stopPropagation();_mostrarHumorDetalhesCi(this,'+ci+')" style="text-align:center;white-space:nowrap;cursor:pointer" title="Clique para ver os motivos">'+'<span style="font-size:13px;color:'+humorC+'">'+humorVal+'</span>'+(h.key!=='sem_pesquisa'?'<span style="font-size:8px;color:'+humorC+';margin-left:3px;font-weight:600">'+esc(h.label)+'</span>':'')+'</td>'
 +'<td style="font-size:9px;color:#64748b">'+esc(c.contato||'—')+'</td>'
 +'<td style="text-align:center;font-family:monospace;font-weight:800;color:'+cls.c+'">'+(c.nota||'—')+'</td>'
 +'<td style="text-align:center;font-size:9px;color:'+(sacs>0?'#ef4444':'#64748b')+'">'+sacs+'</td>'
@@ -8420,6 +8503,136 @@ var salvarCond=_sc;function kpiMini(lbl,val,cor){return'<div style="background:#
 +'<div style="font-size:18px;font-weight:900;font-family:monospace;color:'+(cor||'#94a3b8')+'">'+(val!==null&&val!==undefined?val:'—')+'</div>'
 +'</div>';}
 
+
+
+
+function fecharHumorPopup(){
+  var m = document.getElementById('humor-detalhes-popup');
+  if (m) m.remove();
+}
+
+function _mostrarHumorDetalhesCi(el, ci) {
+  var h = window._humorMap && window._humorMap[ci];
+  if (!h) {
+    var c = DB.conds && DB.conds[ci];
+    if (c) h = _calcHumorSindico(c.nome);
+  }
+  if (!h) return;
+  var condNome = (DB.conds && DB.conds[ci] && DB.conds[ci].nome) || '';
+
+  var existing = document.getElementById('humor-detalhes-popup');
+  if (existing) { existing.remove(); if (existing._srcEl === el) return; }
+
+  var popup = document.createElement('div');
+  popup.id = 'humor-detalhes-popup';
+  popup._srcEl = el;
+  popup.style.cssText = 'position:fixed;z-index:10005;background:#1e1e2e;border:1px solid #334155;border-radius:12px;padding:16px;min-width:300px;max-width:380px;box-shadow:0 8px 40px rgba(0,0,0,.7)';
+
+  var rect = el.getBoundingClientRect();
+  var top = rect.bottom + 8;
+  var left = rect.left;
+  if (left + 380 > window.innerWidth) left = window.innerWidth - 388;
+  if (top + 300 > window.innerHeight) top = rect.top - 310;
+  popup.style.top = top + 'px';
+  popup.style.left = left + 'px';
+
+  var tipoCor = {positivo:'#10b981', negativo:'#f59e0b', grave:'#ef4444', neutro:'#64748b'};
+  var tipoIcon = {positivo:'\u2705', negativo:'\u26A0\uFE0F', grave:'\uD83D\uDD34', neutro:'\u2139\uFE0F'};
+
+  var motivosHtml = h.motivos && h.motivos.length
+    ? h.motivos.map(function(m) {
+        var cor = tipoCor[m.tipo] || '#64748b';
+        var ico = tipoIcon[m.tipo] || '&#8226;';
+        return '<div style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid #1e273440">'
+          + '<span style="font-size:12px;flex-shrink:0">' + ico + '</span>'
+          + '<span style="font-size:11px;color:#94a3b8;line-height:1.4">' + m.txt + '</span>'
+          + '</div>';
+      }).join('')
+    : '<div style="font-size:11px;color:#64748b;padding:4px 0">Nenhum dado calculado.</div>';
+
+  popup.innerHTML =
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'
+    + '<div style="display:flex;align-items:center;gap:8px">'
+    + '<span style="font-size:24px">' + h.emoji + '</span>'
+    + '<div>'
+    + '<div style="font-size:12px;font-weight:700;color:' + h.cor + '">' + h.label + '</div>'
+    + '<div style="font-size:9px;color:#64748b">' + condNome + '</div>'
+    + '</div></div>'
+    + '<button onclick="fecharHumorPopup()" style="background:none;border:none;color:#64748b;cursor:pointer;font-size:16px;line-height:1">&#x2715;</button>'
+    + '</div>'
+    + '<div style="font-size:9px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">Motivos da classifica&#xe7;&#xe3;o</div>'
+    + motivosHtml
+    + '<div style="margin-top:10px;padding:8px 10px;background:#0d1117;border-radius:6px;font-size:9px;color:#475569">Calculado automaticamente com base em pesquisas e demandas</div>';
+
+  document.body.appendChild(popup);
+  setTimeout(function() {
+    document.addEventListener('click', function _closeH(e) {
+      if (!popup.contains(e.target) && e.target !== el) {
+        if (popup.parentNode) popup.remove();
+        document.removeEventListener('click', _closeH);
+      }
+    });
+  }, 100);
+}
+
+function _mostrarHumorDetalhes(el, condNome) {
+  var h = _calcHumorSindico(condNome);
+  var existing = document.getElementById('humor-detalhes-popup');
+  if (existing) { existing.remove(); if (existing._srcEl === el) return; }
+
+  var popup = document.createElement('div');
+  popup.id = 'humor-detalhes-popup';
+  popup._srcEl = el;
+  popup.style.cssText = 'position:fixed;z-index:10005;background:#1e1e2e;border:1px solid #334155;border-radius:12px;padding:16px;min-width:300px;max-width:380px;box-shadow:0 8px 40px rgba(0,0,0,.7)';
+
+  var rect = el.getBoundingClientRect();
+  var top = rect.bottom + 8;
+  var left = rect.left;
+  if (left + 380 > window.innerWidth) left = window.innerWidth - 388;
+  if (top + 300 > window.innerHeight) top = rect.top - 300;
+  popup.style.top = top + 'px';
+  popup.style.left = left + 'px';
+
+  var tipoCor = {'positivo':'#10b981','negativo':'#f59e0b','grave':'#ef4444','neutro':'#64748b'};
+  var tipoIcon = {'positivo':'✅','negativo':'⚠️','grave':'🔴','neutro':'ℹ️'};
+
+  var motivosHtml = h.motivos && h.motivos.length
+    ? h.motivos.map(function(m) {
+        var cor = tipoCor[m.tipo] || '#64748b';
+        var ico = tipoIcon[m.tipo] || '•';
+        return '<div style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid #1e273440">'
+          + '<span style="font-size:12px;flex-shrink:0;margin-top:1px">' + ico + '</span>'
+          + '<span style="font-size:11px;color:#94a3b8;line-height:1.4">' + m.txt + '</span>'
+        + '</div>';
+      }).join('')
+    : '<div style="font-size:11px;color:#64748b">Nenhum dado disponível.</div>';
+
+  popup.innerHTML =
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'
+      + '<div style="display:flex;align-items:center;gap:8px">'
+        + '<span style="font-size:22px">' + h.emoji + '</span>'
+        + '<div>'
+          + '<div style="font-size:12px;font-weight:700;color:' + h.cor + '">' + h.label + '</div>'
+          + '<div style="font-size:9px;color:#64748b">' + condNome + '</div>'
+        + '</div>'
+      + '</div>'
+      + '<button onclick="fecharHumorPopup()" '
+        + 'style="background:none;border:none;color:#64748b;cursor:pointer;font-size:16px;line-height:1">✕</button>'
+    + '</div>'
+    + '<div style="font-size:9px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">Motivos da classificação</div>'
+    + motivosHtml
+    + '<div style="margin-top:10px;padding-top:8px;border-top:1px solid #1e2736;font-size:9px;color:#475569">Calculado automaticamente com base em pesquisas e demandas</div>';
+
+  document.body.appendChild(popup);
+  setTimeout(function() {
+    document.addEventListener('click', function _closeHumor(e) {
+      if (!popup.contains(e.target) && e.target !== el) {
+        if (popup.parentNode) popup.remove();
+        document.removeEventListener('click', _closeHumor);
+      }
+    });
+  }, 100);
+}
 
 function _mostrarScoreDetalhesCrit(el, condNome) {
   var crit = _calcCrit(condNome);
