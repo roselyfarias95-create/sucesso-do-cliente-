@@ -884,7 +884,7 @@ showToast('📄 Relatório gerado!');try{renderVisitas();}catch(e){}}</script>
 <div class="ph">
 <div>
 <h1>🤝 Relacionamento</h1>
-<p>CRM de síndicos</p>
+<p>CRM de síndicos <span onclick="abrirLegendaHumor()" title="Entender o humor do síndico" style="cursor:pointer;font-size:11px;background:#1e2736;border:1px solid #334155;border-radius:50%;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;color:#64748b;font-weight:700;vertical-align:middle;margin-left:4px">?</span></p>
 
 <button class="btn btn-gh btn-sm" onclick="abrirFiltrosAba('relacionamento')" title="Editar filtros">🔽 Filtros</button>
 <button class="btn btn-gh btn-sm" onclick="abrirGerenciarAba('relacionamento')" title="Gerenciar esta aba" style="margin-left:auto">⚙️</button></div>
@@ -12628,5 +12628,109 @@ function fecharLegendaScore() {
   if (m) m.style.display = 'none';
 }
 // === FIM LEGENDA SCORE ===
+
+
+
+// === LEGENDA HUMOR SÍNDICO ===
+function abrirLegendaHumor() {
+  var modal = document.getElementById('modal-legenda-humor');
+  if (!modal) {
+    var d = document.createElement('div');
+    d.id = 'modal-legenda-humor';
+    d.style.cssText = 'display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.75);z-index:10001;align-items:center;justify-content:center;';
+
+    d.innerHTML =
+      '<div style="background:#1e1e2e;border-radius:14px;width:92%;max-width:580px;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 24px 80px rgba(0,0,0,.6)">'
+
+      // Header
+      + '<div style="background:#0d1117;border-radius:14px 14px 0 0;padding:16px 20px;border-bottom:1px solid #1e2736;display:flex;justify-content:space-between;align-items:center;flex-shrink:0">'
+        + '<div>'
+          + '<div style="font-size:14px;font-weight:800;color:#f1f5f9">🤝 Como funciona o Humor do Síndico</div>'
+          + '<div style="font-size:10px;color:#64748b;margin-top:2px">Calculado automaticamente — atualiza a cada login</div>'
+        + '</div>'
+        + '<button onclick="fecharLegendaHumor()" style="background:none;border:none;color:#64748b;font-size:20px;cursor:pointer;line-height:1">&#x2715;</button>'
+      + '</div>'
+
+      // Body
+      + '<div style="flex:1;overflow-y:auto;padding:18px 20px">'
+
+        // Classificações
+        + '<div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Classificações</div>'
+        + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px">'
+          + _humorCard('😊','Feliz','#10b981','Síndico muito satisfeito. Notas altas, sem reclamações e elogios registrados.')
+          + _humorCard('😐','Neutro','#f59e0b','Situação estável. Notas razoáveis, sem reclamações ativas.')
+          + _humorCard('⚠️','Atenção','#f97316','Sinais de insatisfação. Nota baixa ou reclamação recente.')
+          + _humorCard('😡','Insatisfeito','#ef4444','Múltiplos problemas. Notas ruins, reclamações abertas e/ou demandas vencidas.')
+        + '</div>'
+
+        // Fatores positivos
+        + '<div style="font-size:10px;color:#10b981;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">&#x2705; Fatores que melhoram o humor</div>'
+        + '<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px">'
+          + _humorFator('Nota &#x2265; 9 na última pesquisa','&#x2212;2 pontos','#10b981')
+          + _humorFator('Nota melhorou em relação à pesquisa anterior','&#x2212;1 ponto','#10b981')
+          + _humorFator('Elogio registrado na pesquisa','&#x2212;1 ponto','#10b981')
+        + '</div>'
+
+        // Fatores negativos
+        + '<div style="font-size:10px;color:#ef4444;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">&#x26A0;&#xFE0F; Fatores que pioram o humor</div>'
+        + '<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px">'
+          + _humorFator('Nota &lt; 5 na última pesquisa','+4 pontos','#ef4444')
+          + _humorFator('Nota 5–6 na última pesquisa','+2 pontos','#f59e0b')
+          + _humorFator('Reclamação registrada na pesquisa','+2 pontos','#f59e0b')
+          + _humorFator('1 demanda SAC/reclamação aberta','+1 ponto','#f59e0b')
+          + _humorFator('2 demandas SAC abertas','+2 pontos','#f97316')
+          + _humorFator('3+ demandas SAC abertas','+3 pontos','#ef4444')
+          + _humorFator('Demanda com prazo vencido','+1 a +2 pontos','#f59e0b')
+          + _humorFator('Nota piorou em relação à pesquisa anterior','+1 ponto','#f59e0b')
+        + '</div>'
+
+        // Cálculo final
+        + '<div style="background:#0d1117;border-radius:10px;padding:14px 16px;border:1px solid #1e2736">'
+          + '<div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">&#x1F4CA; Resultado final (soma dos pontos)</div>'
+          + '<div style="display:flex;flex-direction:column;gap:6px">'
+            + '<div style="display:flex;align-items:center;gap:10px"><span style="font-size:16px">&#x1F60A;</span><div><span style="color:#10b981;font-weight:700">Pontos &#x2264; -2</span><span style="color:#64748b;font-size:10px;margin-left:8px">Feliz</span></div></div>'
+            + '<div style="display:flex;align-items:center;gap:10px"><span style="font-size:16px">&#x1F610;</span><div><span style="color:#f59e0b;font-weight:700">Pontos -1 a 1</span><span style="color:#64748b;font-size:10px;margin-left:8px">Neutro</span></div></div>'
+            + '<div style="display:flex;align-items:center;gap:10px"><span style="font-size:16px">&#x26A0;&#xFE0F;</span><div><span style="color:#f97316;font-weight:700">Pontos 2 a 3</span><span style="color:#64748b;font-size:10px;margin-left:8px">Atenção</span></div></div>'
+            + '<div style="display:flex;align-items:center;gap:10px"><span style="font-size:16px">&#x1F621;</span><div><span style="color:#ef4444;font-weight:700">Pontos &#x2265; 4</span><span style="color:#64748b;font-size:10px;margin-left:8px">Insatisfeito</span></div></div>'
+          + '</div>'
+        + '</div>'
+
+      + '</div>'
+
+      // Footer
+      + '<div style="padding:14px 20px;border-top:1px solid #1e2736;background:#0d1117;border-radius:0 0 14px 14px;display:flex;justify-content:flex-end;flex-shrink:0">'
+        + '<button onclick="fecharLegendaHumor()" style="padding:8px 20px;background:#3b82f6;border:none;border-radius:8px;color:#fff;font-weight:700;font-size:12px;cursor:pointer">Entendido &#x2713;</button>'
+      + '</div>'
+    + '</div>';
+
+    document.body.appendChild(d);
+    d.addEventListener('click', function(e){ if(e.target===d) fecharLegendaHumor(); });
+    modal = d;
+  }
+  modal.style.display = 'flex';
+}
+
+function fecharLegendaHumor() {
+  var m = document.getElementById('modal-legenda-humor');
+  if (m) m.style.display = 'none';
+}
+
+function _humorCard(emoji, label, cor, desc) {
+  return '<div style="background:#0d1117;border:1px solid #1e2736;border-radius:10px;padding:12px 14px">'
+    + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">'
+      + '<span style="font-size:20px">' + emoji + '</span>'
+      + '<span style="font-size:12px;font-weight:700;color:' + cor + '">' + label + '</span>'
+    + '</div>'
+    + '<div style="font-size:10px;color:#64748b;line-height:1.5">' + desc + '</div>'
+  + '</div>';
+}
+
+function _humorFator(desc, pts, cor) {
+  return '<div style="display:flex;align-items:center;justify-content:space-between;background:#0d1117;border-radius:7px;padding:7px 12px">'
+    + '<span style="font-size:11px;color:#94a3b8">' + desc + '</span>'
+    + '<span style="background:' + cor + '22;color:' + cor + ';border-radius:4px;padding:2px 8px;font-size:10px;font-weight:700;white-space:nowrap;margin-left:8px">' + pts + '</span>'
+  + '</div>';
+}
+// === FIM LEGENDA HUMOR ===
 
 </script>
